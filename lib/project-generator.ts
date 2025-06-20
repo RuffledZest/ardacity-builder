@@ -11,7 +11,7 @@ export function generateProjectFiles(components: ComponentInstance[]): Record<st
   files["next.config.mjs"] = generateNextConfig()
   files["tailwind.config.ts"] = generateTailwindConfig()
   files["tsconfig.json"] = generateTsConfig()
-  files["postcss.config.mjs"] = generatePostcssConfig()
+  files["postcss.config.cjs"] = generatePostcssConfig()
 
   // Generate app files
   files["app/layout.tsx"] = generateLayout()
@@ -1218,30 +1218,26 @@ interface FloatingNavbarProps {
 
 export function FloatingNavbar({
   brand = "ArDacity",
-  links = ["Home", "About", "Contact"],
+  links,
   variant = "floating",
 }: FloatingNavbarProps) {
+  const safeLinks = Array.isArray(links) ? links : ["Home", "About", "Contact"]
+
   const [isVisible, setIsVisible] = useState(true)
   const [lastScrollY, setLastScrollY] = useState(0)
 
   useEffect(() => {
     const controlNavbar = () => {
-      if (typeof window !== "undefined") {
-        if (window.scrollY > lastScrollY) {
-          setIsVisible(false)
-        } else {
-          setIsVisible(true)
-        }
-        setLastScrollY(window.scrollY)
+      if (window.scrollY > lastScrollY) {
+        setIsVisible(false)
+      } else {
+        setIsVisible(true)
       }
+      setLastScrollY(window.scrollY)
     }
 
-    if (typeof window !== "undefined") {
-      window.addEventListener("scroll", controlNavbar)
-      return () => {
-        window.removeEventListener("scroll", controlNavbar)
-      }
-    }
+    window.addEventListener("scroll", controlNavbar)
+    return () => window.removeEventListener("scroll", controlNavbar)
   }, [lastScrollY])
 
   return (
@@ -1255,7 +1251,7 @@ export function FloatingNavbar({
           <div className="font-bold text-white">{brand}</div>
 
           <div className="flex items-center space-x-6">
-            {links.map((link, index) => (
+            {safeLinks.map((link, index) => (
               <Button
                 key={index}
                 variant="ghost"
@@ -1275,6 +1271,7 @@ export function FloatingNavbar({
     </nav>
   )
 }
+
 `
 }
 
