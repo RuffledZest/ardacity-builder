@@ -69,7 +69,7 @@ export const AOMessageSigner: React.FC<AOMessageSignerProps> = ({
   }
 
   return (
-    <div className="p-8 bg-gradient-to-br from-zinc-900 to-zinc-800">
+    <div className="p-8 bg-black">
       <div
         className={`max-w-md mx-auto rounded-lg shadow-lg transition-all duration-200 bg-zinc-800/50 border border-zinc-700 ${className}`}
         style={{ padding: "1.5rem", ...style }}
@@ -80,7 +80,7 @@ export const AOMessageSigner: React.FC<AOMessageSignerProps> = ({
         {error && <div className="mt-4 p-4 rounded-md bg-red-900/30 border border-red-800 text-red-100">{error}</div>}
 
         <input
-          className="w-full px-4 py-2 mb-4 rounded-md transition-all duration-200 focus:outline-none focus:ring-2 bg-zinc-700 border-zinc-600 focus:ring-blue-500 text-white placeholder:text-zinc-400"
+          className="w-full px-4 py-2 mb-4 rounded-md transition-all duration-200 focus:outline-none focus:ring-2 bg-zinc-700 border-zinc-600 focus:ring-white/10 text-white placeholder:text-zinc-400"
           type="text"
           value={messageContent}
           placeholder="Enter message to sign"
@@ -90,7 +90,7 @@ export const AOMessageSigner: React.FC<AOMessageSignerProps> = ({
 
         <button
           className={`w-full px-4 py-2 rounded-md font-medium transition-all duration-200 ${
-            loading ? "bg-zinc-600 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700 text-white"
+            loading ? "bg-zinc-800 cursor-not-allowed" : "bg-cyan-900 hover:bg-cyan-900 text-white"
           }`}
           onClick={sendMessageToAO}
           disabled={loading || !messageContent.trim()}

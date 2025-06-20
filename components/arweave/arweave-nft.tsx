@@ -91,7 +91,7 @@ end
 
   return (
     <div
-      className={`bg-gradient-to-br from-zinc-900 to-zinc-800 rounded-xl shadow-xl p-8 border border-zinc-700 ${className}`}
+      className={`bg-black shadow-xl p-8 border border-zinc-700  ${className}`}
       style={style}
     >
       <div className="mb-8">
@@ -101,8 +101,8 @@ end
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* NFT Display */}
-        <div className="bg-zinc-800/30 rounded-lg p-6 shadow-md border border-zinc-700 transition-all hover:border-zinc-600">
-          <div className="aspect-square w-full overflow-hidden rounded-lg ring-2 ring-zinc-700 mb-6">
+        <div className="bg-blac max-w-7xl rounded-lg p-6 shadow-md transition-all hover:border-zinc-600">
+          <div className="aspect-square w-full overflow-hidden  mb-6">
             <img src={imageUrl || "/placeholder.svg"} alt={title} className="w-full h-full object-cover" />
           </div>
           <div className="space-y-4">

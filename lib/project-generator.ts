@@ -106,6 +106,7 @@ function getPackageVersion(packageName: string): string {
     "class-variance-authority": "^0.7.0",
     clsx: "^2.0.0",
     "tailwind-merge": "^2.0.0",
+    "warp-arbundles": "^1.0.4",
     "lucide-react": "^0.294.0",
     "@radix-ui/react-dialog": "^1.0.5",
     "@radix-ui/react-dropdown-menu": "^2.0.6",

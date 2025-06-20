@@ -118,25 +118,28 @@ export function AOChatBot({
   }
 
   return (
-    <div className="p-8 bg-gradient-to-br from-zinc-900 to-zinc-800">
-      <div className="max-w-2xl mx-auto bg-zinc-800/50 border border-zinc-700 rounded-xl shadow-xl overflow-hidden">
-        <div className="bg-zinc-800/80 border-b border-zinc-700 p-4">
-          <h2 className="text-xl font-bold text-white">{title}</h2>
+    <div className="p-8 bg-black">
+      <div className="max-w-2xl mx-auto bg-gradient-to-br from-purple-500/15 via-black/90 to-blue-500/15 border border-zinc-700 rounded-xl shadow-xl overflow-hidden">
+        <div className="bg-gradient-to-r 
+from-purple-500/15 via-black/90
+to-blue-500/15 text-white
+         border-b border-zinc-800 p-4">
+          <h2 className="text-xl font-semibold text-white">{title}</h2>
           {error && (
             <div className="mt-2 text-sm text-red-400 bg-red-900/30 border border-red-800 rounded p-2">{error}</div>
           )}
         </div>
 
-        <div className="h-96 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-track-zinc-800 scrollbar-thumb-zinc-600">
+        <div className="h-96 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-track-zinc-900 scrollbar-thumb-zinc-900">
           {messages.map((msg, index) => (
             <div key={index} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
               <div
                 className={`max-w-[80%] p-3 rounded-lg ${
                   msg.role === "user"
-                    ? "bg-blue-600 text-white"
+                    ? "bg-[#094655b7] backdrop-blur-3xl  text-white"
                     : msg.role === "system"
                       ? "bg-red-900/30 border border-red-800 text-red-100"
-                      : "bg-zinc-700 text-zinc-100"
+                      : "bg-black border border-zinc-800 text-zinc-100"
                 }`}
               >
                 <div className="text-sm">{msg.content}</div>
@@ -147,22 +150,22 @@ export function AOChatBot({
           <div ref={messagesEndRef} />
         </div>
 
-        <form onSubmit={handleSubmit} className="p-4 border-t border-zinc-700">
+        <form onSubmit={handleSubmit} className="p-4 border-t border-zinc-800">
           <div className="flex gap-2">
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Type your message..."
-              className="flex-1 p-3 bg-zinc-700 border border-zinc-600 rounded-lg text-white placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex-1 p-3 bg-black border border-zinc-800 rounded-lg text-white placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-white/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={loading || (typeof window !== "undefined" && !window.arweaveWallet)}
             />
             <button
               type="submit"
               className={`px-4 py-3 rounded-lg font-medium transition-all ${
                 loading || !input.trim() || (typeof window !== "undefined" && !window.arweaveWallet)
-                  ? "bg-zinc-600 cursor-not-allowed"
-                  : "bg-blue-600 hover:bg-blue-700 text-white"
+                  ? "bg-zinc-900 border border-zinc-800 cursor-not-allowed"
+                  : "bg-cyan-900 hover:bg-cyan-700 text-white"
               }`}
               disabled={loading || !input.trim() || (typeof window !== "undefined" && !window.arweaveWallet)}
             >
