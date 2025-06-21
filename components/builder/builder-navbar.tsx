@@ -72,7 +72,7 @@ export function BuilderNavbar() {
 
       <div className="flex items-center gap-4">
         <Link href="/docs">
-          <Button variant="ghost" size="sm" className="text-zinc-300 hover:text-white">
+          <Button variant="ghost" size="sm" className="text-zinc-300 hover:text-black">
             Docs
           </Button>
         </Link>
@@ -80,7 +80,7 @@ export function BuilderNavbar() {
         <Button
           variant="ghost"
           size="sm"
-          className="text-zinc-300 hover:text-white"
+          className="text-zinc-300 hover:text-black"
           onClick={() => window.open("https://ardacityui.ar.io", "_blank")}
         >
           UI Library
@@ -89,7 +89,7 @@ export function BuilderNavbar() {
         <Button
           variant="ghost"
           size="sm"
-          className="text-zinc-300 hover:text-white"
+          className="text-zinc-300 hover:text-black"
           onClick={() => window.open("https://perma-way.vercel.app", "_blank")}
         >
           Html Deployer
@@ -110,7 +110,7 @@ export function BuilderNavbar() {
       </div>
 
       <div className="flex items-center gap-2">
-        <Button variant="ghost" size="sm" className="text-zinc-300 hover:text-white" onClick={handleComingSoon}>
+        <Button variant="ghost" size="sm" className="text-zinc-300 hover:text-black" onClick={handleComingSoon}>
           <Share className="h-4 w-4 mr-2" />
           Share on X
         </Button>
@@ -118,7 +118,7 @@ export function BuilderNavbar() {
         <Button
           variant="outline"
           size="sm"
-          className="bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700"
+          className="bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-300"
           onClick={handleDownloadProject}
           disabled={isDownloading}
         >
@@ -126,7 +126,7 @@ export function BuilderNavbar() {
           {isDownloading ? "Generating..." : "Download Project"}
         </Button>
 
-        <Button size="sm" className="bg-white text-black hover:bg-gray-100" onClick={handleComingSoon}>
+        <Button size="sm" className="bg-white text-black hover:bg-gray-300" onClick={handleComingSoon}>
           <Rocket className="h-4 w-4 mr-2" />
           Deploy
         </Button>

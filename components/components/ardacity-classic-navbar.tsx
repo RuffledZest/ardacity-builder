@@ -48,19 +48,27 @@ export function ArDacityClassicNavbar({
     relative: "relative",
   }[position]
 
+  const variantClass = {
+    default: "bg-white dark:bg-black text-gray-800 dark:text-gray-200",
+    outline: "border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200",
+    floating: "bg-white dark:bg-gray-900 shadow-lg text-gray-800 dark:text-gray-200",
+  }[variant]
+
   return (
     <header
-      className={`border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50 ${positionClass}`}
+      className={`border-b bg-black backdrop-blur supports-[backdrop-filter]:bg-black z-50 ${positionClass} 
+        ${variantClass}
+        `}
     >
       <div className="flex h-14 items-center px-4 lg:px-8">
         <Button variant="ghost" size="icon" className="md:hidden">
           <Menu className="h-5 w-5" />
         </Button>
 
-        <div className="flex items-center justify-between w-full">
+        <div className="flex items-center justify-between w-full ">
           <div className="flex items-center space-x-4">
             <div className="hidden md:flex items-center space-x-2">
-              <div className="text-xl font-bold">{brand}</div>
+              <div className="text-xl font-bold ">{brand}</div>
             </div>
           </div>
 
