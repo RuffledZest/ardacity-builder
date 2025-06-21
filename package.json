@@ -9,6 +9,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@apollo/client": "^3.13.8",
     "@emotion/is-prop-valid": "latest",
     "@hookform/resolvers": "^3.9.1",
     "@permaweb/aoconnect": "latest",
@@ -47,6 +48,8 @@
     "date-fns": "^3.0.0",
     "embla-carousel-react": "8.5.1",
     "framer-motion": "latest",
+    "graphql": "^16.11.0",
+    "gsap": "^3.13.0",
     "input-otp": "1.4.1",
     "jszip": "latest",
     "lucide-react": "^0.454.0",
