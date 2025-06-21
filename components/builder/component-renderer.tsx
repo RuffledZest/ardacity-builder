@@ -9,6 +9,10 @@ import { NftThemeHero } from "../headers/nft-theme-hero"
 import { AOMessageSigner } from "../arweave/ao-message-signer"
 import { AOChatBot } from "../arweave/ao-chatbot"
 import { ArweaveNFT } from "../arweave/arweave-nft"
+import { ArweaveSearch } from "../arweave/arweave-search"
+import { ClipPathLinks } from "../ui/clip-path-links"
+import { FlowingMenu } from "../ui/flowing-menu"
+import { Masonry } from "../ui/masonry"
 
 interface ComponentRendererProps {
   component: ComponentInstance
@@ -41,6 +45,14 @@ export function ComponentRenderer({ component }: ComponentRendererProps) {
         return <AOChatBot {...component.props} />
       case "ArweaveNFT":
         return <ArweaveNFT {...component.props} />
+      case "ArweaveSearch":
+        return <ArweaveSearch {...component.props} />
+      case "ClipPathLinks":
+        return <ClipPathLinks {...component.props} />
+      case "FlowingMenu":
+        return <FlowingMenu {...component.props} />
+      case "Masonry":
+        return <Masonry {...component.props} />
       default:
         return (
           <div className="p-8 bg-red-500/20 text-red-300 border border-red-500/50 rounded-lg m-4">
