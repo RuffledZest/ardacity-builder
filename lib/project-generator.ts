@@ -44,7 +44,6 @@ function generatePackageJson(components: ComponentInstance[]): string {
     "tailwindcss",
     "class-variance-authority",
     "clsx",
-    "wrap-arbundles",
     "tailwind-merge",
     "lucide-react",
     "@radix-ui/react-dialog",
@@ -102,7 +101,7 @@ function getPackageVersion(packageName: string): string {
     "framer-motion": "^10.16.0",
     "next-themes": "^0.2.1",
     "react-icons": "^4.12.0",
-    "@permaweb/aoconnect": "^0.0.53",
+    "@permaweb/aoconnect": "^0.0.85",
     "@ar-dacity/ardacity-wallet-btn": "^0.1.0",
     "class-variance-authority": "^0.7.0",
     clsx: "^2.0.0",
@@ -499,7 +498,7 @@ export function ArDacityClassicNavbar({
 
   return (
     <header
-      className={\`border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50 \${positionClass}\`}
+      className={\`border-zinc-800 bg-gradient-to-br from-purple-500/15 via-black/90 to-blue-500/15 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50 \${positionClass}\`}
     >
       <div className="flex h-14 items-center px-4 lg:px-8">
         <Button variant="ghost" size="icon" className="md:hidden">
@@ -1600,150 +1599,154 @@ export function NftThemeHero({
 
 function generateAOMessageSigner(): string {
   return `"use client"
-
-import React, { useState, useEffect } from "react"
-import { message, createDataItemSigner } from "@permaweb/aoconnect"
-
-export interface AOMessageSignerProps {
-  processId?: string
-  className?: string
-  style?: React.CSSProperties
-  theme?: 'light' | 'dark'
-  title?: string
-  description?: string
-}
-
-declare global {
-  interface Window {
-    arweaveWallet: any
+  
+  import type React from "react"
+  import { useState, useEffect } from "react"
+  
+  export interface AOMessageSignerProps {
+    processId?: string
+    className?: string
+    style?: React.CSSProperties
+    theme?: "light" | "dark"
+    title?: string
+    description?: string
   }
-}
-
-export const AOMessageSigner: React.FC<AOMessageSignerProps> = ({
-  processId = "wTIAdGied4B7wXk1zikACl0Qn-wNdIlDOCkY81YiPBc",
-  className = "",
-  style = {},
-  theme = 'dark',
-  title = "AO Message Signer",
-  description = "Sign messages using AO wallet"
-}) => {
-  const [messageContent, setMessageContent] = useState("")
-  const [responseText, setResponseText] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-
-  useEffect(() => {
-    if (typeof window !== 'undefined' && !window.arweaveWallet) {
-      setError("ArConnect wallet not detected. Please install ArConnect to use this feature.")
+  
+  declare global {
+    interface Window {
+      arweaveWallet: any
     }
-  }, [])
-
-  const sendMessageToAO = async () => {
-    setLoading(true)
-    setResponseText(null)
-    setError(null)
-
-    try {
-      if (typeof window === 'undefined' || !window.arweaveWallet) {
-        throw new Error("ArConnect wallet not available")
+  }
+  
+  export const AOMessageSigner: React.FC<AOMessageSignerProps> = ({
+    processId = "wTIAdGied4B7wXk1zikACl0Qn-wNdIlDOCkY81YiPBc",
+    className = "",
+    style = {},
+    theme = "dark",
+    title = "AO Message Signer",
+    description = "Sign messages using AO wallet",
+  }) => {
+    const [messageContent, setMessageContent] = useState("")
+    const [responseText, setResponseText] = useState<string | null>(null)
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState<string | null>(null)
+  
+    useEffect(() => {
+      if (typeof window !== "undefined" && !window.arweaveWallet) {
+        setError("ArConnect wallet not detected. Please install ArConnect to use this feature.")
       }
-
-      const signer = createDataItemSigner(window.arweaveWallet)
-
-      const result = await message({
-        process: processId,
-        tags: [{ name: "Action", value: "Sign" }],
-        signer,
-        data: messageContent || "Random generated message"
-      })
-
-      setResponseText(JSON.stringify(result, null, 2))
-    } catch (err) {
-      console.error("Error sending message:", err)
-      setError("Failed to send message. Please check your wallet connection and try again.")
-    } finally {
-      setLoading(false)
+    }, [])
+  
+    const sendMessageToAO = async () => {
+      setLoading(true)
+      setResponseText(null)
+      setError(null)
+  
+      try {
+        if (typeof window === "undefined" || !window.arweaveWallet) {
+          throw new Error("ArConnect wallet not available")
+        }
+  
+        // Dynamic import to avoid build issues
+        const { message, createDataItemSigner } = await import("@permaweb/aoconnect")
+  
+        const signer = createDataItemSigner(window.arweaveWallet)
+  
+        const result = await message({
+          process: processId,
+          tags: [{ name: "Action", value: "Sign" }],
+          signer,
+          data: messageContent || "Random generated message",
+        })
+  
+        setResponseText(JSON.stringify(result, null, 2))
+      } catch (err) {
+        console.error("Error sending message:", err)
+        setError("Failed to send message. Please check your wallet connection and try again.")
+      } finally {
+        setLoading(false)
+      }
     }
-  }
-
-  return (
-    <div className="p-8 bg-gradient-to-br from-zinc-900 to-zinc-800">
-      <div 
-        className={\`max-w-md mx-auto rounded-lg shadow-lg transition-all duration-200 bg-zinc-800/50 border border-zinc-700 \${className}\`}
-        style={{ padding: '1.5rem', ...style }}
-      >
-        <h2 className="text-xl font-bold mb-2 pb-2 border-b border-zinc-700 text-white">
-          {title}
-        </h2>
-        <p className="text-zinc-400 text-sm mb-4">{description}</p>
-
-        {error && (
-          <div className="mt-4 p-4 rounded-md bg-red-900/30 border border-red-800 text-red-100">
-            {error}
-          </div>
-        )}
-
-        <input
-          className="w-full px-4 py-2 mb-4 rounded-md transition-all duration-200 focus:outline-none focus:ring-2 bg-zinc-700 border-zinc-600 focus:ring-blue-500 text-white placeholder:text-zinc-400"
-          type="text"
-          value={messageContent}
-          placeholder="Enter message to sign"
-          onChange={(e) => setMessageContent(e.target.value)}
-          disabled={loading}
-        />
-
-        <button
-          className={\`w-full px-4 py-2 rounded-md font-medium transition-all duration-200 \${
-            loading
-              ? 'bg-zinc-600 cursor-not-allowed'
-              : 'bg-blue-600 hover:bg-blue-700 text-white'
-          }\`}
-          onClick={sendMessageToAO}
-          disabled={loading || !messageContent.trim()}
+  
+    return (
+      <div className="p-8 bg-black">
+        <div
+          className={\`max-w-md mx-auto rounded-lg shadow-lg transition-all duration-200 bg-zinc-800/50 border border-zinc-700 \${className}\`}
+          style={{ padding: "1.5rem", ...style }}
         >
-          {loading ? (
-            <div className="flex items-center justify-center">
-              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              Signing...
+          <h2 className="text-xl font-bold mb-2 pb-2 border-b border-zinc-700 text-white">{title}</h2>
+          <p className="text-zinc-400 text-sm mb-4">{description}</p>
+  
+          {error && <div className="mt-4 p-4 rounded-md bg-red-900/30 border border-red-800 text-red-100">{error}</div>}
+  
+          <input
+            className="w-full px-4 py-2 mb-4 rounded-md transition-all duration-200 focus:outline-none focus:ring-2 bg-zinc-700 border-zinc-600 focus:ring-white/10 text-white placeholder:text-zinc-400"
+            type="text"
+            value={messageContent}
+            placeholder="Enter message to sign"
+            onChange={(e) => setMessageContent(e.target.value)}
+            disabled={loading}
+          />
+  
+          <button
+            className={\`w-full px-4 py-2 rounded-md font-medium transition-all duration-200 \${
+              loading ? "bg-zinc-800 cursor-not-allowed" : "bg-cyan-900 hover:bg-cyan-900 text-white"
+            }\`}
+            onClick={sendMessageToAO}
+            disabled={loading || !messageContent.trim()}
+          >
+            {loading ? (
+              <div className="flex items-center justify-center">
+                <svg
+                  className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                Signing...
+              </div>
+            ) : (
+              "Send to AO"
+            )}
+          </button>
+  
+          {responseText && (
+            <div className="mt-4 p-4 rounded-md overflow-auto bg-zinc-700 border border-zinc-600">
+              <div className="font-semibold mb-2 text-white">Response:</div>
+              <pre className="whitespace-pre-wrap break-words text-sm text-zinc-300">{responseText}</pre>
             </div>
-          ) : (
-            "Send to AO"
           )}
-        </button>
-
-        {responseText && (
-          <div className="mt-4 p-4 rounded-md overflow-auto bg-zinc-700 border border-zinc-600">
-            <div className="font-semibold mb-2 text-white">Response:</div>
-            <pre className="whitespace-pre-wrap break-words text-sm text-zinc-300">
-              {responseText}
-            </pre>
-          </div>
-        )}
+        </div>
       </div>
-    </div>
-  )
-}
+    )
+  }
+  
 `
 }
 
 function generateAOChatBot(): string {
   return `"use client"
 
-import { useState, useEffect, useRef } from 'react'
-import { message, createDataItemSigner, result } from "@permaweb/aoconnect"
-import { Send } from 'lucide-react'
+import type React from "react"
+
+import { useState, useEffect, useRef } from "react"
+import { Send } from "lucide-react"
 
 interface AOChatBotProps {
   processId?: string
-  theme?: 'light' | 'dark'
+  theme?: "light" | "dark"
   title?: string
 }
 
 interface Message {
-  role: 'user' | 'assistant' | 'system'
+  role: "user" | "assistant" | "system"
   content: string
   timestamp: string
 }
@@ -1754,25 +1757,25 @@ declare global {
   }
 }
 
-export function AOChatBot({ 
-  processId = "lf9KuIzsIogdOPXc5hdBZNbZ3_CaeM0IrX9maSteWcY", 
-  theme = 'dark',
-  title = "AO ChatBot"
+export function AOChatBot({
+  processId = "lf9KuIzsIogdOPXc5hdBZNbZ3_CaeM0IrX9maSteWcY",
+  theme = "dark",
+  title = "AO ChatBot",
 }: AOChatBotProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
-      role: 'assistant',
-      content: 'Hello! I\\'m your AO ChatBot. How can I help you today?',
-      timestamp: new Date().toISOString()
-    }
+      role: "assistant",
+      content: "Hello! I'm your AO ChatBot. How can I help you today?",
+      timestamp: new Date().toISOString(),
+    },
   ])
-  const [input, setInput] = useState('')
+  const [input, setInput] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && !window.arweaveWallet) {
+    if (typeof window !== "undefined" && !window.arweaveWallet) {
       setError("ArConnect wallet not detected. Please install ArConnect to use this feature.")
     }
   }, [])
@@ -1790,20 +1793,23 @@ export function AOChatBot({
     if (!input.trim() || loading) return
 
     const userMessage: Message = {
-      role: 'user',
+      role: "user",
       content: input,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     }
 
-    setMessages(prev => [...prev, userMessage])
-    setInput('')
+    setMessages((prev) => [...prev, userMessage])
+    setInput("")
     setLoading(true)
     setError(null)
 
     try {
-      if (typeof window === 'undefined' || !window.arweaveWallet) {
+      if (typeof window === "undefined" || !window.arweaveWallet) {
         throw new Error("ArConnect wallet not available")
       }
+
+      // Dynamic import to avoid build issues
+      const { message, createDataItemSigner, result } = await import("@permaweb/aoconnect")
 
       const signer = createDataItemSigner(window.arweaveWallet)
 
@@ -1811,100 +1817,105 @@ export function AOChatBot({
         process: processId,
         tags: [{ name: "Action", value: "Ask" }],
         signer,
-        data: input
+        data: input,
       })
 
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      await new Promise((resolve) => setTimeout(resolve, 2000))
 
       const response = await result({
         process: processId,
-        message: msgResult
+        message: msgResult,
       })
 
       const botResponse = response?.Messages?.[0]?.Data || "No response received from the bot"
-      
+
       const botMessage: Message = {
-        role: 'assistant',
+        role: "assistant",
         content: botResponse,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       }
 
-      setMessages(prev => [...prev, botMessage])
+      setMessages((prev) => [...prev, botMessage])
     } catch (err) {
-      console.error('Error sending message:', err)
+      console.error("Error sending message:", err)
       setError("Failed to send message. Please check your wallet connection and try again.")
-      
+
       const errorMessage: Message = {
-        role: 'system',
-        content: 'Sorry, I encountered an error processing your request.',
-        timestamp: new Date().toISOString()
+        role: "system",
+        content: "Sorry, I encountered an error processing your request.",
+        timestamp: new Date().toISOString(),
       }
-      setMessages(prev => [...prev, errorMessage])
+      setMessages((prev) => [...prev, errorMessage])
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="p-8 bg-gradient-to-br from-zinc-900 to-zinc-800">
-      <div className="max-w-2xl mx-auto bg-zinc-800/50 border border-zinc-700 rounded-xl shadow-xl overflow-hidden">
-        <div className="bg-zinc-800/80 border-b border-zinc-700 p-4">
-          <h2 className="text-xl font-bold text-white">{title}</h2>
+    <div className="p-8 bg-black">
+      <div className="max-w-2xl mx-auto bg-gradient-to-br from-purple-500/15 via-black/90 to-blue-500/15 border border-zinc-700 rounded-xl shadow-xl overflow-hidden">
+        <div className="bg-gradient-to-r 
+from-purple-500/15 via-black/90
+to-blue-500/15 text-white
+         border-b border-zinc-800 p-4">
+          <h2 className="text-xl font-semibold text-white">{title}</h2>
           {error && (
-            <div className="mt-2 text-sm text-red-400 bg-red-900/30 border border-red-800 rounded p-2">
-              {error}
-            </div>
+            <div className="mt-2 text-sm text-red-400 bg-red-900/30 border border-red-800 rounded p-2">{error}</div>
           )}
         </div>
-        
-        <div className="h-96 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-track-zinc-800 scrollbar-thumb-zinc-600">
+
+        <div className="h-96 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-track-zinc-900 scrollbar-thumb-zinc-900">
           {messages.map((msg, index) => (
-            <div 
-              key={index} 
-              className={\`flex \${msg.role === 'user' ? 'justify-end' : 'justify-start'}\`}
-            >
-              <div 
+            <div key={index} className={\`flex \${msg.role === "user" ? "justify-end" : "justify-start"}\`}>
+              <div
                 className={\`max-w-[80%] p-3 rounded-lg \${
-                  msg.role === 'user' 
-                    ? 'bg-blue-600 text-white' 
-                    : msg.role === 'system'
-                    ? 'bg-red-900/30 border border-red-800 text-red-100'
-                    : 'bg-zinc-700 text-zinc-100'
+                  msg.role === "user"
+                    ? "bg-[#094655b7] backdrop-blur-3xl  text-white"
+                    : msg.role === "system"
+                      ? "bg-red-900/30 border border-red-800 text-red-100"
+                      : "bg-black border border-zinc-800 text-zinc-100"
                 }\`}
               >
                 <div className="text-sm">{msg.content}</div>
-                <div className="text-xs opacity-70 mt-1">
-                  {new Date(msg.timestamp).toLocaleTimeString()}
-                </div>
+                <div className="text-xs opacity-70 mt-1">{new Date(msg.timestamp).toLocaleTimeString()}</div>
               </div>
             </div>
           ))}
           <div ref={messagesEndRef} />
         </div>
 
-        <form onSubmit={handleSubmit} className="p-4 border-t border-zinc-700">
+        <form onSubmit={handleSubmit} className="p-4 border-t border-zinc-800">
           <div className="flex gap-2">
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Type your message..."
-              className="flex-1 p-3 bg-zinc-700 border border-zinc-600 rounded-lg text-white placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              disabled={loading || (typeof window !== 'undefined' && !window.arweaveWallet)}
+              className="flex-1 p-3 bg-black border border-zinc-800 rounded-lg text-white placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-white/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={loading || (typeof window !== "undefined" && !window.arweaveWallet)}
             />
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className={\`px-4 py-3 rounded-lg font-medium transition-all \${
-                loading || !input.trim() || (typeof window !== 'undefined' && !window.arweaveWallet)
-                  ? 'bg-zinc-600 cursor-not-allowed'
-                  : 'bg-blue-600 hover:bg-blue-700 text-white'
+                loading || !input.trim() || (typeof window !== "undefined" && !window.arweaveWallet)
+                  ? "bg-zinc-900 border border-zinc-800 cursor-not-allowed"
+                  : "bg-cyan-900 hover:bg-cyan-700 text-white"
               }\`}
-              disabled={loading || !input.trim() || (typeof window !== 'undefined' && !window.arweaveWallet)}
+              disabled={loading || !input.trim() || (typeof window !== "undefined" && !window.arweaveWallet)}
             >
               {loading ? (
-                <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <svg
+                  className="animate-spin h-5 w-5"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
                 </svg>
               ) : (
                 <Send className="h-5 w-5" />
@@ -1916,11 +1927,14 @@ export function AOChatBot({
     </div>
   )
 }
+
 `
 }
 
 function generateArweaveNFT(): string {
   return `"use client"
+
+import type React from "react"
 
 import { useState } from "react"
 import LuaIDE from "./lua-ide"
@@ -2011,7 +2025,7 @@ end
 
   return (
     <div
-      className={\`bg-gradient-to-br from-zinc-900 to-zinc-800 rounded-xl shadow-xl p-8 border border-zinc-700 \${className}\`}
+      className={\`bg-black shadow-xl p-8 border border-zinc-700  \${className}\`}
       style={style}
     >
       <div className="mb-8">
@@ -2021,8 +2035,8 @@ end
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* NFT Display */}
-        <div className="bg-zinc-800/30 rounded-lg p-6 shadow-md border border-zinc-700 transition-all hover:border-zinc-600">
-          <div className="aspect-square w-full overflow-hidden rounded-lg ring-2 ring-zinc-700 mb-6">
+        <div className="bg-blac max-w-7xl rounded-lg p-6 shadow-md transition-all hover:border-zinc-600">
+          <div className="aspect-square w-full overflow-hidden  mb-6">
             <img src={imageUrl || "/placeholder.svg"} alt={title} className="w-full h-full object-cover" />
           </div>
           <div className="space-y-4">
@@ -2045,9 +2059,7 @@ end
         <div className="bg-zinc-800/30 rounded-lg p-6 shadow-md border border-zinc-700">
           <form onSubmit={handleTransfer} className="space-y-6">
             <div>
-              <label className="block text-sm font-semibold text-zinc-300 mb-3">
-                Recipient Address
-              </label>
+              <label className="block text-sm font-semibold text-zinc-300 mb-3">Recipient Address</label>
               <input
                 type="text"
                 value={recipient}
@@ -2060,9 +2072,7 @@ end
 
             {/* Lua Code Editor */}
             <div>
-              <label className="block text-sm font-semibold text-zinc-300 mb-3">
-                Transfer Handler Code
-              </label>
+              <label className="block text-sm font-semibold text-zinc-300 mb-3">Transfer Handler Code</label>
               <div className="border border-zinc-600 rounded-lg overflow-hidden">
                 <LuaIDE
                   cellId="nft-transfer-lua"
@@ -2148,6 +2158,7 @@ end
     </div>
   )
 }
+
 `
 }
 
