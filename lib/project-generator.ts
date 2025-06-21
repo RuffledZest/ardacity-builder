@@ -44,6 +44,7 @@ function generatePackageJson(components: ComponentInstance[]): string {
     "tailwindcss",
     "class-variance-authority",
     "clsx",
+    "wrap-arbundles",
     "tailwind-merge",
     "lucide-react",
     "@radix-ui/react-dialog",
