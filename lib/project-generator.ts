@@ -498,7 +498,7 @@ export function ArDacityClassicNavbar({
 
   return (
     <header
-      className={\`border-b border-zinc-800 bg-gradient-to-br from-purple-500/15 via-black/90 to-blue-500/15 backdrop-blur  z-50 \${positionClass}\`}
+      className={\`border-b border-zinc-800 bg-black  backdrop-blur  z-50 \${positionClass}\`}
     >
       <div className="flex h-14 items-center px-4 lg:px-8">
         <Button variant="ghost" size="icon" className="md:hidden">
@@ -508,23 +508,23 @@ export function ArDacityClassicNavbar({
         <div className="flex items-center justify-between w-full">
           <div className="flex items-center space-x-4">
             <div className="hidden md:flex items-center space-x-2">
-              <div className="text-xl font-bold ">{brand}</div>
+              <div className="text-xl text-white font-bold ">{brand}</div>
             </div>
           </div>
 
           <nav className="hidden translate-x-12 md:flex items-center space-x-6">
-            <Link href="/docs" className="text-sm font-medium transition-colors hover:text-cyan-500">
+            <Link href="/docs" className="text-sm text-white font-medium transition-colors hover:text-cyan-500">
               {nav1}
             </Link>
             <button
               onClick={() => scrollToSection("features")}
-              className="text-sm font-medium transition-colors hover:text-cyan-500"
+              className="text-sm font-medium transition-colors text-white hover:text-cyan-500"
             >
               {nav2}
             </button>
             <button
               onClick={() => scrollToSection("demo")}
-              className="text-sm font-medium transition-colors hover:text-cyan-500"
+              className="text-sm font-medium transition-colors text-white hover:text-cyan-500"
             >
               {nav3}
             </button>
@@ -532,7 +532,7 @@ export function ArDacityClassicNavbar({
 
           <div className="flex items-center space-x-2">
             <Button variant="outline" size="sm" className="hidden md:flex items-center gap-2 bg-black text-white">
-              <Wallet className="h-4 w-4" />
+              <Wallet className="h-4 w-4 " />
               Connect Wallet
             </Button>
 
