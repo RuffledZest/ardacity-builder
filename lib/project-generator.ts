@@ -449,7 +449,7 @@ function generateArDacityClassicNavbar(): string {
   return `"use client"
 
 import { Button } from "@/components/ui/button"
-import { Menu, Moon, Sun, Wallet } from 'lucide-react'
+import { Menu, Moon, Sun, Wallet } from "lucide-react"
 import { useTheme } from "next-themes"
 import { useState, useEffect } from "react"
 import Link from "next/link"
@@ -498,7 +498,7 @@ export function ArDacityClassicNavbar({
 
   return (
     <header
-      className={\`border-zinc-800 bg-gradient-to-br from-purple-500/15 via-black/90 to-blue-500/15 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50 \${positionClass}\`}
+      className={\`border-b border-zinc-800 bg-gradient-to-br from-purple-500/15 via-black/90 to-blue-500/15 backdrop-blur  z-50 \${positionClass}\`}
     >
       <div className="flex h-14 items-center px-4 lg:px-8">
         <Button variant="ghost" size="icon" className="md:hidden">
@@ -508,7 +508,7 @@ export function ArDacityClassicNavbar({
         <div className="flex items-center justify-between w-full">
           <div className="flex items-center space-x-4">
             <div className="hidden md:flex items-center space-x-2">
-              <div className="text-xl font-bold">{brand}</div>
+              <div className="text-xl font-bold ">{brand}</div>
             </div>
           </div>
 
@@ -547,7 +547,7 @@ export function ArDacityClassicNavbar({
                   alt="X Logo"
                   width={12}
                   height={12}
-                  className="h-3 w-3 text-black dark:text-white dark:invert"
+                  className="h-3 w-3 text-black dark:text-white invert "
                 />
               </a>
             </Button>
@@ -557,6 +557,7 @@ export function ArDacityClassicNavbar({
     </header>
   )
 }
+
 `
 }
 
