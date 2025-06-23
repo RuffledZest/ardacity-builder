@@ -65,13 +65,21 @@ export function ComponentLibrary() {
                     key={component.id}
                     draggable
                     onDragStart={(e) => handleDragStart(e, component)}
-                    className="p-3 bg-zinc-800/50 border border-zinc-700 rounded-lg cursor-move hover:bg-zinc-800 transition-colors group"
+                    className="p-3 bg-gradient-to-br from-zinc-800 to-black hover:from-black hover:to-zinc-800 rounded-lg cursor-move transition-colors group relative"
+                    style={{
+                      border: "2px solid transparent",
+                      borderRadius: "0.5rem",
+                      backgroundOrigin: "border-box",
+                      backgroundClip: "padding-box, border-box",
+                      backgroundImage:
+                        "linear-gradient(to bottom right, #27272a, #000), linear-gradient(120deg, #6366f1, #a21caf, #f59e42)",
+                    }}
                   >
                     <div className="text-sm font-medium text-white mb-1">{component.name}</div>
                     <div className="text-xs text-zinc-400 mb-2">{component.description}</div>
                     <div className="flex flex-wrap gap-1 mb-2">
                       {component.tags.slice(0, 3).map((tag) => (
-                        <span key={tag} className="text-xs bg-zinc-700 text-zinc-300 px-2 py-1 rounded">
+                        <span key={tag} className="text-xs bg-black border border-zinc-300/30  text-zinc-300 px-2 py-1 rounded">
                           {tag}
                         </span>
                       ))}
@@ -79,7 +87,7 @@ export function ComponentLibrary() {
                     <Button
                       size="sm"
                       variant="outline"
-                      className="w-full bg-zinc-700 border-zinc-600 text-zinc-300 hover:bg-zinc-600 hover:text-white"
+                      className="w-full bg-white border-zinc-600 text-black hover:bg-zinc-600 hover:text-white"
                       onClick={() =>
                         addComponent({
                           type: component.type,
