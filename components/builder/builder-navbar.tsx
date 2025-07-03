@@ -3,15 +3,18 @@
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
-import { Search, Download, Share, Rocket } from "lucide-react"
+import { Search, Download, Share, Rocket, Wand2 } from "lucide-react"
 import Link from "next/link"
 import { useComponents } from "./component-context"
 import { generateProjectFiles } from "@/lib/project-generator"
 import { useState } from "react"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 
 export function BuilderNavbar() {
-  const { components, searchQuery, setSearchQuery } = useComponents()
+  const { components, searchQuery, setSearchQuery, addComponent } = useComponents()
   const [isDownloading, setIsDownloading] = useState(false)
+  const [aiModalOpen, setAiModalOpen] = useState(false)
+  const [aiPrompt, setAiPrompt] = useState("")
 
   const handleComingSoon = () => {
     alert("Coming Soon!")
@@ -130,7 +133,70 @@ export function BuilderNavbar() {
           <Rocket className="h-4 w-4 mr-2" />
           Deploy
         </Button>
+        <Button variant="ghost" size="icon" onClick={() => setAiModalOpen(true)}>
+          <Wand2 className="h-5 w-5" />
+        </Button>
       </div>
+      <Dialog open={aiModalOpen} onOpenChange={setAiModalOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>AI Assistant</DialogTitle>
+          </DialogHeader>
+          <form
+            onSubmit={async e => {
+              e.preventDefault()
+              try {
+                const res = await fetch('/api/ai-generate', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ prompt: aiPrompt }),
+                })
+                const data = await res.json()
+                // Gemini's response is in data.candidates[0].content.parts[0].text
+                const content = data.candidates?.[0]?.content?.parts?.[0]?.text
+                if (content) {
+                  try {
+                    const componentsArray = JSON.parse(content)
+                    if (Array.isArray(componentsArray)) {
+                      for (const comp of componentsArray) {
+                        addComponent({
+                          type: comp.type,
+                          category: comp.category || "AI",
+                          props: comp.props || {},
+                          position: comp.position || { x: 0, y: 0 },
+                        })
+                      }
+                    } else {
+                      alert("AI did not return a component array.")
+                    }
+                  } catch (err) {
+                    alert("Failed to parse AI response as JSON. Check the console for details.")
+                    console.error('JSON parse error:', err, content)
+                  }
+                } else {
+                  alert("No response from AI.")
+                }
+              } catch (err) {
+                console.error('AI request failed:', err)
+                alert("AI request failed. Check the console for details.")
+              }
+              setAiModalOpen(false)
+              setAiPrompt("")
+            }}
+            className="flex flex-col gap-4"
+          >
+            <Input
+              autoFocus
+              placeholder="Describe the webpage you want..."
+              value={aiPrompt}
+              onChange={e => setAiPrompt(e.target.value)}
+            />
+            <Button type="submit" disabled={!aiPrompt.trim()}>
+              Generate
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
     </nav>
   )
 }
