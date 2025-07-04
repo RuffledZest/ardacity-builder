@@ -11,7 +11,7 @@ export function ArDacityBuilder() {
     <ComponentProvider>
       <div className="h-screen flex flex-col bg-zinc-950 text-white">
         <BuilderNavbar />
-        <div className="flex-1 flex overflow-hidden">
+        <div className="flex-1 flex overflow-hidden relative">
           <ComponentLibrary />
           <BuilderCanvas />
           <PropertiesPanel />

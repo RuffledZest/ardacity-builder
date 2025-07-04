@@ -10,6 +10,41 @@ import { generateProjectFiles } from "@/lib/project-generator"
 import { useState } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 
+// Utility to convert kebab-case to PascalCase
+function pascalCase(str: string) {
+  return str
+    .split('-')
+    .map(s => s.charAt(0).toUpperCase() + s.slice(1))
+    .join('');
+}
+
+// Utility to extract and clean JSON array from Gemini response
+function extractJsonArray(text: string) {
+  let cleaned = text.trim();
+  if (cleaned.startsWith('```')) {
+    cleaned = cleaned.replace(/^```[a-zA-Z]*\n?/, '').replace(/```$/, '').trim();
+  }
+  const firstBracket = cleaned.indexOf('[');
+  const lastBracket = cleaned.lastIndexOf(']');
+  if (firstBracket !== -1 && lastBracket !== -1) {
+    cleaned = cleaned.substring(firstBracket, lastBracket + 1);
+  }
+  return cleaned;
+}
+
+// Transform Gemini response to ComponentInstance input
+function fromGeminiResponse(geminiArray: any[]) {
+  return geminiArray.map(item => {
+    const [category, type] = item.type.split('/');
+    return {
+      type: pascalCase(type),
+      category: category || "AI",
+      props: item.props || {},
+      position: item.position || { x: 0, y: 0 }
+    };
+  });
+}
+
 export function BuilderNavbar() {
   const { components, searchQuery, setSearchQuery, addComponent } = useComponents()
   const [isDownloading, setIsDownloading] = useState(false)
@@ -152,19 +187,16 @@ export function BuilderNavbar() {
                   body: JSON.stringify({ prompt: aiPrompt }),
                 })
                 const data = await res.json()
-                // Gemini's response is in data.candidates[0].content.parts[0].text
-                const content = data.candidates?.[0]?.content?.parts?.[0]?.text
+                // Gemini's response is in data.gemini.candidates[0].content.parts[0].text
+                const content = data.gemini?.candidates?.[0]?.content?.parts?.[0]?.text || data.candidates?.[0]?.content?.parts?.[0]?.text
                 if (content) {
                   try {
-                    const componentsArray = JSON.parse(content)
+                    const cleaned = extractJsonArray(content);
+                    const componentsArray = JSON.parse(cleaned)
                     if (Array.isArray(componentsArray)) {
-                      for (const comp of componentsArray) {
-                        addComponent({
-                          type: comp.type,
-                          category: comp.category || "AI",
-                          props: comp.props || {},
-                          position: comp.position || { x: 0, y: 0 },
-                        })
+                      const transformed = fromGeminiResponse(componentsArray)
+                      for (const comp of transformed) {
+                        addComponent(comp)
                       }
                     } else {
                       alert("AI did not return a component array.")
