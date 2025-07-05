@@ -1,6 +1,7 @@
 "use client"
 
 import { type ComponentInstance, useComponents } from "./component-context"
+import { getDynamicComponent, createFallbackComponent } from "@/lib/dynamic-component-compiler"
 import { ArDacityClassicNavbar } from "../navigation/ardacity-classic-navbar"
 import { FloatingNavbar } from "../navigation/floating-navbar"
 import { SmoothScrollHero } from "../headers/smooth-scroll-hero"
@@ -29,9 +30,28 @@ export function ComponentRenderer({ component }: ComponentRendererProps) {
 
   const isSelected = selectedComponent?.id === component.id
 
+  // Utility to convert kebab-case to PascalCase
+  function kebabToPascalCase(str: string) {
+    return str
+      .split('-')
+      .map(s => s.charAt(0).toUpperCase() + s.slice(1))
+      .join('');
+  }
+
+  const resolvedType = kebabToPascalCase(component.type);
+
   const renderComponent = () => {
-    console.log('Rendering component with type:', component.type);
-    switch (component.type) {
+    console.log('Rendering component with type:', component.type, 'resolved as:', resolvedType);
+    
+    // First, check if it's a dynamic component
+    const DynamicComponent = getDynamicComponent(component.type);
+    if (DynamicComponent) {
+      console.log('Rendering dynamic component:', component.type);
+      return <DynamicComponent {...component.props} />
+    }
+    
+    // Then check static components
+    switch (resolvedType) {
       case "ArDacityClassicNavbar":
         return <ArDacityClassicNavbar {...component.props} />
       case "FloatingNavbar":
@@ -69,14 +89,18 @@ export function ComponentRenderer({ component }: ComponentRendererProps) {
             {component.props.children}
           </Button>
         )
+      case "SignerComponent":
+        // Dynamically import if not statically imported
+        const SignerComponent = require("../components/signer-component").SignerComponent;
+        return <SignerComponent {...component.props} />
+      case "ChatBox":
+        const ChatBox = require("../components/chat-box").ChatBox;
+        return <ChatBox {...component.props} />
       default:
         console.log('No matching case found for type:', component.type);
-        return (
-          <div className="p-8 bg-red-500/20 text-red-300 border border-red-500/50 rounded-lg m-4">
-            <h3 className="text-lg font-semibold mb-2">Unknown Component</h3>
-            <p>Component type "{component.type}" not found</p>
-          </div>
-        )
+        // Create a fallback component that shows the missing component info
+        const FallbackComponent = createFallbackComponent(component.type, "Component not found in registry");
+        return <FallbackComponent {...component.props} />
     }
   }
 
