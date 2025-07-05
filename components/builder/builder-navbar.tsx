@@ -9,9 +9,19 @@ import { useComponents } from "./component-context"
 import { generateProjectFiles } from "@/lib/project-generator"
 import { useState } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { getComponentByType, componentRegistry } from "@/lib/component-registry"
 
 // Utility to convert kebab-case to PascalCase
 function pascalCase(str: string) {
+  // Special handling for ArDacity components
+  if (str.startsWith('ardacity-')) {
+    const rest = str.replace('ardacity-', '');
+    return 'ArDacity' + rest
+      .split('-')
+      .map(s => s.charAt(0).toUpperCase() + s.slice(1))
+      .join('');
+  }
+  
   return str
     .split('-')
     .map(s => s.charAt(0).toUpperCase() + s.slice(1))
@@ -32,13 +42,27 @@ function extractJsonArray(text: string) {
   return cleaned;
 }
 
+// Utility to map kebab-case type to PascalCase using the registry
+function registryTypeFromKebab(type: string) {
+  // Find the registry entry whose id matches the kebab-case type
+  const entry = componentRegistry.find(comp => comp.id === type);
+  return entry ? entry.type : pascalCase(type);
+}
+
 // Transform Gemini response to ComponentInstance input
 function fromGeminiResponse(geminiArray: any[]) {
   return geminiArray.map(item => {
-    const [category, type] = item.type.split('/');
+    let type = item.type;
+    let category = item.category || "AI";
+    if (type.includes('/')) {
+      [category, type] = type.split('/');
+    }
+    // Use registry mapping for type
+    const registryType = registryTypeFromKebab(type);
+    console.log('Mapping type:', type, 'to registryType:', registryType);
     return {
-      type: pascalCase(type),
-      category: category || "AI",
+      type: registryType,
+      category: category,
       props: item.props || {},
       position: item.position || { x: 0, y: 0 }
     };
@@ -192,9 +216,12 @@ export function BuilderNavbar() {
                 if (content) {
                   try {
                     const cleaned = extractJsonArray(content);
+                    console.log('Cleaned AI response:', cleaned);
                     const componentsArray = JSON.parse(cleaned)
+                    console.log('Parsed components array:', componentsArray);
                     if (Array.isArray(componentsArray)) {
                       const transformed = fromGeminiResponse(componentsArray)
+                      console.log('Transformed components:', transformed);
                       for (const comp of transformed) {
                         addComponent(comp)
                       }

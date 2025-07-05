@@ -1,7 +1,7 @@
 export interface ComponentDefinition {
   id: string
   name: string
-  category: "navigation" | "header" | "arweave"
+  category: "navigation" | "header" | "arweave" | "builder"
   type: string
   description: string
   defaultProps: Record<string, any>
@@ -232,6 +232,20 @@ export const componentRegistry: ComponentDefinition[] = [
     dependencies: ["@apollo/client", "graphql"],
     imports: ["import { ArweaveSearch } from '@/components/arweave/arweave-search'"],
     tags: ["arweave", "search", "graphql", "transactions", "indexer"],
+  },
+  {
+    id: "ardacity-builder",
+    name: "ArDacity Builder",
+    category: "builder",
+    type: "ArDacityBuilder",
+    description: "Main builder interface for creating ArDacity projects",
+    defaultProps: {
+      theme: "dark",
+      layout: "default",
+    },
+    dependencies: [],
+    imports: ["import { ArDacityBuilder } from '@/components/builder/ardacity-builder'"],
+    tags: ["builder", "interface", "main"],
   },
 ]
 

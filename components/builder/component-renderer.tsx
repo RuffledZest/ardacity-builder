@@ -13,6 +13,7 @@ import { ArweaveSearch } from "../arweave/arweave-search"
 import { ClipPathLinks } from "../ui/clip-path-links"
 import { FlowingMenu } from "../ui/flowing-menu"
 import { Masonry } from "../ui/masonry"
+import { ArDacityBuilder } from "./ardacity-builder"
 
 interface ComponentRendererProps {
   component: ComponentInstance
@@ -28,6 +29,7 @@ export function ComponentRenderer({ component }: ComponentRendererProps) {
   const isSelected = selectedComponent?.id === component.id
 
   const renderComponent = () => {
+    console.log('Rendering component with type:', component.type);
     switch (component.type) {
       case "ArDacityClassicNavbar":
         return <ArDacityClassicNavbar {...component.props} />
@@ -53,7 +55,11 @@ export function ComponentRenderer({ component }: ComponentRendererProps) {
         return <FlowingMenu {...component.props} />
       case "Masonry":
         return <Masonry {...component.props} />
+      case "ArDacityBuilder":
+        console.log('Found ArDacityBuilder case, rendering component');
+        return <ArDacityBuilder {...component.props} />
       default:
+        console.log('No matching case found for type:', component.type);
         return (
           <div className="p-8 bg-red-500/20 text-red-300 border border-red-500/50 rounded-lg m-4">
             <h3 className="text-lg font-semibold mb-2">Unknown Component</h3>

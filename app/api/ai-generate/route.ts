@@ -19,7 +19,25 @@ export async function POST(req: NextRequest) {
     },
     body: JSON.stringify({
       contents: [
-        { parts: [{ text: `You are a helpful assistant that generates a JSON array of UI components for a React builder. Each component should have a type and props. User prompt: ${prompt}. Here is a list of available components categorized: ${JSON.stringify(componentsList)}. Only suggest components from this list.` }] }
+        { parts: [{ text: `You are a helpful assistant that generates a JSON array of UI components for a React builder. 
+
+User prompt: ${prompt}
+
+Available components: ${JSON.stringify(componentsList)}
+
+Generate a JSON array with this exact format:
+[
+  {
+    "type": "component-name-from-list",
+    "category": "navigation|header|arweave|builder",
+    "props": {
+      "title": "Example Title",
+      "description": "Example description"
+    }
+  }
+]
+
+Only use component names from the provided list. Use kebab-case for component names (e.g., "ardacity-builder", "floating-navbar").` }] }
       ]
     }),
   });
