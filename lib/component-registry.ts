@@ -1,7 +1,7 @@
 export interface ComponentDefinition {
   id: string
   name: string
-  category: "navigation" | "header" | "arweave" | "builder"
+  category: "navigation" | "header" | "arweave" | "ui"
   type: string
   description: string
   defaultProps: Record<string, any>
@@ -234,18 +234,32 @@ export const componentRegistry: ComponentDefinition[] = [
     tags: ["arweave", "search", "graphql", "transactions", "indexer"],
   },
   {
-    id: "ardacity-builder",
-    name: "ArDacity Builder",
-    category: "builder",
-    type: "ArDacityBuilder",
-    description: "Main builder interface for creating ArDacity projects",
+    id: "card",
+    name: "Card",
+    category: "ui",
+    type: "Card",
+    description: "A flexible card container with header, content, and footer.",
     defaultProps: {
-      theme: "dark",
-      layout: "default",
+      children: "Card content here"
     },
     dependencies: [],
-    imports: ["import { ArDacityBuilder } from '@/components/builder/ardacity-builder'"],
-    tags: ["builder", "interface", "main"],
+    imports: ["import { Card } from '@/components/ui/card'"] ,
+    tags: ["ui", "container", "card"],
+  },
+  {
+    id: "button",
+    name: "Button",
+    category: "ui",
+    type: "Button",
+    description: "A styled button component supporting variants and sizes.",
+    defaultProps: {
+      children: "Click me",
+      variant: "default",
+      size: "default"
+    },
+    dependencies: [],
+    imports: ["import { Button } from '@/components/ui/button'"] ,
+    tags: ["ui", "button", "action"],
   },
 ]
 

@@ -13,7 +13,8 @@ import { ArweaveSearch } from "../arweave/arweave-search"
 import { ClipPathLinks } from "../ui/clip-path-links"
 import { FlowingMenu } from "../ui/flowing-menu"
 import { Masonry } from "../ui/masonry"
-import { ArDacityBuilder } from "./ardacity-builder"
+import { Card } from "../ui/card"
+import { Button } from "../ui/button"
 
 interface ComponentRendererProps {
   component: ComponentInstance
@@ -55,9 +56,10 @@ export function ComponentRenderer({ component }: ComponentRendererProps) {
         return <FlowingMenu {...component.props} />
       case "Masonry":
         return <Masonry {...component.props} />
-      case "ArDacityBuilder":
-        console.log('Found ArDacityBuilder case, rendering component');
-        return <ArDacityBuilder {...component.props} />
+      case "Card":
+        return <Card {...component.props}>{component.props.children}</Card>
+      case "Button":
+        return <Button {...component.props}>{component.props.children}</Button>
       default:
         console.log('No matching case found for type:', component.type);
         return (
