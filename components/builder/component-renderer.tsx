@@ -59,7 +59,16 @@ export function ComponentRenderer({ component }: ComponentRendererProps) {
       case "Card":
         return <Card {...component.props}>{component.props.children}</Card>
       case "Button":
-        return <Button {...component.props}>{component.props.children}</Button>
+        return (
+          <Button 
+            variant={component.props.variant} 
+            size={component.props.size}
+            className={component.props.className}
+            {...component.props}
+          >
+            {component.props.children}
+          </Button>
+        )
       default:
         console.log('No matching case found for type:', component.type);
         return (

@@ -255,11 +255,12 @@ export const componentRegistry: ComponentDefinition[] = [
     defaultProps: {
       children: "Click me",
       variant: "default",
-      size: "default"
+      size: "default",
+      className: ""
     },
-    dependencies: [],
-    imports: ["import { Button } from '@/components/ui/button'"] ,
-    tags: ["ui", "button", "action"],
+    dependencies: ["@radix-ui/react-slot", "class-variance-authority"],
+    imports: ["import { Button } from '@/components/ui/button'"],
+    tags: ["ui", "button", "action", "interactive"],
   },
 ]
 
