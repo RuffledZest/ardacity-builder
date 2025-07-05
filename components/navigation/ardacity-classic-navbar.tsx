@@ -1,11 +1,13 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { Menu, Moon, Sun, Wallet } from "lucide-react"
+import { Menu, Moon, Sun, Wallet, Wand2 } from "lucide-react"
 import { useTheme } from "next-themes"
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
 
 interface ArDacityClassicNavbarProps {
   brand?: string
@@ -26,6 +28,8 @@ export function ArDacityClassicNavbar({
 }: ArDacityClassicNavbarProps) {
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
+  const [aiModalOpen, setAiModalOpen] = useState(false)
+  const [aiPrompt, setAiPrompt] = useState("")
 
   useEffect(() => {
     setMounted(true)

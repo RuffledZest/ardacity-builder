@@ -3,15 +3,77 @@
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
-import { Search, Download, Share, Rocket } from "lucide-react"
+import { Search, Download, Share, Rocket, Wand2 } from "lucide-react"
 import Link from "next/link"
 import { useComponents } from "./component-context"
 import { generateProjectFiles } from "@/lib/project-generator"
 import { useState } from "react"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { getComponentByType, componentRegistry } from "@/lib/component-registry"
+
+// Utility to convert kebab-case to PascalCase
+function pascalCase(str: string) {
+  // Special handling for ArDacity components
+  if (str.startsWith('ardacity-')) {
+    const rest = str.replace('ardacity-', '');
+    return 'ArDacity' + rest
+      .split('-')
+      .map(s => s.charAt(0).toUpperCase() + s.slice(1))
+      .join('');
+  }
+  
+  return str
+    .split('-')
+    .map(s => s.charAt(0).toUpperCase() + s.slice(1))
+    .join('');
+}
+
+// Utility to extract and clean JSON array from Gemini response
+function extractJsonArray(text: string) {
+  let cleaned = text.trim();
+  if (cleaned.startsWith('```')) {
+    cleaned = cleaned.replace(/^```[a-zA-Z]*\n?/, '').replace(/```$/, '').trim();
+  }
+  const firstBracket = cleaned.indexOf('[');
+  const lastBracket = cleaned.lastIndexOf(']');
+  if (firstBracket !== -1 && lastBracket !== -1) {
+    cleaned = cleaned.substring(firstBracket, lastBracket + 1);
+  }
+  return cleaned;
+}
+
+// Utility to map kebab-case type to PascalCase using the registry
+function registryTypeFromKebab(type: string) {
+  // Find the registry entry whose id matches the kebab-case type
+  const entry = componentRegistry.find(comp => comp.id === type);
+  return entry ? entry.type : pascalCase(type);
+}
+
+// Transform Gemini response to ComponentInstance input
+function fromGeminiResponse(geminiArray: any[]) {
+  return geminiArray.map(item => {
+    let type = item.type;
+    let category = item.category || "AI";
+    if (type.includes('/')) {
+      [category, type] = type.split('/');
+    }
+    // Use registry mapping for type
+    const registryType = registryTypeFromKebab(type);
+    console.log('Mapping type:', type, 'to registryType:', registryType);
+    return {
+      type: registryType,
+      category: category,
+      props: item.props || {},
+      position: item.position || { x: 0, y: 0 }
+    };
+  });
+}
 
 export function BuilderNavbar() {
-  const { components, searchQuery, setSearchQuery } = useComponents()
+  const { components, searchQuery, setSearchQuery, addComponent } = useComponents()
   const [isDownloading, setIsDownloading] = useState(false)
+  const [aiModalOpen, setAiModalOpen] = useState(false)
+  const [aiPrompt, setAiPrompt] = useState("")
 
   const handleComingSoon = () => {
     alert("Coming Soon!")
@@ -130,7 +192,70 @@ export function BuilderNavbar() {
           <Rocket className="h-4 w-4 mr-2" />
           Deploy
         </Button>
+        <Button variant="ghost" size="icon" onClick={() => setAiModalOpen(true)}>
+          <Wand2 className="h-5 w-5" />
+        </Button>
       </div>
+      <Dialog open={aiModalOpen} onOpenChange={setAiModalOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>AI Assistant</DialogTitle>
+          </DialogHeader>
+          <form
+            onSubmit={async e => {
+              e.preventDefault()
+              try {
+                const res = await fetch('/api/ai-generate', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ prompt: aiPrompt }),
+                })
+                const data = await res.json()
+                // Gemini's response is in data.gemini.candidates[0].content.parts[0].text
+                const content = data.gemini?.candidates?.[0]?.content?.parts?.[0]?.text || data.candidates?.[0]?.content?.parts?.[0]?.text
+                if (content) {
+                  try {
+                    const cleaned = extractJsonArray(content);
+                    console.log('Cleaned AI response:', cleaned);
+                    const componentsArray = JSON.parse(cleaned)
+                    console.log('Parsed components array:', componentsArray);
+                    if (Array.isArray(componentsArray)) {
+                      const transformed = fromGeminiResponse(componentsArray)
+                      console.log('Transformed components:', transformed);
+                      for (const comp of transformed) {
+                        addComponent(comp)
+                      }
+                    } else {
+                      alert("AI did not return a component array.")
+                    }
+                  } catch (err) {
+                    alert("Failed to parse AI response as JSON. Check the console for details.")
+                    console.error('JSON parse error:', err, content)
+                  }
+                } else {
+                  alert("No response from AI.")
+                }
+              } catch (err) {
+                console.error('AI request failed:', err)
+                alert("AI request failed. Check the console for details.")
+              }
+              setAiModalOpen(false)
+              setAiPrompt("")
+            }}
+            className="flex flex-col gap-4"
+          >
+            <Input
+              autoFocus
+              placeholder="Describe the webpage you want..."
+              value={aiPrompt}
+              onChange={e => setAiPrompt(e.target.value)}
+            />
+            <Button type="submit" disabled={!aiPrompt.trim()}>
+              Generate
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
     </nav>
   )
 }

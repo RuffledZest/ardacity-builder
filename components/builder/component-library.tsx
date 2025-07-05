@@ -13,6 +13,7 @@ export function ComponentLibrary() {
     navigation: true,
     header: true,
     arweave: true,
+    ui: true,
   })
   const { addComponent, searchQuery } = useComponents()
 
@@ -32,6 +33,7 @@ export function ComponentLibrary() {
     { key: "navigation", title: "Navigation Bar" },
     { key: "header", title: "Header Section" },
     { key: "arweave", title: "Arweave Blocks" },
+    { key: "ui", title: "UI Components" },
   ]
 
   return (
