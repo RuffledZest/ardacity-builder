@@ -1,7 +1,7 @@
 export interface ComponentDefinition {
   id: string
   name: string
-  category: "navigation" | "header" | "arweave"
+  category: "navigation" | "header" | "arweave" | "ui"
   type: string
   description: string
   defaultProps: Record<string, any>
@@ -44,6 +44,82 @@ export const componentRegistry: ComponentDefinition[] = [
     dependencies: [],
     imports: ["import { FloatingNavbar } from '@/components/navigation/floating-navbar'"],
     tags: ["navigation", "floating", "modern"],
+  },
+  {
+    id: "clip-path-links",
+    name: "Clip Path Links",
+    category: "navigation",
+    type: "ClipPathLinks",
+    description: "Animated grid of social/media links with clip-path hover effects.",
+    defaultProps: {
+      links: [
+        { icon: "SiGoogle", href: "#", label: "Google" },
+        { icon: "SiShopify", href: "#", label: "Shopify" },
+        { icon: "SiApple", href: "#", label: "Apple" },
+        { icon: "SiSoundcloud", href: "#", label: "Soundcloud" },
+        { icon: "SiAdobe", href: "#", label: "Adobe" },
+        { icon: "SiFacebook", href: "#", label: "Facebook" },
+        { icon: "SiTiktok", href: "#", label: "TikTok" },
+        { icon: "SiSpotify", href: "#", label: "Spotify" },
+        { icon: "SiLinkedin", href: "#", label: "LinkedIn" }
+      ],
+      gridLayout: "3x3",
+      iconSize: "md",
+      hoverColor: "#1a1a1a",
+      backgroundColor: "transparent",
+      borderColor: "#1a1a1a",
+      animationDuration: 0.3
+    },
+    dependencies: ["framer-motion", "react-icons"],
+    imports: ["import { ClipPathLinks } from '@/components/ui/clip-path-links'"],
+    tags: ["links", "social", "animation", "clip-path", "grid"],
+  },
+  {
+    id: "flowing-menu",
+    name: "Flowing Menu",
+    category: "navigation",
+    type: "FlowingMenu",
+    description: "Animated navigation menu with flowing marquee effects on hover.",
+    defaultProps: {
+      items: [
+        { link: "#", text: "Home", image: "/placeholder.jpg" },
+        { link: "#", text: "About", image: "/placeholder.jpg" },
+        { link: "#", text: "Services", image: "/placeholder.jpg" },
+        { link: "#", text: "Contact", image: "/placeholder.jpg" }
+      ],
+      className: ""
+    },
+    dependencies: [],
+    imports: ["import { FlowingMenu } from '@/components/ui/flowing-menu'"],
+    tags: ["navigation", "menu", "animation", "marquee", "hover"],
+  },
+  {
+    id: "masonry",
+    name: "Masonry Grid",
+    category: "header",
+    type: "Masonry",
+    description: "Responsive masonry grid with GSAP animations and hover effects.",
+    defaultProps: {
+      items: [
+        { id: "1", img: "/placeholder.jpg", url: "#", height: 300 },
+        { id: "2", img: "/placeholder.jpg", url: "#", height: 400 },
+        { id: "3", img: "/placeholder.jpg", url: "#", height: 250 },
+        { id: "4", img: "/placeholder.jpg", url: "#", height: 350 },
+        { id: "5", img: "/placeholder.jpg", url: "#", height: 280 },
+        { id: "6", img: "/placeholder.jpg", url: "#", height: 320 }
+      ],
+      ease: "power3.out",
+      duration: 0.6,
+      stagger: 0.05,
+      animateFrom: "bottom",
+      scaleOnHover: true,
+      hoverScale: 0.95,
+      blurToFocus: true,
+      colorShiftOnHover: false
+    },
+    dependencies: ["gsap"],
+    imports: ["import { Masonry } from '@/components/ui/masonry'"],
+    tags: ["grid", "masonry", "animation", "gsap", "responsive", "gallery"],
   },
   // Header Components
   {
@@ -139,6 +215,52 @@ export const componentRegistry: ComponentDefinition[] = [
       "import { LuaIDE } from '@/components/arweave/lua-ide'",
     ],
     tags: ["arweave", "nft", "lua", "transfer"],
+  },
+  {
+    id: "arweave-search",
+    name: "Arweave Search",
+    category: "arweave",
+    type: "ArweaveSearch",
+    description: "Search Arweave transactions using GraphQL with tag filtering",
+    defaultProps: {
+      initialTags: [
+        { name: "Content-Type", value: "image/png" },
+        { name: "App-Name", value: "ArweaveSearch" }
+      ],
+      limit: 10
+    },
+    dependencies: ["@apollo/client", "graphql"],
+    imports: ["import { ArweaveSearch } from '@/components/arweave/arweave-search'"],
+    tags: ["arweave", "search", "graphql", "transactions", "indexer"],
+  },
+  {
+    id: "card",
+    name: "Card",
+    category: "ui",
+    type: "Card",
+    description: "A flexible card container with header, content, and footer.",
+    defaultProps: {
+      children: "Card content here"
+    },
+    dependencies: [],
+    imports: ["import { Card } from '@/components/ui/card'"] ,
+    tags: ["ui", "container", "card"],
+  },
+  {
+    id: "button",
+    name: "Button",
+    category: "ui",
+    type: "Button",
+    description: "A styled button component supporting variants and sizes.",
+    defaultProps: {
+      children: "Click me",
+      variant: "default",
+      size: "default",
+      className: ""
+    },
+    dependencies: ["@radix-ui/react-slot", "class-variance-authority"],
+    imports: ["import { Button } from '@/components/ui/button'"],
+    tags: ["ui", "button", "action", "interactive"],
   },
 ]
 
