@@ -1,6 +1,12 @@
 "use client"
 
 import { createContext, useContext, useState, type ReactNode } from "react"
+import { 
+  compileAndRegisterComponents, 
+  getDynamicComponent, 
+  isDynamicComponent,
+  type GeneratedComponent 
+} from "@/lib/dynamic-component-compiler"
 
 export interface ComponentInstance {
   id: string
@@ -20,6 +26,9 @@ interface ComponentContextType {
   selectComponent: (component: ComponentInstance | null) => void
   deleteComponent: (id: string) => void
   moveComponent: (id: string, direction: "up" | "down") => void
+  // New methods for dynamic components
+  addGeneratedComponents: (generatedComponents: GeneratedComponent[]) => void
+  isComponentAvailable: (type: string) => boolean
 }
 
 const ComponentContext = createContext<ComponentContextType | undefined>(undefined)
@@ -73,6 +82,76 @@ export function ComponentProvider({ children }: { children: ReactNode }) {
     })
   }
 
+  // New method to handle AI-generated components
+  const addGeneratedComponents = (generatedComponents: GeneratedComponent[]) => {
+    console.log('Adding generated components:', generatedComponents);
+    
+    // First, compile and register the components
+    const result = compileAndRegisterComponents(generatedComponents)
+    
+    console.log('Dynamic component compilation result:', result)
+    console.log('Successful compilations:', result.success);
+    console.log('Failed compilations:', result.failed);
+    
+    // Then add them to the builder
+    generatedComponents.forEach((genComponent) => {
+      const newComponent: ComponentInstance = {
+        id: `component-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        type: genComponent.type,
+        category: genComponent.category,
+        props: genComponent.props,
+        position: { x: 0, y: 0 } // Default position
+      }
+      
+      console.log('Adding component to builder:', newComponent);
+      setComponents((prev) => [...prev, newComponent])
+    })
+  }
+
+  // Check if a component type is available (either static or dynamic)
+  const isComponentAvailable = (type: string): boolean => {
+    console.log('Checking if component is available:', type);
+    
+    // Check if it's a dynamic component
+    if (isDynamicComponent(type)) {
+      console.log('Component is available as dynamic component:', type);
+      return true
+    }
+    
+    // Check if it's a static component by trying to resolve it
+    const resolvedType = type
+      .split('-')
+      .map(s => s.charAt(0).toUpperCase() + s.slice(1))
+      .join('');
+    
+    console.log('Resolved type for static component check:', resolvedType);
+    
+    // List of known static component types
+    const staticComponentTypes = [
+      "ArDacityClassicNavbar",
+      "FloatingNavbar", 
+      "SmoothScrollHero",
+      "ArDacityClassicHero",
+      "NftThemeHero",
+      "AOMessageSigner",
+      "AOChatBot",
+      "ArweaveNFT",
+      "ArweaveSearch",
+      "ClipPathLinks",
+      "FlowingMenu",
+      "Masonry",
+      "Card",
+      "Button",
+      "SignerComponent",
+      "ChatBox"
+    ];
+    
+    const isStatic = staticComponentTypes.includes(resolvedType);
+    console.log('Is static component:', isStatic);
+    
+    return isStatic;
+  }
+
   return (
     <ComponentContext.Provider
       value={{
@@ -85,6 +164,8 @@ export function ComponentProvider({ children }: { children: ReactNode }) {
         selectComponent,
         deleteComponent,
         moveComponent,
+        addGeneratedComponents,
+        isComponentAvailable,
       }}
     >
       {children}

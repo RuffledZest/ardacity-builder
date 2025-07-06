@@ -6,6 +6,7 @@ import { useComponents } from "./component-context"
 import { ComponentRenderer } from "./component-renderer"
 import { ComponentHoverControls } from "./component-hover-controls"
 import { useState } from "react"
+import { getDynamicComponentSampleData } from '@/lib/dynamic-component-compiler'
 
 export function BuilderCanvas() {
   const { components, addComponent } = useComponents()
@@ -15,10 +16,13 @@ export function BuilderCanvas() {
     e.preventDefault()
     const componentData = JSON.parse(e.dataTransfer.getData("application/json"))
 
+    // Try to get AI-generated sample data for this component type
+    const sampleData = getDynamicComponentSampleData(componentData.type)
+
     addComponent({
       type: componentData.type,
       category: componentData.category,
-      props: componentData.defaultProps,
+      props: sampleData || componentData.defaultProps,
       position: { x: 0, y: 0 },
     })
   }
