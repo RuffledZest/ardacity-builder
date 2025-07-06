@@ -10,6 +10,17 @@ export async function POST(req: NextRequest) {
   const componentsJson = fs.readFileSync(componentsPath, 'utf-8');
   const componentsList = JSON.parse(componentsJson);
 
+  // Example prompt template for Gemini
+  const THEME = 'dark'; // or 'light' or 'custom', can be parameterized
+  const MODERN_STYLE = 'glassmorphism, gradients, soft shadows, rounded corners, and other modern UI/UX trends';
+
+  const aiPromptTemplate = `
+Generate a React function component (plain JavaScript, no TypeScript, no import/export) styled with the latest modern UI trends (${MODERN_STYLE}).
+Use a ${THEME} theme for all colors and backgrounds.
+The component must accept all content, images, and data as props (do not hardcode any placeholder data inside the component).
+After the component code, provide a sample data object for the props in JSON format, using realistic and visually appealing values.
+`;
+
   // Call Gemini API with enhanced prompt
   const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent', {
     method: 'POST',
@@ -31,6 +42,11 @@ INSTRUCTIONS:
 1. First, try to use existing components from the provided list. Use kebab-case for component names (e.g., "ardacity-builder", "floating-navbar").
 2. If you need a component that doesn't exist in the list, generate a complete React functional component for it.
 3. For each missing component, provide both the component suggestion AND the complete React code.
+4. IMPORTANT: For any custom component, generate a plain React functional component in JavaScript (not TypeScript), and do NOT include any import or export statements. Assume React is already in scope. The component should be a function definition only, e.g.:
+
+function MyComponent({ prop1, prop2 }) {
+  return <div>...</div>;
+}
 
 RESPONSE FORMAT:
 Return a JSON object with this exact structure:
@@ -47,17 +63,17 @@ Return a JSON object with this exact structure:
   ],
   "generatedComponents": [
     {
-      "type": "missing-component-name",
+      "type": "descriptive-component-name",
       "category": "ui",
       "props": {
         "title": "Example Title"
       },
-      "code": "import React from 'react';\\n\\nexport function MissingComponent({ title }) {\\n  return (\\n    <div className='p-4 border rounded-lg'>\\n      <h2>{title}</h2>\\n    </div>\\n  );\\n}"
+      "code": "function DescriptiveComponent({ title }) { return <div>{title}</div>; }"
     }
   ]
 }
 
-Only use component names from the provided list when possible. For missing components, generate clean, functional React components with proper TypeScript props and modern styling.` }]
+Only use component names from the provided list when possible. For missing components, generate clean, functional React components as described above.` }]
         }
       ]
     }),
@@ -79,9 +95,23 @@ Only use component names from the provided list when possible. For missing compo
         // Remove the last line if it's ```
         text = text.replace(/\n?```$/, '');
       }
+      console.log('=== AI RAW RESPONSE START ===');
+      console.log(text);
+      console.log('=== AI RAW RESPONSE END ===');
       result = JSON.parse(text);
       console.log('Gemini chosen components:', result.components);
       console.log('Gemini generated components:', result.generatedComponents);
+      if (result.generatedComponents && Array.isArray(result.generatedComponents)) {
+        result.generatedComponents.forEach((comp, idx) => {
+          if (comp && typeof comp === 'object') {
+            const c = comp as any;
+            console.log(`=== GENERATED COMPONENT #${idx + 1} ===`);
+            console.log('Type:', c.type);
+            console.log('Code:', c.code);
+            console.log('Sample Data:', c.props);
+          }
+        });
+      }
     } else {
       console.warn('Could not find generated components in Gemini response.');
     }

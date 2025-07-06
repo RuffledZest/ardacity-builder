@@ -1,7 +1,7 @@
 "use client"
 
 import { type ComponentInstance, useComponents } from "./component-context"
-import { getDynamicComponent, createFallbackComponent } from "@/lib/dynamic-component-compiler"
+import { getDynamicComponent, createFallbackComponent, createCompilationFallbackComponent, hasCompilationError, getCompilationError } from "@/lib/dynamic-component-compiler"
 import { ArDacityClassicNavbar } from "../navigation/ardacity-classic-navbar"
 import { FloatingNavbar } from "../navigation/floating-navbar"
 import { SmoothScrollHero } from "../headers/smooth-scroll-hero"
@@ -16,6 +16,8 @@ import { FlowingMenu } from "../ui/flowing-menu"
 import { Masonry } from "../ui/masonry"
 import { Card } from "../ui/card"
 import { Button } from "../ui/button"
+import { SignerComponent } from "../components/signer-component"
+import { ChatBox } from "../components/chat-box"
 
 interface ComponentRendererProps {
   component: ComponentInstance
@@ -30,27 +32,44 @@ export function ComponentRenderer({ component }: ComponentRendererProps) {
 
   const isSelected = selectedComponent?.id === component.id
 
-  // Utility to convert kebab-case to PascalCase
-  function kebabToPascalCase(str: string) {
-    return str
-      .split('-')
-      .map(s => s.charAt(0).toUpperCase() + s.slice(1))
-      .join('');
-  }
+      // Utility to convert kebab-case to PascalCase
+    function kebabToPascalCase(str: string) {
+      return str
+        .split('-')
+        .map(s => s.charAt(0).toUpperCase() + s.slice(1))
+        .join('');
+    }
+    
+    // Special case mapping for components with specific naming conventions
+    const specialCaseMapping: Record<string, string> = {
+      'ardacity-classic-navbar': 'ArDacityClassicNavbar',
+      'ardacity-classic-hero': 'ArDacityClassicHero',
+      'nft-theme-hero': 'NftThemeHero',
+      'ao-message-signer': 'AOMessageSigner',
+      'ao-chatbot': 'AOChatBot',
+      'arweave-nft': 'ArweaveNFT',
+      'arweave-search': 'ArweaveSearch',
+      'clip-path-links': 'ClipPathLinks',
+      'flowing-menu': 'FlowingMenu',
+      'smooth-scroll-hero': 'SmoothScrollHero',
+      'floating-navbar': 'FloatingNavbar',
+      'signer-component': 'SignerComponent',
+      'chat-box': 'ChatBox'
+    };
 
-  const resolvedType = kebabToPascalCase(component.type);
+      // Use special case mapping if available, otherwise use kebabToPascalCase
+    const resolvedType = specialCaseMapping[component.type] || kebabToPascalCase(component.type);
 
   const renderComponent = () => {
     console.log('Rendering component with type:', component.type, 'resolved as:', resolvedType);
     
-    // First, check if it's a dynamic component
+    // Always check dynamic registry first
     const DynamicComponent = getDynamicComponent(component.type);
     if (DynamicComponent) {
       console.log('Rendering dynamic component:', component.type);
-      return <DynamicComponent {...component.props} />
+      return <DynamicComponent {...component.props} />;
     }
-    
-    // Then check static components
+    // Only fall back to static components if not found in dynamic registry
     switch (resolvedType) {
       case "ArDacityClassicNavbar":
         return <ArDacityClassicNavbar {...component.props} />
@@ -90,15 +109,11 @@ export function ComponentRenderer({ component }: ComponentRendererProps) {
           </Button>
         )
       case "SignerComponent":
-        // Dynamically import if not statically imported
-        const SignerComponent = require("../components/signer-component").SignerComponent;
         return <SignerComponent {...component.props} />
       case "ChatBox":
-        const ChatBox = require("../components/chat-box").ChatBox;
         return <ChatBox {...component.props} />
       default:
-        console.log('No matching case found for type:', component.type);
-        // Create a fallback component that shows the missing component info
+        // Fallback for unknown types
         const FallbackComponent = createFallbackComponent(component.type, "Component not found in registry");
         return <FallbackComponent {...component.props} />
     }

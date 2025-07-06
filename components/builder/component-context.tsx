@@ -84,10 +84,14 @@ export function ComponentProvider({ children }: { children: ReactNode }) {
 
   // New method to handle AI-generated components
   const addGeneratedComponents = (generatedComponents: GeneratedComponent[]) => {
+    console.log('Adding generated components:', generatedComponents);
+    
     // First, compile and register the components
     const result = compileAndRegisterComponents(generatedComponents)
     
     console.log('Dynamic component compilation result:', result)
+    console.log('Successful compilations:', result.success);
+    console.log('Failed compilations:', result.failed);
     
     // Then add them to the builder
     generatedComponents.forEach((genComponent) => {
@@ -99,20 +103,53 @@ export function ComponentProvider({ children }: { children: ReactNode }) {
         position: { x: 0, y: 0 } // Default position
       }
       
+      console.log('Adding component to builder:', newComponent);
       setComponents((prev) => [...prev, newComponent])
     })
   }
 
   // Check if a component type is available (either static or dynamic)
   const isComponentAvailable = (type: string): boolean => {
+    console.log('Checking if component is available:', type);
+    
     // Check if it's a dynamic component
     if (isDynamicComponent(type)) {
+      console.log('Component is available as dynamic component:', type);
       return true
     }
     
-    // Check if it's a static component (you might want to add a static component registry here)
-    // For now, we'll assume all components are available
-    return true
+    // Check if it's a static component by trying to resolve it
+    const resolvedType = type
+      .split('-')
+      .map(s => s.charAt(0).toUpperCase() + s.slice(1))
+      .join('');
+    
+    console.log('Resolved type for static component check:', resolvedType);
+    
+    // List of known static component types
+    const staticComponentTypes = [
+      "ArDacityClassicNavbar",
+      "FloatingNavbar", 
+      "SmoothScrollHero",
+      "ArDacityClassicHero",
+      "NftThemeHero",
+      "AOMessageSigner",
+      "AOChatBot",
+      "ArweaveNFT",
+      "ArweaveSearch",
+      "ClipPathLinks",
+      "FlowingMenu",
+      "Masonry",
+      "Card",
+      "Button",
+      "SignerComponent",
+      "ChatBox"
+    ];
+    
+    const isStatic = staticComponentTypes.includes(resolvedType);
+    console.log('Is static component:', isStatic);
+    
+    return isStatic;
   }
 
   return (

@@ -44,9 +44,15 @@ export function useAIGenerator(): UseAIGeneratorReturn {
 
       const data = await response.json();
       
+      console.log('Raw API response:', data);
+      
       // Extract the result from the API response
       const result = data.result || { components: [], generatedComponents: [] };
       setLastResult(result);
+      
+      console.log('Processed result:', result);
+      console.log('Components to add:', result.components);
+      console.log('Generated components to compile:', result.generatedComponents);
 
       // Add regular components from the library
       if (result.components && Array.isArray(result.components)) {
