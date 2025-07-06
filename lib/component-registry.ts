@@ -265,7 +265,36 @@ export const componentRegistry: ComponentDefinition[] = [
 ]
 
 export function getComponentByType(type: string): ComponentDefinition | undefined {
-  return componentRegistry.find((comp) => comp.type === type)
+  console.log('Looking for component by type:', type);
+  
+  // First try to find by type (PascalCase)
+  let component = componentRegistry.find((comp) => comp.type === type)
+  if (component) {
+    console.log('Found component by type:', component.id);
+    return component;
+  }
+  
+  // If not found, try to find by id (kebab-case)
+  component = componentRegistry.find((comp) => comp.id === type)
+  if (component) {
+    console.log('Found component by id:', component.id);
+    return component;
+  }
+  
+  // If still not found, try converting kebab-case to PascalCase
+  const pascalCase = type
+    .split('-')
+    .map(s => s.charAt(0).toUpperCase() + s.slice(1))
+    .join('');
+  console.log('Trying PascalCase conversion:', pascalCase);
+  component = componentRegistry.find((comp) => comp.type === pascalCase)
+  if (component) {
+    console.log('Found component by PascalCase:', component.id);
+    return component;
+  }
+  
+  console.log('Component not found in registry');
+  return component
 }
 
 export function searchComponents(query: string): ComponentDefinition[] {

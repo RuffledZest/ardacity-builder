@@ -1,0 +1,25 @@
+Rendering component with type: missing-artist-grid resolved as: MissingArtistGrid
+C:\Users\pratham\Documents\Projects\ardacityTest\ardacityNew\components\builder\component-renderer.tsx:75 Component has compilation error: missing-artist-grid
+C:\Users\pratham\Documents\Projects\ardacityTest\ardacityNew\components\builder\component-renderer.tsx:64 Rendering component with type: missing-artist-grid resolved as: MissingArtistGrid
+C:\Users\pratham\Documents\Projects\ardacityTest\ardacityNew\components\builder\component-renderer.tsx:75 Component has compilation error: missing-artist-grid
+C:\Users\pratham\Documents\Projects\ardacityTest\ardacityNew\components\builder\component-renderer.tsx:64 Rendering component with type: missing-event-list resolved as: MissingEventList
+C:\Users\pratham\Documents\Projects\ardacityTest\ardacityNew\components\builder\component-renderer.tsx:75 Component has compilation error: missing-event-list
+C:\Users\pratham\Documents\Projects\ardacityTest\ardacityNew\components\builder\component-renderer.tsx:64 Rendering component with type: missing-event-list resolved as: MissingEventList
+C:\Users\pratham\Documents\Projects\ardacityTest\ardacityNew\components\builder\component-renderer.tsx:75 Component has compilation error: missing-event-list
+C:\Users\pratham\Documents\Projects\ardacityTest\ardacityNew\components\builder\component-renderer.tsx:64 Rendering component with type: missing-contact-form resolved as: MissingContactForm
+C:\Users\pratham\Documents\Projects\ardacityTest\ardacityNew\components\builder\component-renderer.tsx:75 Component has compilation error: missing-contact-form
+C:\Users\pratham\Documents\Projects\ardacityTest\ardacityNew\components\builder\component-renderer.tsx:64 Rendering component with type: missing-contact-form resolved as: MissingContactForm
+C:\Users\pratham\Documents\Projects\ardacityTest\ardacityNew\components\builder\component-renderer.tsx:75 Component has compilation error: missing-contact-form
+C:\Users\pratham\Documents\Projects\ardacityTest\ardacityNew\lib\component-registry.ts:268 Looking for component by type: missing-contact-form
+C:\Users\pratham\Documents\Projects\ardacityTest\ardacityNew\lib\component-registry.ts:289 Trying PascalCase conversion: MissingContactForm
+C:\Users\pratham\Documents\Projects\ardacityTest\ardacityNew\lib\component-registry.ts:296 Component not found in registry
+C:\Users\pratham\Documents\Projects\ardacityTest\ardacityNew\lib\component-registry.ts:268 Looking for component by type: missing-contact-form
+C:\Users\pratham\Documents\Projects\ardacityTest\ardacityNew\lib\component-registry.ts:289 Trying PascalCase conversion: MissingContactForm
+C:\Users\pratham\Documents\Projects\ardacityTest\ardacityNew\lib\component-registry.ts:296 Component not found in registry
+
+Looking for component by type: missing-contact-form
+C:\Users\pratham\Documents\Projects\ardacityTest\ardacityNew\lib\component-registry.ts:289 Trying PascalCase conversion: MissingContactForm
+C:\Users\pratham\Documents\Projects\ardacityTest\ardacityNew\lib\component-registry.ts:296 Component not found in registry
+C:\Users\pratham\Documents\Projects\ardacityTest\ardacityNew\lib\component-registry.ts:268 Looking for component by type: missing-contact-form
+C:\Users\pratham\Documents\Projects\ardacityTest\ardacityNew\lib\component-registry.ts:289 Trying PascalCase conversion: MissingContactForm
+C:\Users\pratham\Documents\Projects\ardacityTest\ardacityNew\lib\component-registry.ts:296 Component not found in registry

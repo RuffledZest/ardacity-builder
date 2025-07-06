@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@apollo/client": "^3.13.8",
+    "@babel/preset-typescript": "^7.27.1",
+    "@babel/standalone": "^7.28.0",
     "@emotion/is-prop-valid": "latest",
     "@hookform/resolvers": "^3.9.1",
     "@permaweb/aoconnect": "latest",
