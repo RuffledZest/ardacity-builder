@@ -54,22 +54,44 @@ export function useAIGenerator(): UseAIGeneratorReturn {
       console.log('Components to add:', result.components);
       console.log('Generated components to compile:', result.generatedComponents);
 
-      // Add regular components from the library
+      // Deduplicate by type, prefer generatedComponents over components
+      const mergedByType: Record<string, any> = {};
       if (result.components && Array.isArray(result.components)) {
         result.components.forEach((component: any) => {
-          addComponent({
-            type: component.type,
-            category: component.category,
-            props: component.props,
-            position: { x: 0, y: 0 }
-          });
+          if (component && component.type) {
+            mergedByType[component.type] = {
+              ...component,
+              __isGenerated: false
+            };
+          }
         });
       }
-
-      // Add generated components (these will be compiled and registered automatically)
       if (result.generatedComponents && Array.isArray(result.generatedComponents)) {
-        addGeneratedComponents(result.generatedComponents);
+        result.generatedComponents.forEach((component: any) => {
+          if (component && component.type) {
+            mergedByType[component.type] = {
+              ...component,
+              __isGenerated: true
+            };
+          }
+        });
       }
+      // Add only unique components, prefer generated
+      Object.values(mergedByType).forEach((component: any) => {
+        if (component.__isGenerated) {
+          // Remove marker before adding
+          const { __isGenerated, ...genComponent } = component;
+          addGeneratedComponents([genComponent]);
+        } else {
+          const { __isGenerated, ...libComponent } = component;
+          addComponent({
+            type: libComponent.type,
+            category: libComponent.category,
+            props: libComponent.props,
+            position: { x: 0, y: 0 }
+          });
+        }
+      });
 
       console.log('AI generation completed:', result);
       
