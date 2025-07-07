@@ -13,13 +13,11 @@ export async function POST(req: NextRequest) {
   // Example prompt template for Gemini
   const THEME = 'dark'; // or 'light' or 'custom', can be parameterized
   const MODERN_STYLE = 'glassmorphism, gradients, soft shadows, rounded corners, and other modern UI/UX trends';
+  const THEME_DETAILS = `\nTheme: ${THEME}\n- Primary color: #1a1a2e\n- Accent color: #e94560\n- Background: #121212\n- Font: 'Inter', sans-serif\n(Adjust these to match your actual theme)\n`;
 
   const aiPromptTemplate = `
-Generate a React function component (plain JavaScript, no TypeScript, no import/export) styled with the latest modern UI trends (${MODERN_STYLE}).
-Use a ${THEME} theme for all colors and backgrounds.
-The component must accept all content, images, and data as props (do not hardcode any placeholder data inside the component).
-After the component code, provide a sample data object for the props in JSON format, using realistic and visually appealing values.
-`;
+Generate a React function component (plain JavaScript, no TypeScript, no import/export) styled with the latest modern UI trends (${MODERN_STYLE}).\nUse a ${THEME} theme for all colors and backgrounds.\n${THEME_DETAILS}
+The component must accept all content, images, and data as props (do not hardcode any placeholder data inside the component).\nAfter the component code, provide a sample data object for the props in JSON format, using realistic and visually appealing values.\nIMPORTANT: All colors, backgrounds, and fonts must match the website's theme as described above. Do not use arbitrary or default colors.\n`;
 
   // Call Gemini API with enhanced prompt
   const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent', {
@@ -32,48 +30,7 @@ After the component code, provide a sample data object for the props in JSON for
       contents: [
         {
           parts: [{
-            text: `You are a helpful assistant that generates UI components for a React builder. 
-
-User prompt: ${prompt}
-
-Available components: ${JSON.stringify(componentsList)}
-
-INSTRUCTIONS:
-1. First, try to use existing components from the provided list. Use kebab-case for component names (e.g., "ardacity-builder", "floating-navbar").
-2. If you need a component that doesn't exist in the list, generate a complete React functional component for it.
-3. For each missing component, provide both the component suggestion AND the complete React code.
-4. IMPORTANT: For any custom component, generate a plain React functional component in JavaScript (not TypeScript), and do NOT include any import or export statements. Assume React is already in scope. The component should be a function definition only, e.g.:
-
-function MyComponent({ prop1, prop2 }) {
-  return <div>...</div>;
-}
-
-RESPONSE FORMAT:
-Return a JSON object with this exact structure:
-{
-  "components": [
-    {
-      "type": "component-name-from-list",
-      "category": "navigation|header|arweave|builder|ui",
-      "props": {
-        "title": "Example Title",
-        "description": "Example description"
-      }
-    }
-  ],
-  "generatedComponents": [
-    {
-      "type": "descriptive-component-name",
-      "category": "ui",
-      "props": {
-        "title": "Example Title"
-      },
-      "code": "function DescriptiveComponent({ title }) { return <div>{title}</div>; }"
-    }
-  ]
-}
-
-Only use component names from the provided list when possible. For missing components, generate clean, functional React components as described above.` }]
+            text: aiPromptTemplate + `\nYou are a helpful assistant that generates UI components for a React builder. \n\nUser prompt: ${prompt}\n\nAvailable components: ${JSON.stringify(componentsList)}\n\nINSTRUCTIONS:\n1. First, try to use existing components from the provided list. Use kebab-case for component names (e.g., "ardacity-builder", "floating-navbar").\n2. If you need a component that doesn't exist in the list, generate a complete React functional component for it.\n3. For each missing component, provide both the component suggestion AND the complete React code.\n4. IMPORTANT: For any custom component, generate a plain React functional component in JavaScript (not TypeScript), and do NOT include any import or export statements. Assume React is already in scope. The component should be a function definition only, e.g.:\n\nfunction MyComponent({ prop1, prop2 }) {\n  return <div>...</div>;\n}\n\nRESPONSE FORMAT:\nReturn a JSON object with this exact structure:\n{\n  "components": [\n    {\n      "type": "component-name-from-list",\n      "category": "navigation|header|arweave|builder|ui",\n      "props": {\n        "title": "Example Title",\n        "description": "Example description"\n      }\n    }\n  ],\n  "generatedComponents": [\n    {\n      "type": "descriptive-component-name",\n      "category": "ui",\n      "props": {\n        "title": "Example Title"\n      },\n      "code": "function DescriptiveComponent({ title }) { return <div>{title}</div>; }"\n    }\n  ]\n}\n\nOnly use component names from the provided list when possible. For missing components, generate clean, functional React components as described above.` }]
         }
       ]
     }),
