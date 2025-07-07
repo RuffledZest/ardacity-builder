@@ -85,9 +85,17 @@ export function compileComponent(code: string, componentName: string): React.Com
     // Evaluate the function in a context where React and all dynamic components are available
     const Component = new Function(...argNames, wrappedCode)(...argValues);
     if (typeof Component === 'function') {
+      // Wrap the AI-generated component in a dark theme container
+      const WrappedComponent = function(props: any) {
+        return React.createElement(
+          'div',
+          { className: 'dark bg-black text-white' },
+          React.createElement(Component, props)
+        );
+      };
       // Update the registry with the actual function
-      dynamicComponentRegistry.set(componentName, Component);
-      return Component;
+      dynamicComponentRegistry.set(componentName, WrappedComponent);
+      return WrappedComponent;
     }
     console.error('Compiled result is not a valid React component');
     return null;

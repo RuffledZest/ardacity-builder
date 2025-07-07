@@ -39,6 +39,9 @@ User prompt: ${prompt}
 Available components: ${JSON.stringify(componentsList)}
 
 INSTRUCTIONS:
+PRIORITY: You MUST always check the provided component list first. If the requested component exists in the list, use it directly. Only generate a new component if it is not available in the list. All generated components must use the specified dark theme (black, white, zinc).
+If the user requests a component that is not in the provided list, you MUST generate it and include it in the 'generatedComponents' array in the response, following the required format. The generated component should be visually appealing, modern, and follow the dark theme (black, white, zinc).
+If the component is visually relevant (e.g., cards, profiles, banners, etc.), you MUST include an image prop (such as imageUrl, avatar, or similar) in the component's props and use it in the UI. The sample data for the component should include a realistic image URL (e.g., '/placeholder.jpg' or a public image link).
 1. First, try to use existing components from the provided list. Use kebab-case for component names (e.g., "ardacity-builder", "floating-navbar").
 2. If you need a component that doesn't exist in the list, generate a complete React functional component for it.
 3. For each missing component, provide both the component suggestion AND the complete React code.
@@ -47,6 +50,13 @@ INSTRUCTIONS:
 function MyComponent({ prop1, prop2 }) {
   return <div>...</div>;
 }
+
+5. THEME RESTRICTIONS: For any custom component, you MUST use only the following Tailwind classes for colors and backgrounds:
+- bg-black, bg-zinc-900, text-white, border-zinc-800, and similar (from the zinc palette only)
+- Only use dark mode styles (do not use light backgrounds or text)
+- Do NOT use any other color classes (no blue, red, green, etc)
+- Do NOT use light backgrounds or text
+- All components must look good in a dark UI with black, white, and zinc as the only colors
 
 RESPONSE FORMAT:
 Return a JSON object with this exact structure:
@@ -99,6 +109,25 @@ Only use component names from the provided list when possible. For missing compo
       console.log(text);
       console.log('=== AI RAW RESPONSE END ===');
       result = JSON.parse(text);
+      // Remove duplicate component types from both arrays
+      if (result.components && Array.isArray(result.components)) {
+        const seenTypes = new Set();
+        result.components = result.components.filter((comp: any) => {
+          if (!comp || !comp.type) return false;
+          if (seenTypes.has(comp.type)) return false;
+          seenTypes.add(comp.type);
+          return true;
+        });
+      }
+      if (result.generatedComponents && Array.isArray(result.generatedComponents)) {
+        const seenTypes = new Set();
+        result.generatedComponents = result.generatedComponents.filter((comp: any) => {
+          if (!comp || !comp.type) return false;
+          if (seenTypes.has(comp.type)) return false;
+          seenTypes.add(comp.type);
+          return true;
+        });
+      }
       console.log('Gemini chosen components:', result.components);
       console.log('Gemini generated components:', result.generatedComponents);
       if (result.generatedComponents && Array.isArray(result.generatedComponents)) {
