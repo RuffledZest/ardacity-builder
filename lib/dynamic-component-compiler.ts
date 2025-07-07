@@ -4,6 +4,12 @@
 import React from 'react';
 import * as Babel from '@babel/standalone';
 
+// Import UI components for dynamic injection
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+// Add more UI components as needed ...
+
 export interface GeneratedComponent {
   type: string;
   category: string;
@@ -79,15 +85,39 @@ export function compileComponent(code: string, componentName: string): React.Com
       .map(([, fn]) => fn);
 
     // Build the function signature and argument list
-    const argNames = ['React', ...dynamicNames];
-    const argValues = [require('react'), ...dynamicFns];
+    const argNames = [
+      'React',
+      // UI components
+      'Accordion', 'AccordionItem', 'AccordionTrigger', 'AccordionContent',
+      'Button',
+      'Card', 'CardHeader', 'CardFooter', 'CardTitle', 'CardDescription', 'CardContent',
+      // Dynamic components
+      ...dynamicNames
+    ];
+    const argValues = [
+      require('react'),
+      // UI components
+      Accordion, AccordionItem, AccordionTrigger, AccordionContent,
+      Button,
+      Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent,
+      // Dynamic components
+      ...dynamicFns
+    ];
 
     // Evaluate the function in a context where React and all dynamic components are available
     const Component = new Function(...argNames, wrappedCode)(...argValues);
     if (typeof Component === 'function') {
+      // Wrap the AI-generated component in a dark theme container
+      const WrappedComponent = function(props: any) {
+        return React.createElement(
+          'div',
+          { className: 'dark bg-black text-white' },
+          React.createElement(Component, props)
+        );
+      };
       // Update the registry with the actual function
-      dynamicComponentRegistry.set(componentName, Component);
-      return Component;
+      dynamicComponentRegistry.set(componentName, WrappedComponent);
+      return WrappedComponent;
     }
     console.error('Compiled result is not a valid React component');
     return null;

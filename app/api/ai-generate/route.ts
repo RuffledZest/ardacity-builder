@@ -11,13 +11,9 @@ export async function POST(req: NextRequest) {
   const componentsList = JSON.parse(componentsJson);
 
   // Example prompt template for Gemini
-  const THEME = 'dark'; // or 'light' or 'custom', can be parameterized
-  const MODERN_STYLE = 'glassmorphism, gradients, soft shadows, rounded corners, and other modern UI/UX trends';
-  const THEME_DETAILS = `\nTheme: ${THEME}\n- Primary color: #1a1a2e\n- Accent color: #e94560\n- Background: #121212\n- Font: 'Inter', sans-serif\n(Adjust these to match your actual theme)\n`;
+  // const THEME = 'dark'; // or 'light' or 'custom', can be parameterized
+  // const MODERN_STYLE = 'glassmorphism, gradients, soft shadows, rounded corners, and other modern UI/UX trends';
 
-  const aiPromptTemplate = `
-Generate a React function component (plain JavaScript, no TypeScript, no import/export) styled with the latest modern UI trends (${MODERN_STYLE}).\nUse a ${THEME} theme for all colors and backgrounds.\n${THEME_DETAILS}
-The component must accept all content, images, and data as props (do not hardcode any placeholder data inside the component).\nAfter the component code, provide a sample data object for the props in JSON format, using realistic and visually appealing values.\nIMPORTANT: All colors, backgrounds, and fonts must match the website's theme as described above. Do not use arbitrary or default colors.\n`;
 
   // Call Gemini API with enhanced prompt
   const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent', {
@@ -30,7 +26,63 @@ The component must accept all content, images, and data as props (do not hardcod
       contents: [
         {
           parts: [{
-            text: aiPromptTemplate + `\nYou are a helpful assistant that generates UI components for a React builder. \n\nUser prompt: ${prompt}\n\nAvailable components: ${JSON.stringify(componentsList)}\n\nINSTRUCTIONS:\n1. First, try to use existing components from the provided list. Use kebab-case for component names (e.g., "ardacity-builder", "floating-navbar").\n2. If you need a component that doesn't exist in the list, generate a complete React functional component for it.\n3. For each missing component, provide both the component suggestion AND the complete React code.\n4. IMPORTANT: For any custom component, generate a plain React functional component in JavaScript (not TypeScript), and do NOT include any import or export statements. Assume React is already in scope. The component should be a function definition only, e.g.:\n\nfunction MyComponent({ prop1, prop2 }) {\n  return <div>...</div>;\n}\n\nRESPONSE FORMAT:\nReturn a JSON object with this exact structure:\n{\n  "components": [\n    {\n      "type": "component-name-from-list",\n      "category": "navigation|header|arweave|builder|ui",\n      "props": {\n        "title": "Example Title",\n        "description": "Example description"\n      }\n    }\n  ],\n  "generatedComponents": [\n    {\n      "type": "descriptive-component-name",\n      "category": "ui",\n      "props": {\n        "title": "Example Title"\n      },\n      "code": "function DescriptiveComponent({ title }) { return <div>{title}</div>; }"\n    }\n  ]\n}\n\nOnly use component names from the provided list when possible. For missing components, generate clean, functional React components as described above.` }]
+            text: `You are a helpful assistant that generates UI components for a React builder. 
+
+User prompt: ${prompt}
+
+Available components: ${JSON.stringify(componentsList)}
+
+INSTRUCTIONS:
+PRIORITY: You MUST always check the provided component list first. If the requested component exists in the list, use it directly. Only generate a new component if it is not available in the list. All generated components must use the specified dark theme (black, white, zinc).
+If the user requests a component that is not in the provided list, you MUST generate it and include it in the 'generatedComponents' array in the response, following the required format. The generated component should be visually appealing, modern, and follow the dark theme (black, white, zinc).
+If the component is visually relevant (e.g., cards, profiles, banners, etc.), you MUST include an image prop (such as imageUrl, avatar, or similar) in the component's props and use it in the UI. The sample data for the component should include a realistic image URL (e.g., '/placeholder.jpg' or a public image link).
+
+IMPORTANT: For all images in cards or sections, use Tailwind classes like h-24, h-32, or a fixed height/width that fits well in a card. You may add an imageClass or imageHeight prop to control image size, and use it in the component. Do NOT make images excessively large. Default to a visually balanced size for card layouts.
+
+ALL UI COMPONENTS (e.g., Accordion, AccordionItem, AccordionTrigger, AccordionContent, Button, Card, etc.) ARE ALREADY AVAILABLE IN SCOPE. DO NOT USE ANY IMPORT OR EXPORT STATEMENTS IN THE GENERATED CODE. Just use the components directly as if they are already defined.
+
+1. First, try to use existing components from the provided list. Use kebab-case for component names (e.g., "ardacity-builder", "floating-navbar").
+2. If you need a component that doesn't exist in the list, generate a complete React functional component for it.
+3. For each missing component, provide both the component suggestion AND the complete React code.
+4. IMPORTANT: For any custom component, generate a plain React functional component in JavaScript (not TypeScript), and do NOT include any import or export statements. Assume React is already in scope. The component should be a function definition only, e.g.:
+
+function MyComponent({ prop1, prop2 }) {
+  return <div>...</div>;
+}
+
+5. THEME RESTRICTIONS: For any custom component, you MUST use only the following Tailwind classes for colors and backgrounds:
+- bg-black, bg-zinc-900, text-white, border-zinc-800, and similar (from the zinc palette only)
+- Only use dark mode styles (do not use light backgrounds or text)
+- Do NOT use any other color classes (no blue, red, green, etc)
+- Do NOT use light backgrounds or text
+- All components must look good in a dark UI with black, white, and zinc as the only colors
+
+RESPONSE FORMAT:
+Return a JSON object with this exact structure:
+{
+  "components": [
+    {
+      "type": "component-name-from-list",
+      "category": "navigation|header|arweave|builder|ui",
+      "props": {
+        "title": "Example Title",
+        "description": "Example description"
+      }
+    }
+  ],
+  "generatedComponents": [
+    {
+      "type": "descriptive-component-name",
+      "category": "ui",
+      "props": {
+        "title": "Example Title"
+      },
+      "code": "function DescriptiveComponent({ title }) { return <div>{title}</div>; }"
+    }
+  ]
+}
+
+Only use component names from the provided list when possible. For missing components, generate clean, functional React components as described above.` }]
         }
       ]
     }),
@@ -56,6 +108,25 @@ The component must accept all content, images, and data as props (do not hardcod
       console.log(text);
       console.log('=== AI RAW RESPONSE END ===');
       result = JSON.parse(text);
+      // Remove duplicate component types from both arrays
+      if (result.components && Array.isArray(result.components)) {
+        const seenTypes = new Set();
+        result.components = result.components.filter((comp: any) => {
+          if (!comp || !comp.type) return false;
+          if (seenTypes.has(comp.type)) return false;
+          seenTypes.add(comp.type);
+          return true;
+        });
+      }
+      if (result.generatedComponents && Array.isArray(result.generatedComponents)) {
+        const seenTypes = new Set();
+        result.generatedComponents = result.generatedComponents.filter((comp: any) => {
+          if (!comp || !comp.type) return false;
+          if (seenTypes.has(comp.type)) return false;
+          seenTypes.add(comp.type);
+          return true;
+        });
+      }
       console.log('Gemini chosen components:', result.components);
       console.log('Gemini generated components:', result.generatedComponents);
       if (result.generatedComponents && Array.isArray(result.generatedComponents)) {
