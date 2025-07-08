@@ -11,29 +11,34 @@
     { "type": "floating-navbar", "renderable": true, "props": { "brand": "", "links": ["Home", "About", "Contact"], "variant": "floating" }, "description": "A floating navigation bar that appears on scroll." }
   ],
   "ui": [
-    { "type": "masonry", "renderable": false, "props": {} },
-    { "type": "flowing-menu", "renderable": false, "props": {} },
+    { "type": "masonry", "renderable": false, "props": {
+      "items": "Array<{ id: string, img: string, url: string, height: number }>",
+      "ease": "string (default: 'power3.out')",
+      "duration": "number (default: 0.6)",
+      "stagger": "number (default: 0.05)",
+      "animateFrom": "'bottom' | 'top' | 'left' | 'right' | 'center' | 'random' (default: 'bottom')",
+      "scaleOnHover": "boolean (default: true)",
+      "hoverScale": "number (default: 0.95)",
+      "blurToFocus": "boolean (default: true)",
+      "colorShiftOnHover": "boolean (default: false)"
+    } },
+    { "type": "flowing-menu", "renderable": false, "props": {
+      "items": "Array<{ link: string, text: string, image: string }> (optional, defaults to 4 placeholder items)"
+    } },
     { "type": "clip-path-links", "renderable": false, "props": {} },
-    { "type": "use-mobile", "renderable": false, "props": {} },
-    { "type": "use-toast", "renderable": false, "props": {} },
-    { "type": "toggle", "renderable": false, "props": {} },
-    { "type": "tooltip", "renderable": false, "props": {} },
-    { "type": "toaster", "renderable": false, "props": {} },
-    { "type": "toggle-group", "renderable": false, "props": {} },
-    { "type": "textarea", "renderable": false, "props": {} },
-    { "type": "toast", "renderable": false, "props": {} },
+    { "type": "textarea", "renderable": true, "props": {
+      "className": "string (optional, additional CSS classes)",
+      "...props": "All standard textarea HTML attributes (placeholder, value, onChange, disabled, etc.)"
+    }, "description": "A styled textarea input. For multi-line text input. Accepts all standard textarea props." },
     { "type": "table", "renderable": false, "props": {} },
     { "type": "tabs", "renderable": false, "props": {} },
-    { "type": "sonner", "renderable": false, "props": {} },
-    { "type": "switch", "renderable": false, "props": {} },
     { "type": "skeleton", "renderable": false, "props": {} },
-    { "type": "slider", "renderable": false, "props": {} },
+    { "type": "slider", "renderable": false, "props": {
+      "className": "string (optional, additional CSS classes)",
+      "...props": "All standard Radix Slider props (min, max, step, value, defaultValue, onValueChange, disabled, orientation, etc.)"
+    }, "description": "A styled slider input. Accepts all standard Radix Slider props for range selection." },
     { "type": "sheet", "renderable": false, "props": {} },
     { "type": "sidebar", "renderable": false, "props": {} },
-    { "type": "select", "renderable": false, "props": {} },
-    { "type": "separator", "renderable": false, "props": {} },
-    { "type": "radio-group", "renderable": false, "props": {} },
-    { "type": "resizable", "renderable": false, "props": {} },
     { "type": "scroll-area", "renderable": false, "props": {} },
     { "type": "popover", "renderable": false, "props": {} },
     { "type": "progress", "renderable": false, "props": {} },
@@ -45,25 +50,21 @@
     { "type": "form", "renderable": false, "props": {} },
     { "type": "hover-card", "renderable": false, "props": {} },
     { "type": "input-otp", "renderable": false, "props": {} },
-    { "type": "drawer", "renderable": false, "props": {} },
     { "type": "dropdown-menu", "renderable": false, "props": {} },
     { "type": "context-menu", "renderable": false, "props": {} },
-    { "type": "dialog", "renderable": false, "props": {} },
-    { "type": "checkbox", "renderable": false, "props": {} },
-    { "type": "collapsible", "renderable": false, "props": {} },
-    { "type": "command", "renderable": false, "props": {} },
-    { "type": "carousel", "renderable": false, "props": {} },
+    { "type": "carousel", "renderable": true, "props": {
+      "opts": "object (Embla carousel options, optional)",
+      "plugins": "any (Embla plugins, optional)",
+      "orientation": "'horizontal' | 'vertical' (default: 'horizontal')",
+      "setApi": "function (optional, receives Embla API)",
+      "children": "ReactNode (should include CarouselContent, CarouselItem, CarouselPrevious, CarouselNext)"
+    }, "description": "A composable carousel. Use CarouselContent for slides, CarouselItem for each slide, and CarouselPrevious/CarouselNext for navigation buttons. All subcomponents must be used within Carousel." },
     { "type": "chart", "renderable": false, "props": {} },
     { "type": "calendar", "renderable": false, "props": {} },
     { "type": "card", "renderable": false, "props": {} },
     { "type": "breadcrumb", "renderable": false, "props": {} },
     { "type": "button", "renderable": false, "props": {} },
-    { "type": "aspect-ratio", "renderable": false, "props": {} },
-    { "type": "avatar", "renderable": false, "props": {} },
-    { "type": "badge", "renderable": false, "props": {} },
-    { "type": "alert-dialog", "renderable": false, "props": {} },
-    { "type": "alert", "renderable": false, "props": {} },
-    { "type": "accordion", "renderable": false, "props": {} }
+    { "type": "avatar", "renderable": false, "props": {} }
   ],
   "headers": [
     { "type": "smooth-scroll-hero", "renderable": true, "props": { "title": "", "subtitle": "" }, "description": "A hero section with smooth scrolling and a title/subtitle." },

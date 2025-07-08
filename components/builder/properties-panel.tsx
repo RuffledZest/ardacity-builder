@@ -9,6 +9,7 @@ import { Trash2, ArrowUp, ArrowDown, Code, Download } from "lucide-react"
 import { useState } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { getComponentByType } from "@/lib/component-registry"
+import { getDynamicComponent, isDynamicComponent } from '@/lib/dynamic-component-compiler'
 
 export function PropertiesPanel() {
   const { selectedComponent, updateComponent, deleteComponent, moveComponent, components } = useComponents()
@@ -40,6 +41,16 @@ export function PropertiesPanel() {
   }
 
   const generateCode = () => {
+    if (isDynamicComponent(selectedComponent.type)) {
+      const dynamicSample = (window as any).__DYNAMIC_COMPONENTS__?.[selectedComponent.type]
+      if (selectedComponent.props && selectedComponent.props.__aiCode) {
+        return selectedComponent.props.__aiCode
+      }
+      if (dynamicSample && dynamicSample.code) {
+        return dynamicSample.code
+      }
+      return `<${selectedComponent.type} {...props} />`
+    }
     const definition = getComponentByType(selectedComponent.type)
     if (!definition) return `<${selectedComponent.type} />`
 
