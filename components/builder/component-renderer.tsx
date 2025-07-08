@@ -18,6 +18,11 @@ import { Card } from "../ui/card"
 import { Button } from "../ui/button"
 import { SignerComponent } from "../components/signer-component"
 import { ChatBox } from "../components/chat-box"
+import { FancyColumnFooter } from "../footers/fancy-column-footer"
+import { LiquidGlassNavbar } from "../navigation/liquid-glass-navbar"
+import { AppDownloadFooter } from "../footers/app-download-footer"
+import { NewsletterFooter } from "../footers/newsletter-footer"
+import { ProductFooter } from "../footers/product-footer"
 
 interface ComponentRendererProps {
   component: ComponentInstance
@@ -44,6 +49,11 @@ export function ComponentRenderer({ component }: ComponentRendererProps) {
     const specialCaseMapping: Record<string, string> = {
       'ardacity-classic-navbar': 'ArDacityClassicNavbar',
       'ardacity-classic-hero': 'ArDacityClassicHero',
+      'liquid-glass-navbar':'LiquidGlassNavbar',
+      'fancy-classic-footer': 'FancyColumnFooter',
+      'app-download-footer':'AppDownloadFooter',
+      'newsletter-footer':'NewsletterFooter',
+      'product-footer':'ProductFooter',
       'nft-theme-hero': 'NftThemeHero',
       'ao-message-signer': 'AOMessageSigner',
       'ao-chatbot': 'AOChatBot',
@@ -73,6 +83,16 @@ export function ComponentRenderer({ component }: ComponentRendererProps) {
     switch (resolvedType) {
       case "ArDacityClassicNavbar":
         return <ArDacityClassicNavbar {...component.props} />
+      case "LiquidGlassNavbar":
+        return <LiquidGlassNavbar {...component.props as any}/>
+      case "FancyColumnFooter":
+        return <FancyColumnFooter {...component.props as any}/>
+      case "AppDownloadFooter":
+        return <AppDownloadFooter {...component.props}/>
+      case "NewsletterFooter":
+        return <NewsletterFooter {...component.props}/>
+      case "ProductFooter":
+        return <ProductFooter {...component.props}/>
       case "FloatingNavbar":
         return <FloatingNavbar {...component.props} />
       case "SmoothScrollHero":

@@ -10,6 +10,11 @@ export async function POST(req: NextRequest) {
   const componentsJson = fs.readFileSync(componentsPath, 'utf-8');
   const componentsList = JSON.parse(componentsJson);
 
+  // Read and parse the imageUrl-data.json file
+  const imageUrlPath = path.join(process.cwd(), 'components', 'imageUrl-data.json');
+  const imageUrlJson = fs.readFileSync(imageUrlPath, 'utf-8');
+  const imageUrlList = JSON.parse(imageUrlJson);
+
   // Example prompt template for Gemini
   // const THEME = 'dark'; // or 'light' or 'custom', can be parameterized
   // const MODERN_STYLE = 'glassmorphism, gradients, soft shadows, rounded corners, and other modern UI/UX trends';
@@ -32,10 +37,14 @@ User prompt: ${prompt}
 
 Available components: ${JSON.stringify(componentsList)}
 
+IMAGE URL DATASET: Use ONLY the following image URLs for any image, avatar, or imageUrl prop in generated components. When an image is required, pick a random URL from this list:
+${JSON.stringify(imageUrlList, null, 2)}
+
 INSTRUCTIONS:
 PRIORITY: You MUST always check the provided component list first. If the requested component exists in the list, use it directly. Only generate a new component if it is not available in the list. All generated components must use the specified dark theme (black, white, zinc).
 If the user requests a component that is not in the provided list, you MUST generate it and include it in the 'generatedComponents' array in the response, following the required format. The generated component should be visually appealing, modern, and follow the dark theme (black, white, zinc).
-If the component is visually relevant (e.g., cards, profiles, banners, etc.), you MUST include an image prop (such as imageUrl, avatar, or similar) in the component's props and use it in the UI. The sample data for the component should include a realistic image URL (e.g., '/placeholder.jpg' or a public image link).
+If the component is visually relevant (e.g., cards, profiles, banners, etc.), you MUST include an image prop (such as imageUrl, avatar, or similar) in the component's props and use it in the UI. The sample data for the component should include a realistic image URL (e.g., pick a random URL from the provided IMAGE URL DATASET).
+IMPORTANT: For any dynamically generated component, do NOT use generic placeholder images (like '/placeholder.jpg'). Instead, always use a random image URL from the provided IMAGE URL DATASET for any image, avatar, or imageUrl prop.
 
 IMPORTANT: For all images in cards or sections, use Tailwind classes like h-24, h-32, or a fixed height/width that fits well in a card. You may add an imageClass or imageHeight prop to control image size, and use it in the component. Do NOT make images excessively large. Default to a visually balanced size for card layouts.
 
@@ -82,7 +91,8 @@ Return a JSON object with this exact structure:
   ]
 }
 
-Only use component names from the provided list when possible. For missing components, generate clean, functional React components as described above.` }]
+Only use component names from the provided list when possible. For missing components, generate clean, functional React components as described above.`
+          }]
         }
       ]
     }),
