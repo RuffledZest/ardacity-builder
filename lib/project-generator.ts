@@ -413,6 +413,30 @@ function generateComponentFiles(components: ComponentInstance[], files: Record<s
   if (usedComponents.has("ArDacityClassicHero")) {
     files["components/headers/ardacity-classic-hero.tsx"] = generateArDacityClassicHero()
   }
+  
+  if (usedComponents.has("AppDownloadFooter")) {
+    files["components/footers/app-download-footer.tsx"] = generateAppDownloadFooter()
+  }
+  
+  if (usedComponents.has("NewsletterFooter")) {
+    files["components/footers/newsletter-footer.tsx"] = generateNewsletterFooter()
+  }
+
+  if (usedComponents.has("ProductFooter")) {
+    files["components/footers/product-footer.tsx"] = generateProductFooter()
+  }
+
+  if (usedComponents.has("LiquidGlassNavbar")) {
+    files["components/navigation/liquid-glass-navbar.tsx"] = generateLiquidNavbar()
+  }
+
+  if (usedComponents.has("Footer")) {
+    files["components/footer/footer.tsx"] = generateFooter()
+  }
+
+  if (usedComponents.has("FancyColumnFooter")) {
+    files["components/footer/fancy-column-footer.tsx"] = generateFancyFooter()
+  }
 
   if (usedComponents.has("NftThemeHero")) {
     files["components/headers/nft-theme-hero.tsx"] = generateNftThemeHero()
@@ -1465,6 +1489,1049 @@ const ScheduleItem: React.FC<ScheduleItemProps> = ({ title, date, location }) =>
         <FiMapPin />
       </div>
     </motion.div>
+  )
+}
+`
+}
+
+function generateFancyFooter(): string {
+  return `
+import React, { useEffect } from "react";
+import { FaTwitter, FaGithub, FaDiscord, FaBox, FaBuilding, FaBook, FaGavel } from "react-icons/fa";
+
+// Icon lookup for string names
+const iconMap: Record<string, React.ReactNode> = {
+  twitter: <FaTwitter />,
+  github: <FaGithub />,
+  discord: <FaDiscord />,
+  box: <FaBox />,
+  company: <FaBuilding />,
+  resources: <FaBook />,
+  legal: <FaGavel />,
+};
+
+// Types for props
+export type FancyFooterColumn = {
+  title: string;
+  icon?: string;
+  links: Array<{
+    label: string;
+    url: string;
+  }>;
+};
+
+export type FancyColumnFooterProps = {
+  logo: { src: string; alt?: string };
+  description?: string;
+  columns: FancyFooterColumn[];
+  backgroundStyle?: "gradient" | "custom" | "dark-abstract";
+  customBackgroundClass?: string;
+  bottomNote?: string;
+  socialIcons?: string[];
+  layout?: "center" | "left";
+};
+
+// Helper: Validate URL (basic)
+const isValidUrl = (url: string) => {
+  try {
+    new URL(url, window.location.origin);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+export const FancyColumnFooter: React.FC<FancyColumnFooterProps> = ({
+  logo,
+  description,
+  columns,
+  backgroundStyle = "dark-abstract",
+  customBackgroundClass = "",
+  bottomNote,
+  socialIcons,
+  layout = "left",
+}) => {
+  useEffect(() => {
+    if (columns.length > 5) {
+      console.warn("[FancyColumnFooter] More than 5 columns provided. Only 5 will be displayed.");
+    }
+    columns.forEach((col, i) => {
+      col.links.forEach((link) => {
+        if (!isValidUrl(link.url)) {
+          console.warn(\`[FancyColumnFooter] Invalid URL in column \${i + 1}: \${link.url}\`);
+        }
+      });
+    });
+    if (socialIcons && socialIcons.length > 0 && !bottomNote) {
+      console.warn("[FancyColumnFooter] Social icons provided but no bottomNote. Social block may not render as expected.");
+    }
+  }, [columns, socialIcons, bottomNote]);
+
+  let bgClass = "";
+  let borderClass = "";
+  if (backgroundStyle === "gradient") {
+    bgClass = "bg-gradient-to-br from-pink-200 via-blue-200 to-purple-200 dark:from-zinc-800 dark:via-zinc-700 dark:to-zinc-800";
+    borderClass = "";
+  } else if (backgroundStyle === "custom") {
+    bgClass = customBackgroundClass;
+    borderClass = "";
+  } else if (backgroundStyle === "dark-abstract") {
+    bgClass = "bg-zinc-900";
+    borderClass = "";
+  }
+
+  const colCount = Math.min(columns.length, 5);
+  const gridCols = {
+    1: "grid-cols-1",
+    2: "grid-cols-1 sm:grid-cols-2",
+    3: "grid-cols-1 sm:grid-cols-2 md:grid-cols-3",
+    4: "grid-cols-1 sm:grid-cols-2 md:grid-cols-4",
+    5: "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5",
+  }[colCount];
+
+  const alignClass = layout === "center" ? "items-center text-center" : "items-start text-left";
+  console.log("Footer props", { logo, columns, socialIcons });
+
+  let textClass = "";
+  let iconClass = "";
+  let linkClass = "";
+  let linkHoverClass = "";
+  let sectionBgClass = "";
+  let abstractBg = null;
+
+  if (backgroundStyle === "dark-abstract") {
+    textClass = "text-zinc-100";
+    iconClass = "text-primary invert";
+    linkClass = "text-muted-foreground hover:text-cyan-400";
+    linkHoverClass = "hover:text-cyan-400";
+    sectionBgClass = "bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-800 relative overflow-hidden";
+    abstractBg = (
+      <>
+        {/* Animated SVG lines */}
+        <svg className="absolute inset-0 w-full h-full pointer-events-none z-0" width="100%" height="100%" viewBox="0 0 1440 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0,160 C360,320 1080,0 1440,160" stroke="#6366f1" strokeWidth="2" fill="none" opacity="0.08">
+            <animate attributeName="d" dur="8s" repeatCount="indefinite"
+              values="M0,160 C360,320 1080,0 1440,160;M0,120 C400,320 1040,40 1440,120;M0,160 C360,320 1080,0 1440,160" />
+          </path>
+          <path d="M0,240 Q720,80 1440,240" stroke="#f472b6" strokeWidth="2" fill="none" opacity="0.10">
+            <animate attributeName="d" dur="10s" repeatCount="indefinite"
+              values="M0,240 Q720,80 1440,240;M0,200 Q720,160 1440,200;M0,240 Q720,80 1440,240" />
+          </path>
+        </svg>
+        {/* Animated geometric shapes */}
+        <div className="absolute -top-16 left-1/2 -translate-x-1/2 z-0 animate-pulse-slow">
+          <div className="w-64 h-64 bg-gradient-to-tr from-purple-700/30 via-blue-500/20 to-pink-400/20 rounded-full blur-2xl animate-spin-slow" />
+        </div>
+        <div className="absolute bottom-0 right-0 z-0 animate-pulse-slow">
+          <div className="w-40 h-40 bg-gradient-to-br from-blue-400/20 to-pink-400/20 rounded-full blur-2xl animate-spin-reverse-slower" />
+        </div>
+      </>
+    );
+  } else if (backgroundStyle === "gradient") {
+    textClass = "text-zinc-900 dark:text-zinc-100";
+    iconClass = "text-primary dark:text-primary";
+    linkClass = "text-muted-foreground hover:text-primary dark:hover:text-cyan-400";
+    linkHoverClass = "hover:text-primary dark:hover:text-cyan-400";
+    sectionBgClass = "bg-background/80 dark:bg-background/80";
+  } else if (backgroundStyle === "custom") {
+    textClass = "text-foreground";
+    iconClass = "text-primary";
+    linkClass = "text-muted-foreground hover:text-primary";
+    linkHoverClass = "hover:text-primary";
+    sectionBgClass = customBackgroundClass;
+  }
+
+  return (
+    <footer
+      className={\`relative z-0 w-full px-4 py-10 \${bgClass} \${borderClass} transition-all duration-300 \${sectionBgClass}\`}
+      role="contentinfo"
+    >
+      {backgroundStyle === "dark-abstract" && abstractBg}
+      <div className={\`relative z-10 max-w-7xl mx-auto flex flex-col gap-8\`}>
+        <div className={\`flex flex-col gap-2 \${alignClass}\`}>
+          <div className="flex justify-center md:justify-start">
+            <img src={logo.src} alt={logo.alt || "Logo"} className="h-10" />
+          </div>
+          {description && (
+            <p className={\`text-sm max-w-md mx-auto md:mx-0 \${textClass} opacity-80\`}>{description}</p>
+          )}
+        </div>
+        <div className={\`grid \${gridCols} gap-8 md:gap-12 transition-all duration-300\`}>
+          {columns.slice(0, 5).map((col, idx) => (
+            <div key={col.title + idx} className="flex flex-col gap-3">
+              <div className="flex items-center gap-2 mb-1">
+                {col.icon && iconMap[col.icon] && (
+                  <span className={\`text-lg \${iconClass}\`}>{iconMap[col.icon]}</span>
+                )}
+                <span className={\`font-semibold tracking-wide \${textClass}\`}>{col.title}</span>
+              </div>
+              <ul className="space-y-2">
+                {col.links.map((link, lidx) => (
+                  <li key={link.label + lidx}>
+                    <a
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={\`inline-block relative group \${linkClass} transition-colors duration-200\`}
+                    >
+                      <span className={\`transition-transform duration-200 hover:translate-x-1 \${linkHoverClass}\`}>{link.label}</span>
+                      <span className="block h-0.5 bg-gradient-to-r from-pink-400 via-blue-400 to-purple-400 rounded-full scale-x-0 hover:scale-x-100 transition-transform duration-300 origin-left mt-0.5" />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+        {(socialIcons?.length || bottomNote) && (
+          <div className="flex flex-col md:flex-row md:justify-between items-center gap-4 pt-8 border-t border-zinc-200 dark:border-zinc-700 mt-8">
+            {bottomNote && (
+              <span className={\`text-xs opacity-80 \${textClass}\`}>{bottomNote}</span>
+            )}
+            {socialIcons && socialIcons.length > 0 && (
+              <div className="flex gap-3">
+                {socialIcons.map((icon, i) => (
+                  <span
+                    key={i}
+                    className={\`w-8 h-8 flex items-center justify-center rounded-full shadow hover:scale-110 transition-transform duration-200 border border-zinc-200 dark:border-zinc-700 bg-background/80 \${iconClass}\`}
+                  >
+                    {iconMap[icon] || null}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </footer>
+  );
+};
+`;
+}
+
+function generateProductFooter(): string {
+  return `
+  import React, { useState } from 'react';
+import { FaGithub, FaTwitter, FaLinkedin, FaFacebook } from 'react-icons/fa';
+
+// Icon registry for builder-friendly string keys
+const logoRegistry: Record<string, React.ReactNode> = {
+    default: <img src="/logo.svg" alt="Brand Logo" className="h-9 w-auto" />,
+    saas: <img src="/saas-logo.svg" alt="SaaS Logo" className="h-9 w-auto" />,
+};
+const socialIconRegistry: Record<string, React.ReactNode> = {
+    github: <FaGithub />,
+    twitter: <FaTwitter />,
+    linkedin: <FaLinkedin />,
+    facebook: <FaFacebook />,
+};
+
+export interface ProductFooterProps {
+    logoUrl?: string;
+    logoKey?: string;
+    logo?: React.ReactNode;
+    description?: string;
+    socialIconKeys?: string[];
+    socialIcons?: React.ReactNode[];
+    quickLinks?: { label: string; href: string }[];
+    legalLinks?: { label: string; href: string }[];
+    onSubscribe?: (email: string) => void;
+    newsletterTitle?: string;
+    newsletterDescription?: string;
+    copyright?: string;
+    className?: string;
+}
+
+function validateEmail(email: string) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+export const ProductFooter: React.FC<ProductFooterProps> = ({
+    logoUrl,
+    logoKey,
+    logo,
+    description,
+    socialIconKeys,
+    socialIcons,
+    quickLinks = [],
+    legalLinks = [],
+    onSubscribe,
+    newsletterTitle = 'Subscribe to our newsletter',
+    newsletterDescription = 'Get product updates, company news, and more.',
+    copyright,
+    className,
+}) => {
+    const [email, setEmail] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [success, setSuccess] = useState(false);
+
+    // Logo resolution: logoUrl > logoKey > logo > default
+    const resolvedLogo = logoUrl
+        ? <img src={logoUrl} alt="Brand Logo" className="h-9 w-auto" />
+        : logoKey
+            ? logoRegistry[logoKey] || logoRegistry['default']
+            : logo || logoRegistry['default'];
+    const resolvedSocialIcons = socialIconKeys
+        ? socialIconKeys.map(key => socialIconRegistry[key] || null).filter(Boolean)
+        : socialIcons || [socialIconRegistry['github'], socialIconRegistry['twitter'], socialIconRegistry['linkedin']];
+
+    const handleSubscribe = async () => {
+        setError(null);
+        setSuccess(false);
+        if (!validateEmail(email)) {
+            setError('Please enter a valid email address.');
+            return;
+        }
+        setLoading(true);
+        try {
+            await onSubscribe?.(email);
+            setSuccess(true);
+            setEmail('');
+        } catch {
+            setError('Subscription failed. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') handleSubscribe();
+    };
+
+    return (
+        <footer className={\`w-full bg-neutral-950 text-muted-foreground border-t border-neutral-800 shadow-lg pt-10 pb-4 px-6 md:px-10 \${className || ''}\`}>
+            {/* Main grid */}
+            <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-6 items-start">
+                {/* Left: Logo, description, social */}
+                <div className="flex flex-col gap-4 items-start">
+                    <div className="flex items-center gap-3">{resolvedLogo}</div>
+                    {description && <div className="text-sm text-white/80 max-w-xs">{description}</div>}
+                    <div className="flex gap-3 mt-2">
+                        {resolvedSocialIcons.map((icon, idx) => (
+                            <span
+                                key={idx}
+                                className="text-xl transition-all text-muted-foreground hover:text-white ease-in-out duration-500 cursor-pointer rounded-lg bg-gradient-to-br from-[#39113D] to-white/10 shadow p-2 hover:scale-110 active:scale-95 focus:outline-none focus:text-white ease-in duration-100 focus:ring-2 focus:ring-fuchsia-500"
+                                tabIndex={0}
+                                style={{
+                                    backdropFilter: 'blur(8px)',
+                                    WebkitBackdropFilter: 'blur(8px)',
+                                    transition: 'transform 0.18s cubic-bezier(.4,2,.6,1)',
+                                }}
+                            >
+                                {icon}
+                            </span>
+                        ))}
+                    </div>
+                </div>
+                {/* Center: Quick links */}
+                <div className="flex flex-col gap-2 items-start md:items-center">
+                    <div>
+                        <div className="font-semibold text-white mb-2">Quick Links</div>
+                        <div className="flex flex-col gap-1 md:gap-2">
+                            {quickLinks.map(link => (
+                                <a
+                                    key={link.href}
+                                    href={link.href}
+                                    className="hover:text-white text-white/70 transition-colors text-sm"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    {link.label}
+                                </a>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+                {/* Right: Newsletter */}
+                <div className="flex flex-col gap-2 items-start md:items-end w-full">
+                    <div className="font-semibold text-white mb-2">{newsletterTitle}</div>
+                    <div className="text-xs text-white/60 mb-2">{newsletterDescription}</div>
+                    <div className="flex flex-col sm:flex-row gap-2 w-fit max-w-xs">
+                        <input
+                            type="email"
+                            value={email}
+                            onChange={e => setEmail(e.target.value)}
+                            onKeyDown={handleKeyDown}
+                            placeholder="Enter your email"
+                            className="flex-1 bg-neutral-900 border border-neutral-700 text-sm text-white rounded-md px-4 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-500 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950 shadow-sm transition placeholder:text-neutral-500"
+                            disabled={loading}
+                            aria-label="Email address"
+                        />
+                        <button
+                            type="button"
+                            onClick={handleSubscribe}
+                            disabled={loading}
+                            className="h-10 px-5 rounded-md bg-fuchsia-600 hover:bg-fuchsia-700 text-white text-sm font-medium shadow-sm transition-colors disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950"
+                            style={{ minWidth: 110 }}
+                        >
+                            {loading ? 'Subscribing...' : 'Subscribe'}
+                        </button>
+                    </div>
+                    {error && <div className="text-xs text-red-500 mt-1">{error}</div>}
+                    {success && <div className="text-xs text-green-500 mt-1">Subscribed! Check your inbox.\`\&quot;\`</div>}
+                </div>
+            </div>
+            {/* Bottom row: Legal links and copyright */}
+            <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-2 border-t border-neutral-800 mt-8 pt-4 text-xs text-white/60">
+                <div className="flex gap-4 flex-wrap mb-1 md:mb-0">
+                    {legalLinks.map(link => (
+                        <a
+                            key={link.href}
+                            href={link.href}
+                            className="hover:text-white/90 transition-all ease-in"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            {link.label}
+                        </a>
+                    ))}
+                </div>
+                <div className="text-xs">{copyright || \`© \${new Date().getFullYear()} All rights reserved.\`}</div>
+            </div>
+        </footer>
+    );
+};
+  `
+}
+
+function generateNewsletterFooter(): string{
+  return `
+  import React, { useState } from 'react';
+import { motion, useMotionValue, useTransform } from 'framer-motion';
+
+export interface NewsletterFooterProps {
+  onSubscribe?: (email: string) => void;
+  title?: string;
+  description?: string;
+  socialIcons?: React.ReactNode[];
+  legalLinks?: { label: string; href: string }[];
+  className?: string;
+}
+
+function validateEmail(email: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+// Framer Motion 3D Social Icon
+const MotionSocialIcon: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [isHover, setIsHover] = useState(false);
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const rotateX = useTransform(y, [0, 1], [0, 10]);
+  const rotateY = useTransform(x, [0, 1], [0, -10]);
+
+  function handleMouseMove(e: React.MouseEvent<HTMLSpanElement, MouseEvent>) {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const px = (e.clientX - rect.left) / rect.width;
+    const py = (e.clientY - rect.top) / rect.height;
+    x.set(px);
+    y.set(py);
+    setIsHover(true);
+  }
+  function handleMouseLeave() {
+    setIsHover(false);
+    x.set(0.5);
+    y.set(0.5);
+  }
+
+  return (
+    <motion.span
+      className="inline-flex items-center justify-center text-gray-300 hover:text-white transition-colors cursor-pointer text-3xl shadow-lg bg-gradient-to-br from-white/5 to-black/10 rounded-xl"
+      style={{
+        perspective: 400,
+        boxShadow: isHover
+          ? '0 8px 32px 0 rgba(0,0,0,0.25), 0 2px 8px 0 rgba(0,0,0,0.15)'
+          : '0 2px 8px 0 rgba(0,0,0,0.10)',
+        transformStyle: 'preserve-3d',
+      }}
+      animate={isHover ? { scale: 1.13 } : { scale: 1 }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      initial={{ scale: 1 }}
+      whileTap={{ scale: 0.95 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+    >
+      <motion.span
+        style={{
+          rotateX: isHover ? rotateX : 0,
+          rotateY: isHover ? rotateY : 0,
+          display: 'inline-flex',
+        }}
+      >
+        {children}
+      </motion.span>
+    </motion.span>
+  );
+};
+
+export const NewsletterFooter: React.FC<NewsletterFooterProps> = ({
+  onSubscribe,
+  title = 'Stay in the loop',
+  description,
+  socialIcons = [],
+  legalLinks = [],
+  className,
+}) => {
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
+
+  const handleSubscribe = async () => {
+    setError(null);
+    setSuccess(false);
+    if (!validateEmail(email)) {
+      setError('Please enter a valid email address.');
+      return;
+    }
+    setLoading(true);
+    try {
+      await onSubscribe?.(email);
+      setSuccess(true);
+      setEmail('');
+    } catch {
+      setError('Subscription failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSubscribe();
+    }
+  };
+
+  return (
+    <footer
+      className={\`w-full bg-neutral-900 text-muted-foreground py-10 px-6 ring-offset-background \${className || ''}\`}
+    >
+      <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+        {/* Left: Call to action */}
+        <div>
+          <h2 className="text-lg font-semibold text-white mb-2">{title}</h2>
+          {description && <p className="text-sm text-white text-muted-foreground mb-2">{description}</p>}
+        </div>
+        {/* Right: Input + Button */}
+        <div>
+          <div className="flex flex-col sm:flex-row gap-2 w-full">
+            <input
+              type="email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Enter your email"
+              className="flex-1 bg-neutral-950 border border-neutral-800 text-sm text-white rounded-md px-4 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900 shadow-sm transition placeholder:text-neutral-500"
+              disabled={loading}
+              aria-label="Email address"
+            />
+            <motion.button
+              type="button"
+              onClick={handleSubscribe}
+              disabled={loading}
+              className="h-10 px-5 rounded-md bg-primary border-1 border-white/20 hover:border-white text-white text-sm font-medium shadow-sm transition-colors disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900 hover:bg-primary/90"
+              style={{ minWidth: 110 }}
+              whileHover={!loading ? { scale: 1.07, boxShadow: '0 4px 24px 0 rgba(0,0,0,0.18)' } : {}}
+              whileTap={!loading ? { scale: 0.97 } : {}}
+              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+            >
+              {loading ? 'Subscribing...' : 'Subscribe'}
+            </motion.button>
+          </div>
+          {error && <div className="text-xs text-red-500 mt-1">{error}</div>}
+          {success && <div className="text-xs text-green-500 mt-1">Subscribed! Check your inbox.\`\&quot;\`</div>}
+        </div>
+      </div>
+      {(!!socialIcons.length || !!legalLinks.length) && (
+        <div className="mt-8 flex flex-col items-center gap-4 border-t border-neutral-800 pt-6">
+          {socialIcons.length > 0 && (
+            <div className="flex gap-6 justify-center">
+              {socialIcons.map((icon, idx) => (
+                <MotionSocialIcon key={idx}>{icon}</MotionSocialIcon>
+              ))}
+            </div>
+          )}
+          {legalLinks.length > 0 && (
+            <div className="flex gap-4 flex-wrap text-xs text-white text-muted-foreground justify-center">
+              {legalLinks.map(link => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  className="hover:underline hover:text-white transition-colors"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {link.label}
+                </a>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </footer>
+  );
+};
+  `
+}
+
+function generateAppDownloadFooter() :string{
+  return `
+  import React from 'react';
+import { FaGithub, FaTwitter, FaLinkedin, FaInstagram, FaFacebook, FaApple, FaGooglePlay } from 'react-icons/fa';
+
+const logoRegistry: Record<string, React.ReactNode> = {
+  default: <img src="/logo.svg" alt="Brand Logo" className="h-10 w-auto" />,
+  ardacity: <img src="/ArDacitypfp.png" alt="ArDacity Logo" className="h-10 w-auto" />,
+  apple: <FaApple className="h-10 w-auto text-white" />,
+};
+const socialIconRegistry: Record<string, React.ReactNode> = {
+  github: <FaGithub />,
+  twitter: <FaTwitter />,
+  linkedin: <FaLinkedin />,
+  instagram: <FaInstagram />,
+  facebook: <FaFacebook />,
+  googlePlay: <FaGooglePlay/>,
+};
+
+export interface AppDownloadFooterProps {
+  logoKey?: string;
+  socialIconKeys?: string[];
+  logoUrl?: string;
+  logo?: React.ReactNode;
+  tagline?: string;
+  appStoreLink?: string;
+  playStoreLink?: string;
+  quickLinks?: { label: string; href: string }[];
+  socialIcons?: React.ReactNode[];
+  darkTheme?: boolean;
+  motionDecor?: boolean;
+  className?: string;
+}
+
+const AppStoreBadge = () => (
+  <svg viewBox="0 0 120 40" className="h-10 w-auto" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect width="120" height="40" rx="8" fill="#111" />
+    <text x="20" y="25" fill="#fff" fontSize="14" fontFamily="sans-serif">App Store</text>
+  </svg>
+);
+const PlayStoreBadge = () => (
+  <svg viewBox="0 0 120 40" className="h-10 w-auto" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect width="120" height="40" rx="8" fill="#111" />
+    <text x="16" y="25" fill="#fff" fontSize="14" fontFamily="sans-serif">Google Play</text>
+  </svg>
+);
+
+export const AppDownloadFooter: React.FC<AppDownloadFooterProps> = ({
+  logoKey,
+  socialIconKeys,
+  logoUrl,
+  logo,
+  tagline,
+  appStoreLink,
+  playStoreLink,
+  quickLinks = [],
+  socialIcons,
+  darkTheme = true,
+  motionDecor = false,
+  className,
+}) => {
+  // Priority: logoUrl > logoKey > logo > default
+  const resolvedLogo = logoUrl
+    ? <img src={logoUrl} alt="Brand Logo" className="h-10 w-auto" />
+    : logoKey
+      ? logoRegistry[logoKey] || logoRegistry['default']
+      : logo || logoRegistry['default'];
+  const resolvedSocialIcons = socialIconKeys
+    ? socialIconKeys.map(key => socialIconRegistry[key] || null).filter(Boolean)
+    : socialIcons || [socialIconRegistry['github'], socialIconRegistry['twitter'], socialIconRegistry['facebook']];
+
+  return (
+    <footer
+      className={\`relative w-full overflow-hidden py-10 px-6 md:px-10 border border-neutral-800 \${darkTheme ? 'bg-neutral-900 text-muted-foreground' : 'bg-white text-gray-700'} \${className || ''}\`}
+    >
+      {motionDecor && (
+        <>
+          <div className="pointer-events-none absolute -top-20 -left-20 w-72 h-72 bg-fuchsia-700/30 blur-3xl rounded-full animate-float-slow z-0" />
+          <div className="pointer-events-none absolute -bottom-24 -right-24 w-80 h-80 bg-cyan-600/20 blur-3xl rounded-full animate-float-slower z-0" />
+        </>
+      )}
+      <div className="relative z-10 max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+        <div className="flex flex-col gap-4 items-start">
+          <div className="flex items-center gap-3">{resolvedLogo}</div>
+          {tagline && <div className="text-base md:text-lg font-medium text-white/90 mb-1">{tagline}</div>}
+          <div className="flex gap-3 mt-2">
+            {appStoreLink && (
+              <a href={appStoreLink} target="_blank" rel="noopener noreferrer" className="hover:scale-105 active:scale-95 transition-transform">
+                <AppStoreBadge />
+              </a>
+            )}
+            {playStoreLink && (
+              <a href={playStoreLink} target="_blank" rel="noopener noreferrer" className="hover:scale-105 active:scale-95 transition-transform">
+                <PlayStoreBadge />
+              </a>
+            )}
+          </div>
+        </div>
+        {/* Right Section */}
+        <div className="flex flex-col md:items-end items-start gap-4 w-full">
+          {quickLinks.length > 0 && (
+            <div className="flex flex-wrap gap-4 text-sm font-medium">
+              {quickLinks.map(link => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  className="hover:text-white text-white/70 transition-colors"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {link.label}
+                </a>
+              ))}
+            </div>
+          )}
+          {resolvedSocialIcons.length > 0 && (
+            <div
+              className="flex gap-4 mt-2 py-2 rounded-xl shadow-xl"
+              style={{
+                boxShadow: '0 8px 32px 0 rgba(0,0,0,0.18)',
+                backdropFilter: 'blur(16px)',
+                WebkitBackdropFilter: 'blur(16px)',
+              }}
+            >
+              {resolvedSocialIcons.map((icon, idx) => (
+                <span
+                  key={idx}
+                  className="text-2xl text-muted-foreground hover:text-white transition-all cursor-pointer rounded-lg bg-gradient-to-br from-[#39113D] to-white/10 shadow-md p-2 hover:scale-110 active:scale-95 focus:outline-none focus:text-white ease-in duration-100 focus:ring-2 focus:ring-fuchsia-500"
+                  tabIndex={0}
+                  style={{
+                    backdropFilter: 'blur(8px)',
+                    WebkitBackdropFilter: 'blur(8px)',
+                    transition: 'transform 0.18s cubic-bezier(.4,2,.6,1)',
+                  }}
+                >
+                  {icon}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+      <style>{\`
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-16px); }
+        }
+        .animate-float { animation: float 6s ease-in-out infinite; }
+        .animate-float-slow { animation: float 12s ease-in-out infinite; }
+        .animate-float-slower { animation: float 18s ease-in-out infinite; }
+      \`}</style>
+    </footer>
+  );
+};
+  `
+}
+
+function generateFooter(): string {
+  return `
+  import React from "react"
+
+interface FooterLink {
+  label: string
+  href: string
+}
+
+interface FooterProps {
+  copyright?: string
+  links?: FooterLink[]
+  className?: string
+}
+
+const Footer: React.FC<FooterProps> = ({
+  copyright = "© 2024 Your Company. All rights reserved.",
+  links = [],
+  className = ""
+}) => {
+  return (
+    <footer className={\`bg-zinc-900 text-white py-4 text-center \${className}\`}>
+      <div className="container mx-auto flex flex-col md:flex-row items-center justify-between gap-2 px-4">
+        <div className="text-zinc-400 text-sm">{copyright}</div>
+        {links.length > 0 && (
+          <nav className="flex flex-wrap gap-4 justify-center md:justify-end">
+            {links.map((link, idx) => (
+              <a
+                key={idx}
+                href={link.href}
+                className="text-zinc-300 hover:text-white transition-colors text-sm"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {link.label}
+              </a>
+            ))}
+          </nav>
+        )}
+      </div>
+    </footer>
+  )
+}
+
+export default Footer
+`
+}
+
+function generateLiquidNavbar() : string{
+  return `
+  "use client"
+
+import type React from "react"
+import { memo, useCallback, useEffect, useRef, useState } from "react"
+import { cn } from "@/lib/utils"
+import { animate } from "framer-motion"
+
+interface LiquidGlassNavbarProps {
+  brand: string
+  links: Array<{ label: string; href: string }>
+  cta?: { label: string; href: string }
+  className?: string
+  scrollTargetId?: string
+}
+
+const GlowingEffect = memo(
+  ({
+    blur = 0,
+    inactiveZone = 0.01,
+    proximity = 64,
+    spread = 40,
+    variant = "default",
+    glow = true,
+    className,
+    disabled = false,
+    movementDuration = 2,
+    borderWidth = 1,
+  }: {
+    blur?: number
+    inactiveZone?: number
+    proximity?: number
+    spread?: number
+    variant?: "default" | "white"
+    glow?: boolean
+    className?: string
+    disabled?: boolean
+    movementDuration?: number
+    borderWidth?: number
+  }) => {
+    const containerRef = useRef<HTMLDivElement>(null)
+    const lastPosition = useRef({ x: 0, y: 0 })
+    const animationFrameRef = useRef<number>(0)
+
+    const handleMove = useCallback(
+      (e?: MouseEvent | { x: number; y: number }) => {
+        if (!containerRef.current) return
+        if (animationFrameRef.current) {
+          cancelAnimationFrame(animationFrameRef.current)
+        }
+        animationFrameRef.current = requestAnimationFrame(() => {
+          const element = containerRef.current
+          if (!element) return
+          const { left, top, width, height } = element.getBoundingClientRect()
+          const mouseX = e?.x ?? lastPosition.current.x
+          const mouseY = e?.y ?? lastPosition.current.y
+          if (e) {
+            lastPosition.current = { x: mouseX, y: mouseY }
+          }
+          const center = [left + width * 0.5, top + height * 0.5]
+          const distanceFromCenter = Math.hypot(mouseX - center[0], mouseY - center[1])
+          const inactiveRadius = 0.5 * Math.min(width, height) * inactiveZone
+          if (distanceFromCenter < inactiveRadius) {
+            element.style.setProperty("--active", "0")
+            return
+          }
+          const isActive =
+            mouseX > left - proximity &&
+            mouseX < left + width + proximity &&
+            mouseY > top - proximity &&
+            mouseY < top + height + proximity
+          element.style.setProperty("--active", isActive ? "1" : "0")
+          if (!isActive) return
+          const currentAngle = Number.parseFloat(element.style.getPropertyValue("--start")) || 0
+          const targetAngle = (180 * Math.atan2(mouseY - center[1], mouseX - center[0])) / Math.PI + 90
+          const angleDiff = ((targetAngle - currentAngle + 180) % 360) - 180
+          const newAngle = currentAngle + angleDiff
+          animate(currentAngle, newAngle, {
+            duration: movementDuration,
+            ease: [0.16, 1, 0.3, 1],
+            onUpdate: (value) => {
+              element.style.setProperty("--start", String(value))
+            },
+          })
+        })
+      },
+      [inactiveZone, proximity, movementDuration],
+    )
+
+    useEffect(() => {
+      if (disabled) return
+      const handleScroll = () => handleMove()
+      const handlePointerMove = (e: PointerEvent) => handleMove(e)
+      window.addEventListener("scroll", handleScroll, { passive: true })
+      document.body.addEventListener("pointermove", handlePointerMove, {
+        passive: true,
+      })
+      return () => {
+        if (animationFrameRef.current) {
+          cancelAnimationFrame(animationFrameRef.current)
+        }
+        window.removeEventListener("scroll", handleScroll)
+        document.body.removeEventListener("pointermove", handlePointerMove)
+      }
+    }, [handleMove, disabled])
+
+    return (
+      <>
+        <div
+          className={cn(
+            "pointer-events-none absolute -inset-px hidden rounded-[inherit] border opacity-0 transition-opacity",
+            glow && "opacity-100",
+            variant === "white" && "border-white",
+            disabled && "!block",
+          )}
+        />
+        <div
+          ref={containerRef}
+          style={
+            {
+              "--blur": \`\${blur}px\`,
+              "--spread": spread,
+              "--start": "0",
+              "--active": "0",
+              "--glowingeffect-border-width": \`\${borderWidth}px\`,
+              "--repeating-conic-gradient-times": "5",
+              "--gradient":
+                variant === "white"
+                  ? \`repeating-conic-gradient(
+                  from 236.84deg at 50% 50%,
+                  var(--black),
+                  var(--black) calc(25% / var(--repeating-conic-gradient-times))
+                )\`
+                  : \`radial-gradient(circle, #dd7bbb 10%, #dd7bbb00 20%),
+                radial-gradient(circle at 40% 40%, #d79f1e 5%, #d79f1e00 15%),
+                radial-gradient(circle at 60% 60%, #5a922c 10%, #5a922c00 20%),
+                 radial-gradient(circle at 40% 60%, #4c7894 10%, #4c789400 20%),
+                repeating-conic-gradient(
+                  from 236.84deg at 50% 50%,
+                  #dd7bbb 0%,
+                  #d79f1e calc(25% / var(--repeating-conic-gradient-times)),
+                  #5a922c calc(50% / var(--repeating-conic-gradient-times)),
+                   #4c7894 calc(75% / var(--repeating-conic-gradient-times)),
+                  #dd7bbb calc(100% / var(--repeating-conic-gradient-times))
+                )\`,
+            } as React.CSSProperties
+          }
+          className={cn(
+            "pointer-events-none absolute inset-0 rounded-[inherit] opacity-100 transition-opacity",
+            glow && "opacity-100",
+            blur > 0 && "blur-[var(--blur)] ",
+            className,
+            disabled && "!hidden",
+          )}
+        >
+          <div
+            className={cn(
+              "glow",
+              "rounded-[inherit]",
+              'after:content-[""] after:rounded-[inherit] after:absolute after:inset-[calc(-1*var(--glowingeffect-border-width))]',
+              "after:[border:var(--glowingeffect-border-width)_solid_transparent]",
+              "after:[background:var(--gradient)] after:[background-attachment:fixed]",
+              "after:opacity-[var(--active)] after:transition-opacity after:duration-300",
+              "after:[mask-clip:padding-box,border-box]",
+              "after:[mask-composite:intersect]",
+              "after:[mask-image:linear-gradient(#0000,#0000),conic-gradient(from_calc((var(--start)-var(--spread))*1deg),#00000000_0deg,#fff,#00000000_calc(var(--spread)*2deg))]",
+            )}
+          />
+        </div>
+      </>
+    )
+  },
+)
+
+GlowingEffect.displayName = "GlowingEffect"
+
+export function LiquidGlassNavbar({ brand, links, cta, className, scrollTargetId }: LiquidGlassNavbarProps) {
+  const [scrolled, setScrolled] = useState(false)
+
+  useEffect(() => {
+    const scrollTarget = scrollTargetId ? document.getElementById(scrollTargetId) : window;
+    const onScroll = () => {
+      const scrollY = scrollTarget === window ? window.scrollY : (scrollTarget as HTMLElement).scrollTop;
+      setScrolled(scrollY > 30);
+    };
+    if (scrollTarget) {
+      scrollTarget.addEventListener("scroll", onScroll);
+    }
+    return () => {
+      if (scrollTarget) {
+        scrollTarget.removeEventListener("scroll", onScroll);
+      }
+    };
+  }, [scrollTargetId]);
+  return (
+    <>
+      <svg style={{ display: "none" }}>
+        <filter id="glass-distortion-card" x="0%" y="0%" width="100%" height="100%" filterUnits="objectBoundingBox">
+          <feTurbulence type="fractalNoise" baseFrequency="0.002 0.008" numOctaves="2" seed="17" result="turbulence" />
+          <feComponentTransfer in="turbulence" result="mapped">
+            <feFuncR type="gamma" amplitude="1.2" exponent="8" offset="0.4" />
+            <feFuncG type="gamma" amplitude="0.1" exponent="1" offset="0.1" />
+            <feFuncB type="gamma" amplitude="0.1" exponent="1" offset="0.6" />
+          </feComponentTransfer>
+          <feGaussianBlur in="turbulence" stdDeviation="4" result="softMap" />
+          <feSpecularLighting
+            in="softMap"
+            surfaceScale="8"
+            specularConstant="1.5"
+            specularExponent="120"
+            lightingColor="white"
+            result="specLight"
+          >
+            <fePointLight x="-150" y="-150" z="400" />
+          </feSpecularLighting>
+          <feComposite in="specLight" operator="arithmetic" k1="0" k2="1.2" k3="1.2" k4="0" result="litImage" />
+          <feDisplacementMap in="SourceGraphic" in2="softMap" scale="300" xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+      </svg>
+
+      <div className={cn("fixed top-0 left-0 transform mx-auto z-50 transition-all duration-500 ease-in-out", scrolled ? "w-[60%]" : "w-full", className)}>
+        <div className={cn("liquidGlass-wrapper relative flex font-semibold overflow-hidden text-black cursor-pointer p-2 hover:p-[10px] hover:scale-[1] hover:shadow-[0_12px_24px_rgba(0,0,0,0.2)] transition-all duration-[400ms] ease-[cubic-bezier(0.175,0.885,0.32,2.2)]" ,scrolled ? "rounded-full" : "rounded-none")}>
+          <div className={cn("liquidGlass-effect absolute z-0 inset-0 [backdrop-filter:blur(3px)] [filter:url(#glass-distortion-card)] overflow-hidden [isolation:isolate]" ,scrolled ? "rounded-full" : "rounded-none")} />
+          <div className={cn("liquidGlass-tint z-[1] absolute inset-0 bg-white/[0.048]" ,scrolled ? "rounded-full" : "rounded-none")} />
+          <div className={cn("liquidGlass-shine absolute inset-0 z-[2] overflow-hidden shadow-[inset_2px_2px_1px_0_rgba(255,255,255,0.5),inset_-1px_-1px_1px_1px_rgba(255,255,255,0.5)]" ,scrolled ? "rounded-full" : "rounded-none")} />
+
+          <div className="relative z-[3] flex items-center justify-between w-full px-6 py-3">
+            <div className="text-xl font-bold tracking-tight text-white dark:text-zinc-100 drop-shadow-md">
+              {brand}
+            </div>
+            <nav className="hidden md:flex gap-6 text-sm font-medium text-zinc-700 dark:text-zinc-200">
+              {links.map((link, i) => (
+                <a key={i} href={link.href} text-white className="hover:text-purple-500 transition-all hover:scale-110 bg-white/10 hover:border-1 hover:border-white/70  px-3 py-1 rounded-full">
+                  {link.label}
+                </a>
+              ))}
+            </nav>
+            {cta && (
+              <div className="flex-shrink-0">
+                <a
+                  href={cta.href}
+                  className="bg-primary text-black px-4 py-2 bg-white rounded-full text-sm shadow hover:scale-105 transition-transform duration-200"
+                >
+                  {cta.label}
+                </a>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </>
   )
 }
 `

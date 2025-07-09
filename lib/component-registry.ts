@@ -1,7 +1,7 @@
 export interface ComponentDefinition {
   id: string
   name: string
-  category: "navigation" | "header" | "arweave" | "ui"
+  category: "navigation" | "header" | "arweave" | "ui" | "footer"
   type: string
   description: string
   defaultProps: Record<string, any>
@@ -165,6 +165,129 @@ export const componentRegistry: ComponentDefinition[] = [
     imports: ["import { NftThemeHero } from '@/components/headers/nft-theme-hero'"],
     tags: ["hero", "nft", "gradient"],
   },
+  {
+    id: "fancy-column-footer",
+    name: "Fancy Column Footer",
+    category: "footer",
+    type: "FancyColumnFooter",
+    description: "Modern, responsive multi-column footer with glass/gradient backgrounds and animated links.",
+    defaultProps: {
+      logo: { src: "/placeholder-ArDacity.png", alt: "Logo" },
+      description: "A modern, beautiful footer for by ArDacity.",
+      columns: [
+        {
+          title: "Product",
+          icon: "box",
+          links: [
+            { label: "Features", url: "#features" },
+            { label: "Pricing", url: "#pricing" },
+            { label: "Docs", url: "#docs" },
+          ],
+        },
+        {
+          title: "Company",
+          icon: "company",
+          links: [
+            { label: "About", url: "#about" },
+            { label: "Careers", url: "#careers" },
+          ],
+        },
+        {
+          title: "Resources",
+          icon: "resources",
+          links: [
+            { label: "Blog", url: "#blog" },
+            { label: "Support", url: "#support" },
+          ],
+        },
+        {
+          title: "Legal",
+          icon: "legal",
+          links: [
+            { label: "Privacy Policy", url: "#privacy" },
+            { label: "Terms of Service", url: "#terms" },
+          ],
+        },
+      ],
+      backgroundStyle: "dark-abstract",
+      bottomNote: "© 2025 Ardacity. All rights reserved.",
+      socialIcons: ["twitter", "github", "discord"],
+      layout: "center",
+    },
+    dependencies: ["react-icons"],
+    imports: ["import { FancyColumnFooter } from '@/components/footers/fancy-column-footer'"],
+    tags: ["footer", "responsive", "glassmorphism", "gradient", "columns", "modern", "animated", "ui"],
+  },
+  {
+    id: "app-download-footer",
+    name: "App Download Footer",
+    category: "footer",
+    type: "AppDownloadFooter",
+    description: "Footer with app download badges, social icons, and quick links. Includes animated visuals and dark mode support.",
+    defaultProps: {
+      logoKey: "default",
+      logoUrl: "/ArDacitypfp.png",
+      tagline: "ArDacity just enhanced your Footer!",
+      appStoreLink: "https://apple.com/app-store",
+      playStoreLink: "https://play.google.com/store",
+      quickLinks: [
+        { label: "Support", href: "/support" },
+        { label: "Contact", href: "/contact" },
+      ],
+      socialIconKeys: ["twitter", "instagram", "facebook"],
+      darkTheme: true,
+      motionDecor: true,
+    },
+    dependencies: ["react-icons"],
+    imports: ["import { AppDownloadFooter } from '@/components/footers/app-download-footer'"],
+    tags: ["footer", "app", "download", "badges", "social", "links", "animated", "dark", "modern"],
+  },
+  {
+    id: "newsletter-footer",
+    name: "Newsletter Footer",
+    category: "footer",
+    type: "NewsletterFooter",
+    description: "Footer with newsletter subscription, social icons, and legal links. Animated, modern, and builder-friendly.",
+    defaultProps: {
+      title: "Stay updated with our latest news",
+      description: "Get product updates, company news, and more.",
+      // onSubscribe is left undefined for builder compatibility
+      socialIcons: [], // Builder can map icon keys to ReactNodes if needed
+      legalLinks: [
+        { label: "Privacy", href: "/privacy" },
+        { label: "Terms", href: "/terms" },
+      ],
+    },
+    dependencies: ["framer-motion", "react-icons"],
+    imports: ["import { NewsletterFooter } from '@/components/footers/newsletter-footer'"],
+    tags: ["footer", "newsletter", "subscription", "social", "legal", "animated", "modern"],
+  },
+  {
+    id: "product-footer",
+    name: "SaaS Product Footer",
+    category: "footer",
+    type: "ProductFooter",
+    description: "Modern SaaS-style footer with logo, description, social icons, quick links, legal links, and newsletter subscription.",
+    defaultProps: {
+      logoUrl: "/ArDacitypfp.png",
+      description: "Modern SaaS for your business.",
+      socialIconKeys: ["github", "twitter", "linkedin"],
+      quickLinks: [
+        { label: "Features", href: "/features" },
+        { label: "Pricing", href: "/pricing" },
+        { label: "Docs", href: "/docs" },
+        { label: "Blog", href: "/blog" },
+        { label: "Careers", href: "/careers" },
+      ],
+      legalLinks: [
+        { label: "Privacy", href: "/privacy" },
+        { label: "Terms", href: "/terms" },
+      ],
+    },
+    dependencies: ["react-icons"],
+    imports: ["import { ProductFooter } from '@/components/footers/product-footer'"],
+    tags: ["footer", "saas", "product", "newsletter", "social", "links", "legal", "modern"],
+  },
   // Arweave Blocks
   {
     id: "ao-message-signer",
@@ -243,7 +366,7 @@ export const componentRegistry: ComponentDefinition[] = [
       children: "Card content here"
     },
     dependencies: [],
-    imports: ["import { Card } from '@/components/ui/card'"] ,
+    imports: ["import { Card } from '@/components/ui/card'"],
     tags: ["ui", "container", "card"],
   },
   {
@@ -262,25 +385,47 @@ export const componentRegistry: ComponentDefinition[] = [
     imports: ["import { Button } from '@/components/ui/button'"],
     tags: ["ui", "button", "action", "interactive"],
   },
+  {
+    id: "liquid-glass-navbar",
+    name: "Liquid Glass Navbar",
+    category: "navigation",
+    type: "LiquidGlassNavbar",
+    description: "Animated glassmorphic navbar with glowing and liquid effects.",
+    defaultProps: {
+      className: "relative",
+      brand: "ArDacity",
+      links: [
+        { label: "Features", href: "#features" },
+        { label: "Pricing", href: "#pricing" },
+        { label: "About", href: "#about" },
+        { label: "Contact", href: "#contact" },
+      ],
+      cta: { label: "Get Started", href: "#get-started" },
+      scrollTargetId: "builder-canvas",
+    },
+    dependencies: ["framer-motion"],
+    imports: ["import { LiquidGlassNavbar } from '@/components/navigation/liquid-glass-navbar'"],
+    tags: ["navigation", "navbar", "glassmorphism", "animated", "liquid", "glow", "modern", "sticky"],
+  },
 ]
 
 export function getComponentByType(type: string): ComponentDefinition | undefined {
   console.log('Looking for component by type:', type);
-  
+
   // First try to find by type (PascalCase)
   let component = componentRegistry.find((comp) => comp.type === type)
   if (component) {
     console.log('Found component by type:', component.id);
     return component;
   }
-  
+
   // If not found, try to find by id (kebab-case)
   component = componentRegistry.find((comp) => comp.id === type)
   if (component) {
     console.log('Found component by id:', component.id);
     return component;
   }
-  
+
   // If still not found, try converting kebab-case to PascalCase
   const pascalCase = type
     .split('-')
@@ -292,7 +437,7 @@ export function getComponentByType(type: string): ComponentDefinition | undefine
     console.log('Found component by PascalCase:', component.id);
     return component;
   }
-  
+
   console.log('Component not found in registry');
   return component
 }

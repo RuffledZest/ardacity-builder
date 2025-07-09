@@ -1,92 +1,585 @@
 {
   "arweave": [
-    { "type": "arweave-search", "renderable": true, "props": { "initialTags": [{ "name": "", "value": "" }], "limit": 10 }, "description": "A search bar and results for querying Arweave transactions by tags." },
-    { "type": "arweave-nft", "renderable": true, "props": { "title": "", "description": "", "imageUrl": "", "tokenId": "", "owner": "", "initialLuaCode": "", "onTransfer": null, "className": "", "style": {} }, "description": "Displays an Arweave NFT with transfer and Lua scripting support." },
-    { "type": "lua-ide", "renderable": true, "props": { "cellId": "", "initialCode": "", "onProcessId": null, "onNewMessage": null, "onInbox": null, "onCodeChange": null }, "description": "A code editor for writing and running Lua scripts." },
-    { "type": "ao-chatbot", "renderable": true, "props": { "processId": "", "theme": "dark", "title": "" }, "description": "A chatbot interface for interacting with AO processes on Arweave." },
-    { "type": "ao-message-signer", "renderable": true, "props": { "processId": "", "className": "", "style": {}, "theme": "dark", "title": "", "description": "" }, "description": "A message signing component for AO/Arweave wallets." }
+    {
+      "type": "arweave-search",
+      "renderable": true,
+      "props": {
+        "initialTags": [
+          {
+            "name": "",
+            "value": ""
+          }
+        ],
+        "limit": 10
+      },
+      "description": "A search bar and results for querying Arweave transactions by tags."
+    },
+    {
+      "type": "arweave-nft",
+      "renderable": true,
+      "props": {
+        "title": "",
+        "description": "",
+        "imageUrl": "",
+        "tokenId": "",
+        "owner": "",
+        "initialLuaCode": "",
+        "onTransfer": null,
+        "className": "",
+        "style": {}
+      },
+      "description": "Displays an Arweave NFT with transfer and Lua scripting support."
+    },
+    {
+      "type": "lua-ide",
+      "renderable": true,
+      "props": {
+        "cellId": "",
+        "initialCode": "",
+        "onProcessId": null,
+        "onNewMessage": null,
+        "onInbox": null,
+        "onCodeChange": null
+      },
+      "description": "A code editor for writing and running Lua scripts."
+    },
+    {
+      "type": "ao-chatbot",
+      "renderable": true,
+      "props": {
+        "processId": "",
+        "theme": "dark",
+        "title": ""
+      },
+      "description": "A chatbot interface for interacting with AO processes on Arweave."
+    },
+    {
+      "type": "ao-message-signer",
+      "renderable": true,
+      "props": {
+        "processId": "",
+        "className": "",
+        "style": {},
+        "theme": "dark",
+        "title": "",
+        "description": ""
+      },
+      "description": "A message signing component for AO/Arweave wallets."
+    }
+  ],
+  "footers": [
+    {
+      "type": "app-download-footer",
+      "renderable": true,
+      "props": {
+        "logoKey": "default",
+        "logoUrl": "/ArDacitypfp.png",
+        "tagline": "ArDacity just enhanced your Footer!",
+        "appStoreLink": "https://apple.com/app-store",
+        "playStoreLink": "https://play.google.com/store",
+        "quickLinks": [
+          {
+            "label": "Support",
+            "href": "/support"
+          },
+          {
+            "label": "Contact",
+            "href": "/contact"
+          }
+        ],
+        "socialIconKeys": [
+          "twitter",
+          "instagram",
+          "facebook"
+        ],
+        "darkTheme": true,
+        "motionDecor": true
+      },
+      "description": "Footer with app download badges, social icons, and quick links. Includes animated visuals and dark mode support."
+    },
+    {
+      "type": "newsletter-footer",
+      "renderable": true,
+      "props": {
+        "title": "Stay updated with our latest news",
+        "description": "Get product updates, company news, and more.",
+        "socialIcons": [],
+        "legalLinks": [
+          {
+            "label": "Privacy",
+            "href": "/privacy"
+          },
+          {
+            "label": "Terms",
+            "href": "/terms"
+          }
+        ]
+      },
+      "description": "Footer with newsletter subscription, social icons, and legal links. Animated, modern, and builder-friendly."
+    },
+    {
+      "type": "product-footer",
+      "renderable": true,
+      "props": {
+        "logoUrl": "/ArDacitypfp.png",
+        "description": "Modern SaaS for your business.",
+        "socialIconKeys": [
+          "github",
+          "twitter",
+          "linkedin"
+        ],
+        "quickLinks": [
+          {
+            "label": "Features",
+            "href": "/features"
+          },
+          {
+            "label": "Pricing",
+            "href": "/pricing"
+          },
+          {
+            "label": "Docs",
+            "href": "/docs"
+          },
+          {
+            "label": "Blog",
+            "href": "/blog"
+          },
+          {
+            "label": "Careers",
+            "href": "/careers"
+          }
+        ],
+        "legalLinks": [
+          {
+            "label": "Privacy",
+            "href": "/privacy"
+          },
+          {
+            "label": "Terms",
+            "href": "/terms"
+          }
+        ]
+      },
+      "description": "Modern SaaS-style footer with logo, description, social icons, quick links, legal links, and newsletter subscription."
+    },
+    {
+      "type": "fancy-column-footer",
+      "renderable": true,
+      "props": {
+        "logo": {
+          "src": "/placeholder-ArDacity.png",
+          "alt": "Logo"
+        },
+        "description": "A modern, beautiful footer for by ArDacity.",
+        "columns": [
+          {
+            "title": "Product",
+            "icon": "box",
+            "links": [
+              {
+                "label": "Features",
+                "url": "#features"
+              },
+              {
+                "label": "Pricing",
+                "url": "#pricing"
+              },
+              {
+                "label": "Docs",
+                "url": "#docs"
+              }
+            ]
+          },
+          {
+            "title": "Company",
+            "icon": "company",
+            "links": [
+              {
+                "label": "About",
+                "url": "#about"
+              },
+              {
+                "label": "Careers",
+                "url": "#careers"
+              }
+            ]
+          },
+          {
+            "title": "Resources",
+            "icon": "resources",
+            "links": [
+              {
+                "label": "Blog",
+                "url": "#blog"
+              },
+              {
+                "label": "Support",
+                "url": "#support"
+              }
+            ]
+          },
+          {
+            "title": "Legal",
+            "icon": "legal",
+            "links": [
+              {
+                "label": "Privacy Policy",
+                "url": "#privacy"
+              },
+              {
+                "label": "Terms of Service",
+                "url": "#terms"
+              }
+            ]
+          }
+        ]
+      },
+      "description": "Modern, responsive multi-column footer with glass/gradient backgrounds and animated links."
+    }
   ],
   "navigation": [
-    { "type": "ardacity-classic-navbar", "renderable": true, "props": { "brand": "", "nav1": "", "nav2": "", "nav3": "", "variant": "default", "position": "sticky" }, "description": "A classic navigation bar for the top of the page." },
-    { "type": "floating-navbar", "renderable": true, "props": { "brand": "", "links": ["Home", "About", "Contact"], "variant": "floating" }, "description": "A floating navigation bar that appears on scroll." }
+    {
+      "type": "liquid-glass-navbar",
+      "renderable": true,
+      "props": {
+        "className": "relative",
+        "brand": "ArDacity",
+        "links": [
+          {
+            "label": "Features",
+            "href": "#features"
+          },
+          {
+            "label": "Pricing",
+            "href": "#pricing"
+          },
+          {
+            "label": "About",
+            "href": "#about"
+          },
+          {
+            "label": "Contact",
+            "href": "#contact"
+          }
+        ],
+        "cta": {
+          "label": "Get Started",
+          "href": "#get-started"
+        },
+        "scrollTargetId": "builder-canvas"
+      },
+      "description": "Animated glassmorphic navbar with glowing and liquid effects."
+    },
+    {
+      "type": "ardacity-classic-navbar",
+      "renderable": true,
+      "props": {
+        "brand": "",
+        "nav1": "",
+        "nav2": "",
+        "nav3": "",
+        "variant": "default",
+        "position": "sticky"
+      },
+      "description": "A classic navigation bar for the top of the page."
+    },
+    {
+      "type": "floating-navbar",
+      "renderable": true,
+      "props": {
+        "brand": "",
+        "links": [
+          "Home",
+          "About",
+          "Contact"
+        ],
+        "variant": "floating"
+      },
+      "description": "A floating navigation bar that appears on scroll."
+    }
   ],
   "ui": [
-    { "type": "masonry", "renderable": false, "props": {
-      "items": "Array<{ id: string, img: string, url: string, height: number }>",
-      "ease": "string (default: 'power3.out')",
-      "duration": "number (default: 0.6)",
-      "stagger": "number (default: 0.05)",
-      "animateFrom": "'bottom' | 'top' | 'left' | 'right' | 'center' | 'random' (default: 'bottom')",
-      "scaleOnHover": "boolean (default: true)",
-      "hoverScale": "number (default: 0.95)",
-      "blurToFocus": "boolean (default: true)",
-      "colorShiftOnHover": "boolean (default: false)"
-    } },
-    { "type": "flowing-menu", "renderable": false, "props": {
-      "items": "Array<{ link: string, text: string, image: string }> (optional, defaults to 4 placeholder items)"
-    } },
-    { "type": "clip-path-links", "renderable": false, "props": {} },
-    { "type": "textarea", "renderable": true, "props": {
-      "className": "string (optional, additional CSS classes)",
-      "...props": "All standard textarea HTML attributes (placeholder, value, onChange, disabled, etc.)"
-    }, "description": "A styled textarea input. For multi-line text input. Accepts all standard textarea props." },
-    { "type": "table", "renderable": false, "props": {} },
-    { "type": "tabs", "renderable": false, "props": {} },
-    { "type": "skeleton", "renderable": false, "props": {} },
-    { "type": "slider", "renderable": false, "props": {
-      "className": "string (optional, additional CSS classes)",
-      "...props": "All standard Radix Slider props (min, max, step, value, defaultValue, onValueChange, disabled, orientation, etc.)"
-    }, "description": "A styled slider input. Accepts all standard Radix Slider props for range selection." },
-    { "type": "sheet", "renderable": false, "props": {} },
-    { "type": "sidebar", "renderable": false, "props": {} },
-    { "type": "scroll-area", "renderable": false, "props": {} },
-    { "type": "popover", "renderable": false, "props": {} },
-    { "type": "progress", "renderable": false, "props": {} },
-    { "type": "pagination", "renderable": false, "props": {} },
-    { "type": "menubar", "renderable": false, "props": {} },
-    { "type": "navigation-menu", "renderable": false, "props": {} },
-    { "type": "input", "renderable": false, "props": {} },
-    { "type": "label", "renderable": false, "props": {} },
-    { "type": "form", "renderable": false, "props": {} },
-    { "type": "hover-card", "renderable": false, "props": {} },
-    { "type": "input-otp", "renderable": false, "props": {} },
-    { "type": "dropdown-menu", "renderable": false, "props": {} },
-    { "type": "context-menu", "renderable": false, "props": {} },
-    { "type": "carousel", "renderable": true, "props": {
-      "opts": "object (Embla carousel options, optional)",
-      "plugins": "any (Embla plugins, optional)",
-      "orientation": "'horizontal' | 'vertical' (default: 'horizontal')",
-      "setApi": "function (optional, receives Embla API)",
-      "children": "ReactNode (should include CarouselContent, CarouselItem, CarouselPrevious, CarouselNext)"
-    }, "description": "A composable carousel. Use CarouselContent for slides, CarouselItem for each slide, and CarouselPrevious/CarouselNext for navigation buttons. All subcomponents must be used within Carousel." },
-    { "type": "chart", "renderable": false, "props": {} },
-    { "type": "calendar", "renderable": false, "props": {} },
-    { "type": "card", "renderable": false, "props": {} },
-    { "type": "breadcrumb", "renderable": false, "props": {} },
-    { "type": "button", "renderable": false, "props": {} },
-    { "type": "avatar", "renderable": false, "props": {} }
+    {
+      "type": "masonry",
+      "renderable": false,
+      "props": {
+        "items": "Array<{ id: string, img: string, url: string, height: number }>",
+        "ease": "string (default: 'power3.out')",
+        "duration": "number (default: 0.6)",
+        "stagger": "number (default: 0.05)",
+        "animateFrom": "'bottom' | 'top' | 'left' | 'right' | 'center' | 'random' (default: 'bottom')",
+        "scaleOnHover": "boolean (default: true)",
+        "hoverScale": "number (default: 0.95)",
+        "blurToFocus": "boolean (default: true)",
+        "colorShiftOnHover": "boolean (default: false)"
+      }
+    },
+    {
+      "type": "flowing-menu",
+      "renderable": false,
+      "props": {
+        "items": "Array<{ link: string, text: string, image: string }> (optional, defaults to 4 placeholder items)"
+      }
+    },
+    {
+      "type": "clip-path-links",
+      "renderable": false,
+      "props": {}
+    },
+    {
+      "type": "textarea",
+      "renderable": true,
+      "props": {
+        "className": "string (optional, additional CSS classes)",
+        "...props": "All standard textarea HTML attributes (placeholder, value, onChange, disabled, etc.)"
+      },
+      "description": "A styled textarea input. For multi-line text input. Accepts all standard textarea props."
+    },
+    {
+      "type": "table",
+      "renderable": false,
+      "props": {}
+    },
+    {
+      "type": "tabs",
+      "renderable": false,
+      "props": {}
+    },
+    {
+      "type": "skeleton",
+      "renderable": false,
+      "props": {}
+    },
+    {
+      "type": "slider",
+      "renderable": false,
+      "props": {
+        "className": "string (optional, additional CSS classes)",
+        "...props": "All standard Radix Slider props (min, max, step, value, defaultValue, onValueChange, disabled, orientation, etc.)"
+      },
+      "description": "A styled slider input. Accepts all standard Radix Slider props for range selection."
+    },
+    {
+      "type": "sheet",
+      "renderable": false,
+      "props": {}
+    },
+    {
+      "type": "sidebar",
+      "renderable": false,
+      "props": {}
+    },
+    {
+      "type": "scroll-area",
+      "renderable": false,
+      "props": {}
+    },
+    {
+      "type": "popover",
+      "renderable": false,
+      "props": {}
+    },
+    {
+      "type": "progress",
+      "renderable": false,
+      "props": {}
+    },
+    {
+      "type": "pagination",
+      "renderable": false,
+      "props": {}
+    },
+    {
+      "type": "menubar",
+      "renderable": false,
+      "props": {}
+    },
+    {
+      "type": "navigation-menu",
+      "renderable": false,
+      "props": {}
+    },
+    {
+      "type": "input",
+      "renderable": false,
+      "props": {}
+    },
+    {
+      "type": "label",
+      "renderable": false,
+      "props": {}
+    },
+    {
+      "type": "form",
+      "renderable": false,
+      "props": {}
+    },
+    {
+      "type": "hover-card",
+      "renderable": false,
+      "props": {}
+    },
+    {
+      "type": "input-otp",
+      "renderable": false,
+      "props": {}
+    },
+    {
+      "type": "dropdown-menu",
+      "renderable": false,
+      "props": {}
+    },
+    {
+      "type": "context-menu",
+      "renderable": false,
+      "props": {}
+    },
+    {
+      "type": "carousel",
+      "renderable": true,
+      "props": {
+        "opts": "object (Embla carousel options, optional)",
+        "plugins": "any (Embla plugins, optional)",
+        "orientation": "'horizontal' | 'vertical' (default: 'horizontal')",
+        "setApi": "function (optional, receives Embla API)",
+        "children": "ReactNode (should include CarouselContent, CarouselItem, CarouselPrevious, CarouselNext)"
+      },
+      "description": "A composable carousel. Use CarouselContent for slides, CarouselItem for each slide, and CarouselPrevious/CarouselNext for navigation buttons. All subcomponents must be used within Carousel."
+    },
+    {
+      "type": "chart",
+      "renderable": false,
+      "props": {}
+    },
+    {
+      "type": "calendar",
+      "renderable": false,
+      "props": {}
+    },
+    {
+      "type": "card",
+      "renderable": false,
+      "props": {}
+    },
+    {
+      "type": "breadcrumb",
+      "renderable": false,
+      "props": {}
+    },
+    {
+      "type": "button",
+      "renderable": false,
+      "props": {}
+    },
+    {
+      "type": "avatar",
+      "renderable": false,
+      "props": {}
+    }
   ],
   "headers": [
-    { "type": "smooth-scroll-hero", "renderable": true, "props": { "title": "", "subtitle": "" }, "description": "A hero section with smooth scrolling and a title/subtitle." },
-    { "type": "ardacity-classic-hero", "renderable": true, "props": { "badge": "", "title1": "", "title2": "" }, "description": "A classic hero section with two main titles and a badge." },
-    { "type": "nft-theme-hero", "renderable": true, "props": { "title": "", "description": "" }, "description": "A hero section for NFT collections with a title and description." }
+    {
+      "type": "smooth-scroll-hero",
+      "renderable": true,
+      "props": {
+        "title": "",
+        "subtitle": ""
+      },
+      "description": "A hero section with smooth scrolling and a title/subtitle."
+    },
+    {
+      "type": "ardacity-classic-hero",
+      "renderable": true,
+      "props": {
+        "badge": "",
+        "title1": "",
+        "title2": ""
+      },
+      "description": "A classic hero section with two main titles and a badge."
+    },
+    {
+      "type": "nft-theme-hero",
+      "renderable": true,
+      "props": {
+        "title": "",
+        "description": ""
+      },
+      "description": "A hero section for NFT collections with a title and description."
+    }
   ],
   "components": [
-    { "type": "signer-component", "renderable": true, "props": { "title": "", "description": "" }, "description": "A wallet connect/signature component for Arweave. Not for general product features or login forms." },
-    { "type": "chat-box", "renderable": true, "props": { "title": "", "placeholder": "" }, "description": "A chat UI for customer support. Not a login form." }
+    {
+      "type": "signer-component",
+      "renderable": true,
+      "props": {
+        "title": "",
+        "description": ""
+      },
+      "description": "A wallet connect/signature component for Arweave. Not for general product features or login forms."
+    },
+    {
+      "type": "chat-box",
+      "renderable": true,
+      "props": {
+        "title": "",
+        "placeholder": ""
+      },
+      "description": "A chat UI for customer support. Not a login form."
+    }
   ],
   "builder": [
-    { "type": "builder-navbar", "renderable": true, "props": {} },
-    { "type": "component-library", "renderable": true, "props": {} },
-    { "type": "component-renderer", "renderable": true, "props": {} },
-    { "type": "properties-panel", "renderable": true, "props": {} },
-    { "type": "component-hover-controls", "renderable": true, "props": {} },
-    { "type": "component-context", "renderable": true, "props": {} },
-    { "type": "ardacity-builder", "renderable": true, "props": {} },
-    { "type": "builder-canvas", "renderable": true, "props": {} }
+    {
+      "type": "builder-navbar",
+      "renderable": true,
+      "props": {}
+    },
+    {
+      "type": "component-library",
+      "renderable": true,
+      "props": {}
+    },
+    {
+      "type": "component-renderer",
+      "renderable": true,
+      "props": {}
+    },
+    {
+      "type": "properties-panel",
+      "renderable": true,
+      "props": {}
+    },
+    {
+      "type": "component-hover-controls",
+      "renderable": true,
+      "props": {}
+    },
+    {
+      "type": "component-context",
+      "renderable": true,
+      "props": {}
+    },
+    {
+      "type": "ardacity-builder",
+      "renderable": true,
+      "props": {}
+    },
+    {
+      "type": "builder-canvas",
+      "renderable": true,
+      "props": {}
+    }
   ],
   "root": [
-    { "type": "theme-provider", "renderable": true, "props": {} },
-    { "type": "ardacity-builder", "renderable": true, "props": {} }
+    {
+      "type": "theme-provider",
+      "renderable": true,
+      "props": {}
+    },
+    {
+      "type": "ardacity-builder",
+      "renderable": true,
+      "props": {}
+    }
   ]
-} 
+}
