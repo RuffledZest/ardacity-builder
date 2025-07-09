@@ -1,13 +1,13 @@
 export interface ComponentDefinition {
-  id: string
-  name: string
-  category: "navigation" | "header" | "arweave" | "ui" | "footer"
-  type: string
-  description: string
-  defaultProps: Record<string, any>
-  dependencies: string[]
-  imports: string[]
-  tags: string[]
+  id: string;
+  name: string;
+  category: "navigation" | "header" | "arweave" | "ui" | "footer" | "landing";
+  type: string;
+  description: string;
+  defaultProps: Record<string, any>;
+  dependencies: string[];
+  imports: string[];
+  tags: string[];
 }
 
 export const componentRegistry: ComponentDefinition[] = [
@@ -27,7 +27,9 @@ export const componentRegistry: ComponentDefinition[] = [
       position: "sticky",
     },
     dependencies: ["@ar-dacity/ardacity-wallet-btn", "next-themes"],
-    imports: ["import { ArDacityClassicNavbar } from '@/components/navigation/ardacity-classic-navbar'"],
+    imports: [
+      "import { ArDacityClassicNavbar } from '@/components/navigation/ardacity-classic-navbar'",
+    ],
     tags: ["navigation", "wallet", "responsive"],
   },
   {
@@ -42,7 +44,9 @@ export const componentRegistry: ComponentDefinition[] = [
       variant: "floating",
     },
     dependencies: [],
-    imports: ["import { FloatingNavbar } from '@/components/navigation/floating-navbar'"],
+    imports: [
+      "import { FloatingNavbar } from '@/components/navigation/floating-navbar'",
+    ],
     tags: ["navigation", "floating", "modern"],
   },
   {
@@ -50,7 +54,8 @@ export const componentRegistry: ComponentDefinition[] = [
     name: "Clip Path Links",
     category: "navigation",
     type: "ClipPathLinks",
-    description: "Animated grid of social/media links with clip-path hover effects.",
+    description:
+      "Animated grid of social/media links with clip-path hover effects.",
     defaultProps: {
       links: [
         { icon: "SiGoogle", href: "#", label: "Google" },
@@ -61,17 +66,19 @@ export const componentRegistry: ComponentDefinition[] = [
         { icon: "SiFacebook", href: "#", label: "Facebook" },
         { icon: "SiTiktok", href: "#", label: "TikTok" },
         { icon: "SiSpotify", href: "#", label: "Spotify" },
-        { icon: "SiLinkedin", href: "#", label: "LinkedIn" }
+        { icon: "SiLinkedin", href: "#", label: "LinkedIn" },
       ],
       gridLayout: "3x3",
       iconSize: "md",
       hoverColor: "#1a1a1a",
       backgroundColor: "transparent",
       borderColor: "#1a1a1a",
-      animationDuration: 0.3
+      animationDuration: 0.3,
     },
     dependencies: ["framer-motion", "react-icons"],
-    imports: ["import { ClipPathLinks } from '@/components/ui/clip-path-links'"],
+    imports: [
+      "import { ClipPathLinks } from '@/components/ui/clip-path-links'",
+    ],
     tags: ["links", "social", "animation", "clip-path", "grid"],
   },
   {
@@ -79,15 +86,16 @@ export const componentRegistry: ComponentDefinition[] = [
     name: "Flowing Menu",
     category: "navigation",
     type: "FlowingMenu",
-    description: "Animated navigation menu with flowing marquee effects on hover.",
+    description:
+      "Animated navigation menu with flowing marquee effects on hover.",
     defaultProps: {
       items: [
         { link: "#", text: "Home", image: "/placeholder.jpg" },
         { link: "#", text: "About", image: "/placeholder.jpg" },
         { link: "#", text: "Services", image: "/placeholder.jpg" },
-        { link: "#", text: "Contact", image: "/placeholder.jpg" }
+        { link: "#", text: "Contact", image: "/placeholder.jpg" },
       ],
-      className: ""
+      className: "",
     },
     dependencies: [],
     imports: ["import { FlowingMenu } from '@/components/ui/flowing-menu'"],
@@ -98,7 +106,8 @@ export const componentRegistry: ComponentDefinition[] = [
     name: "Masonry Grid",
     category: "header",
     type: "Masonry",
-    description: "Responsive masonry grid with GSAP animations and hover effects.",
+    description:
+      "Responsive masonry grid with GSAP animations and hover effects.",
     defaultProps: {
       items: [
         { id: "1", img: "/placeholder.jpg", url: "#", height: 300 },
@@ -106,7 +115,7 @@ export const componentRegistry: ComponentDefinition[] = [
         { id: "3", img: "/placeholder.jpg", url: "#", height: 250 },
         { id: "4", img: "/placeholder.jpg", url: "#", height: 350 },
         { id: "5", img: "/placeholder.jpg", url: "#", height: 280 },
-        { id: "6", img: "/placeholder.jpg", url: "#", height: 320 }
+        { id: "6", img: "/placeholder.jpg", url: "#", height: 320 },
       ],
       ease: "power3.out",
       duration: 0.6,
@@ -115,7 +124,7 @@ export const componentRegistry: ComponentDefinition[] = [
       scaleOnHover: true,
       hoverScale: 0.95,
       blurToFocus: true,
-      colorShiftOnHover: false
+      colorShiftOnHover: false,
     },
     dependencies: ["gsap"],
     imports: ["import { Masonry } from '@/components/ui/masonry'"],
@@ -133,7 +142,9 @@ export const componentRegistry: ComponentDefinition[] = [
       subtitle: "Browse NFTs",
     },
     dependencies: ["framer-motion", "react-icons"],
-    imports: ["import { SmoothScrollHero } from '@/components/headers/smooth-scroll-hero'"],
+    imports: [
+      "import { SmoothScrollHero } from '@/components/headers/smooth-scroll-hero'",
+    ],
     tags: ["hero", "parallax", "animation"],
   },
   {
@@ -148,7 +159,9 @@ export const componentRegistry: ComponentDefinition[] = [
       title2: "Find Your Design",
     },
     dependencies: ["framer-motion", "next/font/google"],
-    imports: ["import { ArDacityClassicHero } from '@/components/headers/ardacity-classic-hero'"],
+    imports: [
+      "import { ArDacityClassicHero } from '@/components/headers/ardacity-classic-hero'",
+    ],
     tags: ["hero", "elegant", "typography"],
   },
   {
@@ -158,11 +171,20 @@ export const componentRegistry: ComponentDefinition[] = [
     type: "NftThemeHero",
     description: "NFT-focused hero section with gradient effects",
     defaultProps: {
-      title: "NFT Collection",
-      description: "Discover unique digital assets",
+      title: "Explore Metaverse Art",
+      description: "Dive into exclusive collections of digital art",
+      backgroundImage: "/ArDacitypfp.png",
+      gradientFrom: "indigo-900",
+      gradientVia: "purple-800",
+      gradientTo: "pink-900",
+      primaryBtnText: "Start Exploring",
+      secondaryBtnText: "Mint Your NFT",
+      animate: true,
     },
     dependencies: ["framer-motion"],
-    imports: ["import { NftThemeHero } from '@/components/headers/nft-theme-hero'"],
+    imports: [
+      "import { NftThemeHero } from '@/components/headers/nft-theme-hero'",
+    ],
     tags: ["hero", "nft", "gradient"],
   },
   {
@@ -170,7 +192,8 @@ export const componentRegistry: ComponentDefinition[] = [
     name: "Fancy Column Footer",
     category: "footer",
     type: "FancyColumnFooter",
-    description: "Modern, responsive multi-column footer with glass/gradient backgrounds and animated links.",
+    description:
+      "Modern, responsive multi-column footer with glass/gradient backgrounds and animated links.",
     defaultProps: {
       logo: { src: "/placeholder-ArDacity.png", alt: "Logo" },
       description: "A modern, beautiful footer for by ArDacity.",
@@ -215,15 +238,27 @@ export const componentRegistry: ComponentDefinition[] = [
       layout: "center",
     },
     dependencies: ["react-icons"],
-    imports: ["import { FancyColumnFooter } from '@/components/footers/fancy-column-footer'"],
-    tags: ["footer", "responsive", "glassmorphism", "gradient", "columns", "modern", "animated", "ui"],
+    imports: [
+      "import { FancyColumnFooter } from '@/components/footers/fancy-column-footer'",
+    ],
+    tags: [
+      "footer",
+      "responsive",
+      "glassmorphism",
+      "gradient",
+      "columns",
+      "modern",
+      "animated",
+      "ui",
+    ],
   },
   {
     id: "app-download-footer",
     name: "App Download Footer",
     category: "footer",
     type: "AppDownloadFooter",
-    description: "Footer with app download badges, social icons, and quick links. Includes animated visuals and dark mode support.",
+    description:
+      "Footer with app download badges, social icons, and quick links. Includes animated visuals and dark mode support.",
     defaultProps: {
       logoKey: "default",
       logoUrl: "/ArDacitypfp.png",
@@ -239,15 +274,28 @@ export const componentRegistry: ComponentDefinition[] = [
       motionDecor: true,
     },
     dependencies: ["react-icons"],
-    imports: ["import { AppDownloadFooter } from '@/components/footers/app-download-footer'"],
-    tags: ["footer", "app", "download", "badges", "social", "links", "animated", "dark", "modern"],
+    imports: [
+      "import { AppDownloadFooter } from '@/components/footers/app-download-footer'",
+    ],
+    tags: [
+      "footer",
+      "app",
+      "download",
+      "badges",
+      "social",
+      "links",
+      "animated",
+      "dark",
+      "modern",
+    ],
   },
   {
     id: "newsletter-footer",
     name: "Newsletter Footer",
     category: "footer",
     type: "NewsletterFooter",
-    description: "Footer with newsletter subscription, social icons, and legal links. Animated, modern, and builder-friendly.",
+    description:
+      "Footer with newsletter subscription, social icons, and legal links. Animated, modern, and builder-friendly.",
     defaultProps: {
       title: "Stay updated with our latest news",
       description: "Get product updates, company news, and more.",
@@ -259,15 +307,26 @@ export const componentRegistry: ComponentDefinition[] = [
       ],
     },
     dependencies: ["framer-motion", "react-icons"],
-    imports: ["import { NewsletterFooter } from '@/components/footers/newsletter-footer'"],
-    tags: ["footer", "newsletter", "subscription", "social", "legal", "animated", "modern"],
+    imports: [
+      "import { NewsletterFooter } from '@/components/footers/newsletter-footer'",
+    ],
+    tags: [
+      "footer",
+      "newsletter",
+      "subscription",
+      "social",
+      "legal",
+      "animated",
+      "modern",
+    ],
   },
   {
     id: "product-footer",
     name: "SaaS Product Footer",
     category: "footer",
     type: "ProductFooter",
-    description: "Modern SaaS-style footer with logo, description, social icons, quick links, legal links, and newsletter subscription.",
+    description:
+      "Modern SaaS-style footer with logo, description, social icons, quick links, legal links, and newsletter subscription.",
     defaultProps: {
       logoUrl: "/ArDacitypfp.png",
       description: "Modern SaaS for your business.",
@@ -285,8 +344,19 @@ export const componentRegistry: ComponentDefinition[] = [
       ],
     },
     dependencies: ["react-icons"],
-    imports: ["import { ProductFooter } from '@/components/footers/product-footer'"],
-    tags: ["footer", "saas", "product", "newsletter", "social", "links", "legal", "modern"],
+    imports: [
+      "import { ProductFooter } from '@/components/footers/product-footer'",
+    ],
+    tags: [
+      "footer",
+      "saas",
+      "product",
+      "newsletter",
+      "social",
+      "links",
+      "legal",
+      "modern",
+    ],
   },
   // Arweave Blocks
   {
@@ -302,7 +372,9 @@ export const componentRegistry: ComponentDefinition[] = [
       theme: "dark",
     },
     dependencies: ["@permaweb/aoconnect"],
-    imports: ["import { AOMessageSigner } from '@/components/arweave/ao-message-signer'"],
+    imports: [
+      "import { AOMessageSigner } from '@/components/arweave/ao-message-signer'",
+    ],
     tags: ["arweave", "ao", "wallet", "signing"],
   },
   {
@@ -348,13 +420,64 @@ export const componentRegistry: ComponentDefinition[] = [
     defaultProps: {
       initialTags: [
         { name: "Content-Type", value: "image/png" },
-        { name: "App-Name", value: "ArweaveSearch" }
+        { name: "App-Name", value: "ArweaveSearch" },
       ],
-      limit: 10
+      limit: 10,
     },
     dependencies: ["@apollo/client", "graphql"],
-    imports: ["import { ArweaveSearch } from '@/components/arweave/arweave-search'"],
+    imports: [
+      "import { ArweaveSearch } from '@/components/arweave/arweave-search'",
+    ],
     tags: ["arweave", "search", "graphql", "transactions", "indexer"],
+  },
+  {
+    id: "chatroom-on-chain",
+    name: "Chatroom On-Chain",
+    category: "arweave",
+    type: "ChatRoom",
+    description: "Real-time on-chain chatroom with emoji picker and quick messages, powered by Socket.IO. Builder-friendly and fully self-contained.",
+    defaultProps: {
+      serverUrl: "https://ardacity-backrooms.onrender.com",
+      className: "",
+      quickMessages: [
+        "ggs",
+        "nice play",
+        "let's play again",
+        "good luck",
+        "well played",
+        "wp",
+        "ez",
+        "clutch",
+        "noob",
+        "pro"
+      ]
+    },
+    dependencies: ["socket.io-client", "lucide-react"],
+    imports: [
+      "import { ChatRoom as ChatRoomOnChain } from '@/components/arweave/chatroom-on-chain'"
+    ],
+    tags: ["arweave", "chat", "realtime", "socket.io", "emoji", "quick-messages", "builder-friendly"],
+  },
+  {
+    id: "dark-theme-header",
+    name: "Dark Theme Header",
+    category: "header",
+    type: "DarkHeader",
+    description: "Animated dark theme header with geometric background, hero text, CTA button, and image. Builder-friendly and highly customizable.",
+    defaultProps: {
+      title: "Experience Creative Precision",
+      subtitle: "Visual harmony driven by real geometry and motion.",
+      ctaText: "Request Demo",
+      onCtaClick: "() => alert('Clicked!')",
+      imageSrc: "/ArDacitypfp.png",
+      showImage: true,
+      customClassName: "",
+    },
+    dependencies: ["framer-motion", "next/image", "react"],
+    imports: [
+      "import { DarkHeader } from '@/components/headers/dark-theme-header'"
+    ],
+    tags: ["header", "dark", "animated", "hero", "cta", "image", "geometric", "builder-friendly"],
   },
   {
     id: "card",
@@ -363,7 +486,7 @@ export const componentRegistry: ComponentDefinition[] = [
     type: "Card",
     description: "A flexible card container with header, content, and footer.",
     defaultProps: {
-      children: "Card content here"
+      children: "Card content here",
     },
     dependencies: [],
     imports: ["import { Card } from '@/components/ui/card'"],
@@ -379,7 +502,7 @@ export const componentRegistry: ComponentDefinition[] = [
       children: "Click me",
       variant: "default",
       size: "default",
-      className: ""
+      className: "",
     },
     dependencies: ["@radix-ui/react-slot", "class-variance-authority"],
     imports: ["import { Button } from '@/components/ui/button'"],
@@ -390,7 +513,8 @@ export const componentRegistry: ComponentDefinition[] = [
     name: "Liquid Glass Navbar",
     category: "navigation",
     type: "LiquidGlassNavbar",
-    description: "Animated glassmorphic navbar with glowing and liquid effects.",
+    description:
+      "Animated glassmorphic navbar with glowing and liquid effects.",
     defaultProps: {
       className: "relative",
       brand: "ArDacity",
@@ -404,52 +528,413 @@ export const componentRegistry: ComponentDefinition[] = [
       scrollTargetId: "builder-canvas",
     },
     dependencies: ["framer-motion"],
-    imports: ["import { LiquidGlassNavbar } from '@/components/navigation/liquid-glass-navbar'"],
-    tags: ["navigation", "navbar", "glassmorphism", "animated", "liquid", "glow", "modern", "sticky"],
+    imports: [
+      "import { LiquidGlassNavbar } from '@/components/navigation/liquid-glass-navbar'",
+    ],
+    tags: [
+      "navigation",
+      "navbar",
+      "glassmorphism",
+      "animated",
+      "liquid",
+      "glow",
+      "modern",
+      "sticky",
+    ],
   },
-]
+  {
+    id: "web3-landing-page",
+    name: "Web3 Landing Page",
+    category: "landing",
+    type: "Web3LandingPage",
+    description:
+      "Modern, customizable Web3 landing page with hero, about, features, and pricing sections.",
+    defaultProps: {
+      contained: true,
+      // logo: "⚡",
+      // companyName: "ArDacity",
+      heroTitle: "The Future of On-Chain Development",
+      heroSubtitle:
+        "Build exceptional decentralized applications with our comprehensive Web3 component library. Secure, scalable, and beautifully designed for the blockchain era.",
+      heroButtonText: "Explore Components",
+      heroSecondaryButtonText: "View Documentation",
+      heroImage: "/ArDacitypfp.png?height=400&width=400",
+      aboutTitle: "Empowering Web3 Innovation",
+      aboutDescription:
+        "ArDacity revolutionizes blockchain development with a comprehensive suite of battle-tested components. Our library combines cutting-edge security with elegant design, enabling developers to create stunning decentralized applications faster than ever before.",
+      aboutImage: "/ArDacitypfp.png?height=500&width=600",
+      aboutStats: [
+        { label: "Active Components", value: "300+", icon: "🧩" },
+        { label: "Developer Community", value: "25K+", icon: "👥" },
+        { label: "dApps Powered", value: "8K+", icon: "🚀" },
+        { label: "Blockchain Networks", value: "20+", icon: "🌐" },
+      ],
+      featuresTitle: "Built for the Decentralized Web",
+      featuresSubtitle:
+        "Comprehensive tools and components designed specifically for Web3 development",
+      features: [
+        {
+          icon: "🔐",
+          title: "Security Audited",
+          description:
+            "Every component undergoes rigorous security audits to ensure your users' assets remain protected.",
+        },
+        {
+          icon: "⚡",
+          title: "Gas Optimized",
+          description:
+            "Intelligent optimization reduces transaction costs while maintaining peak performance.",
+        },
+        {
+          icon: "🎨",
+          title: "Design System",
+          description:
+            "Cohesive design language that scales beautifully across all your decentralized applications.",
+        },
+        {
+          icon: "🔗",
+          title: "Multi-Chain Ready",
+          description:
+            "Seamless integration across Ethereum, Polygon, Arbitrum, and 17+ other networks.",
+        },
+        {
+          icon: "📱",
+          title: "Mobile First",
+          description:
+            "Responsive components optimized for mobile wallets and cross-platform compatibility.",
+        },
+        {
+          icon: "🛠️",
+          title: "Developer Tools",
+          description:
+            "Comprehensive CLI, testing suite, and debugging tools for streamlined development.",
+        },
+      ],
+      pricingTitle: "Scale with Confidence",
+      pricingSubtitle:
+        "Choose the perfect plan for your Web3 development journey",
+      pricingPlans: [
+        {
+          name: "Starter",
+          price: "Free",
+          period: "forever",
+          buttonText: "Get Started",
+          features: [
+            "100+ core components",
+            "Basic templates",
+            "Community support",
+            "MIT license",
+            "Documentation access",
+            "GitHub integration",
+          ],
+        },
+        {
+          name: "Professional",
+          price: "$79",
+          period: "per month",
+          popular: true,
+          buttonText: "Start Free Trial",
+          features: [
+            "300+ premium components",
+            "Advanced templates",
+            "Priority support",
+            "Custom themes",
+            "Team collaboration",
+            "Advanced analytics",
+            "API access",
+            "White-label options",
+          ],
+        },
+        {
+          name: "Enterprise",
+          price: "Custom",
+          period: "contact us",
+          buttonText: "Contact Sales",
+          features: [
+            "Unlimited components",
+            "Custom development",
+            "24/7 dedicated support",
+            "On-premise deployment",
+            "SLA guarantee",
+            "Security compliance",
+            "Training & onboarding",
+            "Custom integrations",
+          ],
+        },
+      ],
+    },
+    dependencies: ["next/image"],
+    imports: [
+      "import { Web3LandingPage } from '@/components/landing/web3-landing-page'",
+    ],
+    tags: ["landing", "web3", "modern", "ui", "customizable"],
+  },
+  {
+    id: "web3-landing-page-2",
+    name: "Web3 Landing Page 2",
+    category: "landing",
+    type: "Web3LandingPage2",
+    description:
+      "Modern, animated Web3 landing page with hero, about, features, and pricing sections.",
+    defaultProps: {
+      contained: true,
+      heroTitle: "Build Stunning On-Chain Components",
+      heroSubtitle:
+        "The ultimate component library for blockchain developers. Create beautiful, responsive, and secure decentralized applications with our comprehensive collection of Web3-ready components that seamlessly integrate with your dApps.",
+      heroButtonText: "Start Building",
+      heroImage: "/ArDacitypfp.png?height=500&width=700",
+      aboutTitle: "Revolutionizing Web3 Development",
+      aboutDescription:
+        "ArDacity is the premier on-chain component library designed specifically for blockchain developers. We provide battle-tested, secure, and beautifully crafted components that seamlessly integrate with your decentralized applications, making Web3 development faster and more efficient than ever before.",
+      aboutImage: "/ArDacitypfp.png?height=400&width=500",
+      aboutStats: [
+        { label: "Components", value: "200+" },
+        { label: "Developers", value: "10K+" },
+        { label: "dApps Built", value: "5K+" },
+        { label: "Blockchains", value: "15+" },
+      ],
+      featuresTitle: "Powerful Web3 Components",
+      featuresSubtitle:
+        "Everything you need to build exceptional decentralized applications",
+      features: [
+        {
+          icon: "🔗",
+          title: "Blockchain Native",
+          description:
+            "Components built specifically for Web3 with native blockchain integration and smart contract compatibility.",
+        },
+        {
+          icon: "🛡️",
+          title: "Security First",
+          description:
+            "Audited components with built-in security best practices to protect your users and their assets.",
+        },
+        {
+          icon: "⚡",
+          title: "Lightning Fast",
+          description:
+            "Optimized for performance with minimal gas costs and instant UI updates for the best user experience.",
+        },
+        {
+          icon: "🎨",
+          title: "Customizable Design",
+          description:
+            "Fully themeable components that adapt to your brand while maintaining Web3 functionality.",
+        },
+        {
+          icon: "🌐",
+          title: "Multi-Chain Support",
+          description:
+            "Works seamlessly across Ethereum, Polygon, BSC, and 12+ other popular blockchain networks.",
+        },
+        {
+          icon: "📱",
+          title: "Mobile Optimized",
+          description:
+            "Responsive components that work perfectly on desktop, mobile, and Web3 wallet browsers.",
+        },
+      ],
+      pricingTitle: "Choose Your Plan",
+      pricingSubtitle:
+        "Flexible pricing for developers and teams building the future of Web3",
+      pricingPlans: [
+        {
+          name: "Developer",
+          price: "$0",
+          period: "forever",
+          features: [
+            "50 components",
+            "Basic templates",
+            "Community support",
+            "MIT license",
+            "Documentation access",
+          ],
+        },
+        {
+          name: "Pro",
+          price: "$49",
+          period: "per month",
+          popular: true,
+          features: [
+            "200+ components",
+            "Premium templates",
+            "Priority support",
+            "Advanced integrations",
+            "Custom themes",
+            "Team collaboration",
+          ],
+        },
+        {
+          name: "Enterprise",
+          price: "$199",
+          period: "per month",
+          features: [
+            "Unlimited components",
+            "White-label solution",
+            "24/7 dedicated support",
+            "Custom development",
+            "On-premise deployment",
+            "SLA guarantee",
+          ],
+        },
+      ],
+    },
+    dependencies: ["next/image"],
+    imports: [
+      "import { Web3LandingPage2 } from '@/components/landing/web3-landing-page-2'",
+    ],
+    tags: ["landing", "web3", "modern", "ui", "animated"],
+  },
+  {
+    id: "product-landing-page",
+    name: "Product Landing Page",
+    category: "landing",
+    type: "ProductLandingPage",
+    description: "Modern, animated product landing page with hero, about, features, testimonials, and pricing sections.",
+    defaultProps: {
+      contained: true,
+      // companyName: "ModernApp",
+      heroTitle: "Build Something Amazing",
+      heroSubtitle: "Transform your ideas into reality with our cutting-edge platform designed for creators and innovators.",
+      ctaText: "Start Free Trial",
+      aboutTitle: "About Our Vision",
+      aboutDescription: "We're on a mission to democratize technology and make powerful tools accessible to everyone. Our platform combines cutting-edge technology with intuitive design to help you achieve more.",
+      features: [
+        {
+          icon: "zap",
+          title: "Lightning Fast",
+          description: "Experience blazing fast performance with our optimized infrastructure",
+          color: "from-yellow-400 to-orange-500",
+        },
+        {
+          icon: "shield",
+          title: "Secure & Reliable",
+          description: "Enterprise-grade security with 99.9% uptime guarantee",
+          color: "from-green-400 to-blue-500",
+        },
+        {
+          icon: "users",
+          title: "Team Collaboration",
+          description: "Seamless collaboration tools for your entire team",
+          color: "from-purple-400 to-pink-500",
+        },
+      ],
+      pricing: [
+        {
+          name: "Starter",
+          price: "$9",
+          features: [
+            "5 Projects",
+            "10GB Storage",
+            "Email Support",
+            "Basic Analytics",
+          ],
+          popular: false,
+        },
+        {
+          name: "Professional",
+          price: "$29",
+          features: [
+            "Unlimited Projects",
+            "100GB Storage",
+            "Priority Support",
+            "Advanced Analytics",
+            "Team Collaboration",
+          ],
+          popular: true,
+        },
+        {
+          name: "Enterprise",
+          price: "$99",
+          features: [
+            "Everything in Pro",
+            "Unlimited Storage",
+            "24/7 Phone Support",
+            "Custom Integrations",
+            "SLA Guarantee",
+          ],
+          popular: false,
+        },
+      ],
+      testimonials: [
+        {
+          name: "Sarah Johnson",
+          role: "CEO, TechCorp",
+          content: "This platform completely transformed how we work. The results speak for themselves.",
+          rating: 5,
+          avatar: "/ArDacitypfp.png",
+        },
+        {
+          name: "Mike Chen",
+          role: "CTO, StartupXYZ",
+          content: "Incredible performance and ease of use. Our team productivity increased by 300%.",
+          rating: 5,
+          avatar: "/ArDacitypfp.png",
+        },
+        {
+          name: "Emily Rodriguez",
+          role: "Product Manager, InnovateCo",
+          content: "The best investment we've made for our development workflow.",
+          rating: 5,
+          avatar: "/ArDacitypfp.png",
+        },
+      ],
+      stats: [
+        { value: "100K+", label: "Active Users" },
+        { value: "99.9%", label: "Uptime" },
+        { value: "50M+", label: "API Calls" },
+        { value: "24/7", label: "Support" },
+      ],
+    },
+    dependencies: ["next/image", "lucide-react"],
+    imports: ["import ProductLandingPage from '@/components/landing/product-landing-page'"],
+    tags: ["landing", "product", "modern", "ui", "animated"],
+  },
+];
 
-export function getComponentByType(type: string): ComponentDefinition | undefined {
-  console.log('Looking for component by type:', type);
+export function getComponentByType(
+  type: string
+): ComponentDefinition | undefined {
+  console.log("Looking for component by type:", type);
 
   // First try to find by type (PascalCase)
-  let component = componentRegistry.find((comp) => comp.type === type)
+  let component = componentRegistry.find((comp) => comp.type === type);
   if (component) {
-    console.log('Found component by type:', component.id);
+    console.log("Found component by type:", component.id);
     return component;
   }
 
   // If not found, try to find by id (kebab-case)
-  component = componentRegistry.find((comp) => comp.id === type)
+  component = componentRegistry.find((comp) => comp.id === type);
   if (component) {
-    console.log('Found component by id:', component.id);
+    console.log("Found component by id:", component.id);
     return component;
   }
 
   // If still not found, try converting kebab-case to PascalCase
   const pascalCase = type
-    .split('-')
-    .map(s => s.charAt(0).toUpperCase() + s.slice(1))
-    .join('');
-  console.log('Trying PascalCase conversion:', pascalCase);
-  component = componentRegistry.find((comp) => comp.type === pascalCase)
+    .split("-")
+    .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+    .join("");
+  console.log("Trying PascalCase conversion:", pascalCase);
+  component = componentRegistry.find((comp) => comp.type === pascalCase);
   if (component) {
-    console.log('Found component by PascalCase:', component.id);
+    console.log("Found component by PascalCase:", component.id);
     return component;
   }
 
-  console.log('Component not found in registry');
-  return component
+  console.log("Component not found in registry");
+  return component;
 }
 
 export function searchComponents(query: string): ComponentDefinition[] {
-  if (!query.trim()) return componentRegistry
+  if (!query.trim()) return componentRegistry;
 
-  const lowercaseQuery = query.toLowerCase()
+  const lowercaseQuery = query.toLowerCase();
   return componentRegistry.filter(
     (comp) =>
       comp.name.toLowerCase().includes(lowercaseQuery) ||
       comp.description.toLowerCase().includes(lowercaseQuery) ||
-      comp.tags.some((tag) => tag.toLowerCase().includes(lowercaseQuery)),
-  )
+      comp.tags.some((tag) => tag.toLowerCase().includes(lowercaseQuery))
+  );
 }

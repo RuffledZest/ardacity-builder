@@ -29,6 +29,7 @@ interface ComponentContextType {
   // New methods for dynamic components
   addGeneratedComponents: (generatedComponents: GeneratedComponent[]) => void
   isComponentAvailable: (type: string) => boolean
+  clearComponents: () => void // new method
 }
 
 const ComponentContext = createContext<ComponentContextType | undefined>(undefined)
@@ -152,6 +153,11 @@ export function ComponentProvider({ children }: { children: ReactNode }) {
     return isStatic;
   }
 
+  const clearComponents = () => {
+    setComponents([])
+    setSelectedComponent(null)
+  }
+
   return (
     <ComponentContext.Provider
       value={{
@@ -166,6 +172,7 @@ export function ComponentProvider({ children }: { children: ReactNode }) {
         moveComponent,
         addGeneratedComponents,
         isComponentAvailable,
+        clearComponents, // new method
       }}
     >
       {children}

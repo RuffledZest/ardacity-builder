@@ -23,11 +23,13 @@ export function useAIGenerator(): UseAIGeneratorReturn {
   const [error, setError] = useState<string | null>(null);
   const [lastResult, setLastResult] = useState<AIGenerationResult | null>(null);
   
-  const { addComponent, addGeneratedComponents } = useComponents();
+  const { addComponent, addGeneratedComponents, clearComponents } = useComponents();
 
   const generateComponents = async (prompt: string) => {
     setIsGenerating(true);
     setError(null);
+    setLastResult(null);
+    clearComponents();
     
     try {
       const response = await fetch('/api/ai-generate', {

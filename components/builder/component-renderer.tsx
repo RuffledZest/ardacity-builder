@@ -23,6 +23,11 @@ import { LiquidGlassNavbar } from "../navigation/liquid-glass-navbar"
 import { AppDownloadFooter } from "../footers/app-download-footer"
 import { NewsletterFooter } from "../footers/newsletter-footer"
 import { ProductFooter } from "../footers/product-footer"
+import Web3LandingPage from "../landing/web3-landing-page"
+import Web3LandingPage2 from "../landing/web3-landing-page-2"
+import ProductLandingPage from "../landing/product-landing-page"
+import { ChatRoom } from "../arweave/chatroom-on-chain"
+import { DarkHeader } from "../headers/dark-theme-header"
 
 interface ComponentRendererProps {
   component: ComponentInstance
@@ -57,14 +62,19 @@ export function ComponentRenderer({ component }: ComponentRendererProps) {
       'nft-theme-hero': 'NftThemeHero',
       'ao-message-signer': 'AOMessageSigner',
       'ao-chatbot': 'AOChatBot',
+      'chatroom-on-chain': 'ChatRoom',
       'arweave-nft': 'ArweaveNFT',
       'arweave-search': 'ArweaveSearch',
       'clip-path-links': 'ClipPathLinks',
       'flowing-menu': 'FlowingMenu',
       'smooth-scroll-hero': 'SmoothScrollHero',
+      'dark-theme-header': 'DarkHeader',
       'floating-navbar': 'FloatingNavbar',
       'signer-component': 'SignerComponent',
-      'chat-box': 'ChatBox'
+      'chat-box': 'ChatBox',
+      'web3-landing-page':'Web3LandingPage',
+      'web3-landing-page-2':'Web3LandingPage2',
+      'product-landing-page':'ProductLandingPage'
     };
 
       // Use special case mapping if available, otherwise use kebabToPascalCase
@@ -97,6 +107,8 @@ export function ComponentRenderer({ component }: ComponentRendererProps) {
         return <FloatingNavbar {...component.props} />
       case "SmoothScrollHero":
         return <SmoothScrollHero {...component.props} />
+      case "DarkHeader":
+        return <DarkHeader {...component.props} />
       case "ArDacityClassicHero":
         return <ArDacityClassicHero {...component.props} />
       case "NftThemeHero":
@@ -105,6 +117,8 @@ export function ComponentRenderer({ component }: ComponentRendererProps) {
         return <AOMessageSigner {...component.props} />
       case "AOChatBot":
         return <AOChatBot {...component.props} />
+      case "ChatRoom":
+        return <ChatRoom {...component.props} />
       case "ArweaveNFT":
         return <ArweaveNFT {...component.props} />
       case "ArweaveSearch":
@@ -132,6 +146,12 @@ export function ComponentRenderer({ component }: ComponentRendererProps) {
         return <SignerComponent {...component.props} />
       case "ChatBox":
         return <ChatBox {...component.props} />
+      case "Web3LandingPage":
+        return <Web3LandingPage {...component.props}/>
+      case "Web3LandingPage2":
+        return <Web3LandingPage2 {...component.props}/>
+      case "ProductLandingPage":
+        return <ProductLandingPage {...component.props}/>
       default:
         // Fallback for unknown types
         const FallbackComponent = createFallbackComponent(component.type, "Component not found in registry");
