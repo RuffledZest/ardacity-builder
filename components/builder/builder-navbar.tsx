@@ -25,7 +25,7 @@ export function BuilderNavbar() {
   // Show banner if on small screen
   useEffect(() => {
     const checkScreen = () => {
-      setShowMobileBanner(window.innerWidth < 1280)
+      setShowMobileBanner(window.innerWidth < 1025)
     }
     checkScreen()
     window.addEventListener('resize', checkScreen)
