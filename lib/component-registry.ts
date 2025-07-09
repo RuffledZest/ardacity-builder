@@ -136,16 +136,33 @@ export const componentRegistry: ComponentDefinition[] = [
     name: "Smooth Scroll Hero",
     category: "header",
     type: "SmoothScrollHero",
-    description: "Parallax hero section with smooth scrolling effects",
+    description: "Parallax hero section with smooth scrolling effects. Accepts 'images' (array) and 'centerImageUrl' (string) props to customize the parallax and center images.",
     defaultProps: {
       title: "ArDacity NFT",
       subtitle: "Browse NFTs",
+      centerImageUrl: "https://images.unsplash.com/photo-1460186136353-977e9d6085a1?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      images: [
+        {
+          src: "https://images.unsplash.com/photo-1484600899469-230e8d1d59c0?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+          alt: "Space launch",
+          start: -200,
+          end: 200,
+          className: "w-1/3",
+        },
+        {
+          src: "https://images.unsplash.com/photo-1446776709462-d6b525c57bd3?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+          alt: "Space launch",
+          start: 200,
+          end: -250,
+          className: "mx-auto w-2/3",
+        },
+      ],
     },
     dependencies: ["framer-motion", "react-icons"],
     imports: [
       "import { SmoothScrollHero } from '@/components/headers/smooth-scroll-hero'",
     ],
-    tags: ["hero", "parallax", "animation"],
+    tags: ["hero", "parallax", "animation", "custom-images", "center-image"],
   },
   {
     id: "ardacity-classic-hero",

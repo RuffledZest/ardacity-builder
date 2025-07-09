@@ -3237,6 +3237,9 @@ import { useRef, useMemo } from "react"
 interface SmoothScrollHeroProps {
   title?: string
   subtitle?: string
+    images?: { src: string; alt?: string; start?: number; end?: number; className?: string }[]
+    centerImageUrl?: string
+
 }
 
 const getSectionHeight = () => {
@@ -3245,13 +3248,31 @@ const getSectionHeight = () => {
   }
   return 1500
 }
+const defaultImages = [
+  {
+    src: "https://images.unsplash.com/photo-1484600899469-230e8d1d59c0?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    alt: "Space launch",
+    start: -200,
+    end: 200,
+    className: "w-1/3",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1446776709462-d6b525c57bd3?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    alt: "Space launch",
+    start: 200,
+    end: -250,
+    className: "mx-auto w-2/3",
+  },
+]
 
-export function SmoothScrollHero({ title = "ArDacity NFT", subtitle = "Browse NFTs" }: SmoothScrollHeroProps) {
-  const sectionHeight = useMemo(() => getSectionHeight(), [])
+const defaultCenterImageUrl = "https://images.unsplash.com/photo-1460186136353-977e9d6085a1?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+
+export function SmoothScrollHero({ title = "ArDacity NFT", subtitle = "Browse NFTs", images, centerImageUrl }: SmoothScrollHeroProps) {  const sectionHeight = useMemo(() => getSectionHeight(), [])
 
   return (
     <div className="bg-zinc-950">
-      <Hero title={title} sectionHeight={sectionHeight} />
+      <Hero title={title} sectionHeight={sectionHeight} images={images ?? defaultImages} centerImageUrl={centerImageUrl ?? defaultCenterImageUrl} />
+      
       <Schedule subtitle={subtitle} />
     </div>
   )
@@ -3260,16 +3281,20 @@ export function SmoothScrollHero({ title = "ArDacity NFT", subtitle = "Browse NF
 interface HeroProps {
   title: string
   sectionHeight: number
+    images: { src: string; alt?: string; start?: number; end?: number; className?: string }[]
+      centerImageUrl: string
+
+
 }
 
-const Hero: React.FC<HeroProps> = ({ title, sectionHeight }) => {
+const Hero: React.FC<HeroProps> = ({ title, sectionHeight, images, centerImageUrl }) => {
   return (
     <div style={{ height: \`calc(\${sectionHeight}px + 100vh)\` }} className="relative w-full">
       <h1 className="absolute top-0 left-0 right-0 z-10 mx-auto max-w-5xl px-4 pt-[200px] text-center text-8xl font-black uppercase text-zinc-50">
         {title}
       </h1>
-      <CenterImage sectionHeight={sectionHeight} />
-      <ParallaxImages sectionHeight={sectionHeight} />
+      <CenterImage sectionHeight={sectionHeight} centerImageUrl={centerImageUrl} />
+      <ParallaxImages sectionHeight={sectionHeight} images={images} />
       <div className="absolute bottom-0 left-0 right-0 h-96 bg-gradient-to-b from-zinc-950/0 to-zinc-950" />
     </div>
   )
@@ -3277,9 +3302,11 @@ const Hero: React.FC<HeroProps> = ({ title, sectionHeight }) => {
 
 interface CenterImageProps {
   sectionHeight: number
+    centerImageUrl: string
+
 }
 
-const CenterImage: React.FC<CenterImageProps> = ({ sectionHeight }) => {
+const CenterImage: React.FC<CenterImageProps> = ({ sectionHeight, centerImageUrl }) => {
   const { scrollY } = useScroll()
 
   const clip1 = useTransform(scrollY, [0, sectionHeight], [25, 0])
@@ -3297,7 +3324,7 @@ const CenterImage: React.FC<CenterImageProps> = ({ sectionHeight }) => {
         clipPath,
         backgroundSize,
         opacity,
-        backgroundImage: \`url(https://images.unsplash.com/photo-1460186136353-977e9d6085a1?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D)\`,
+        backgroundImage: \`url(\${centerImageUrl})\`,
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
       }}
@@ -3307,30 +3334,25 @@ const CenterImage: React.FC<CenterImageProps> = ({ sectionHeight }) => {
 
 interface ParallaxImagesProps {
   sectionHeight: number
+    images: { src: string; alt?: string; start?: number; end?: number; className?: string }[]
+
 }
 
-const ParallaxImages: React.FC<ParallaxImagesProps> = ({ sectionHeight }) => {
-  const images = [
-    {
-      src: "https://images.unsplash.com/photo-1484600899469-230e8d1d59c0?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      alt: "Space launch",
-      start: -200,
-      end: 200,
-      className: "w-1/3",
-    },
-    {
-      src: "https://images.unsplash.com/photo-1446776709462-d6b525c57bd3?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      alt: "Space launch",
-      start: 200,
-      end: -250,
-      className: "mx-auto w-2/3",
-    },
-  ]
+const ParallaxImages: React.FC<ParallaxImagesProps> = ({ sectionHeight, images }) => {
+
 
   return (
     <div className="mx-auto max-w-5xl px-4 pt-[200px]">
       {images.map((image, index) => (
-        <ParallaxImg key={index} {...image} sectionHeight={sectionHeight} />
+      <ParallaxImg
+          key={index}
+          src={image.src}
+          alt={image.alt || \`Parallax image \${index + 1}\`}
+          start={image.start ?? 0}
+          end={image.end ?? 0}
+          className={image.className || "w-full"}
+          sectionHeight={sectionHeight}
+        />
       ))}
     </div>
   )
