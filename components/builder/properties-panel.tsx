@@ -84,6 +84,20 @@ function PropertyEditor({
   }
 
   // Primitive types
+  if (propName === "imageUrl") {
+    return (
+      <div className="mb-2">
+        <Label className="text-sm font-medium text-zinc-300 capitalize">{propName}</Label>
+        <Input
+          type="text"
+          value={value ?? ""}
+          onChange={e => onChange(e.target.value)}
+          className="bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-400"
+          placeholder="Paste image URL"
+        />
+      </div>
+    );
+  }
   return (
     <div className="mb-2">
       <Label className="text-sm font-medium text-zinc-300 capitalize">{propName}</Label>

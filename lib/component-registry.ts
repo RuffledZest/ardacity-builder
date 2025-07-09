@@ -401,6 +401,7 @@ export const componentRegistry: ComponentDefinition[] = [
     defaultProps: {
       title: "Arweave NFT",
       description: "View and interact with your Arweave NFT",
+      imageUrl: "/ArweaveNFT.png",
       tokenId: "your-token-id",
       owner: "your-wallet-address",
     },
@@ -418,10 +419,7 @@ export const componentRegistry: ComponentDefinition[] = [
     type: "ArweaveSearch",
     description: "Search Arweave transactions using GraphQL with tag filtering",
     defaultProps: {
-      initialTags: [
-        { name: "Content-Type", value: "image/png" },
-        { name: "App-Name", value: "ArweaveSearch" },
-      ],
+      initialTags: [], // No default tags
       limit: 10,
     },
     dependencies: ["@apollo/client", "graphql"],

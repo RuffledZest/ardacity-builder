@@ -130,7 +130,7 @@ export function BuilderNavbar() {
             className="text-zinc-300 hover:text-black"
             onClick={() => window.open("https://perma-way.vercel.app", "_blank")}
           >
-            Html Deployer
+            PermaWay
           </Button>
         </div>
 

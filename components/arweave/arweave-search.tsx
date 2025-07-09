@@ -129,13 +129,6 @@ const ArweaveSearchContent: React.FC<ArweaveSearchProps> = ({
               <div key={node.id} className="transaction">
                 <h3>Transaction ID: {node.id}</h3>
                 <p>Block Height: {node.block.height}</p>
-                <div className="tags">
-                  {node.tags.map((tag, index) => (
-                    <span key={index} className="tag">
-                      {tag.name}: {tag.value}
-                    </span>
-                  ))}
-                </div>
                 {node.bundledIn && (
                   <p>Bundled in: {node.bundledIn.id}</p>
                 )}
