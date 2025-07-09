@@ -148,17 +148,17 @@ export function BuilderNavbar() {
         </div>
 
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" className="text-zinc-300 hover:text-black" onClick={handleComingSoon}>
+          {/* <Button variant="ghost" size="sm" className="text-zinc-300 hover:text-black" onClick={handleComingSoon}>
             <Share className="h-4 w-4 mr-2" />
             <p className="md:hidden lg:inline">
               Share on X
             </p>
-          </Button>
+          </Button> */}
 
           <Button
             variant="outline"
             size="sm"
-            className="bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-300"
+            className="bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-300 mr-4"
             onClick={handleDownloadProject}
             disabled={isDownloading}
           >
@@ -168,35 +168,34 @@ export function BuilderNavbar() {
             </p>
           </Button>
 
-          <Button size="sm" className="bg-white text-black hover:bg-gray-300" onClick={handleComingSoon}>
+          {/* <Button size="sm" className="bg-white text-black hover:bg-gray-300" onClick={handleComingSoon}>
             <Rocket className="h-4 w-4 mr-2" />
             <p className="md:hidden lg:inline">
               Deploy
             </p>
-          </Button>
+          </Button> */}
           <button
             type="button"
             onClick={() => setAiModalOpen(true)}
-            className="relative group rounded-full p-[1px] shadow-lg overflow-hidden focus:outline-none focus:ring-2 focus:ring-fuchsia-400 h-12 w-12"
+            className="relative group rounded-lg p-[2px] shadow-lg overflow-hidden focus:outline-none focus:ring-2 focus:ring-fuchsia-400 h-10 min-w-[160px] flex items-center justify-center bg-white/30"
             style={{ boxShadow: '0 0 16px 2px #a21caf55, 0 0 32px 8px #38bdf855' }}
             aria-label="AI Generate"
           >
             {/* Animated conic-gradient border */}
-            <span className="absolute inset-[-100%] overflow-hidden animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#e7029a_0%,#f472b6_50%,#bd5fff_100%)] rounded-full" />
+            <span className="absolute inset-[-20%] overflow-hidden animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#e7029a_0%,#f472b6_50%,#bd5fff_100%)] rounded-lg" />
             {/* Sparkle layer */}
             <span className="pointer-events-none absolute inset-0 flex items-center justify-center z-10">
-              <span className="animate-ai-sparkle w-2 h-2 bg-white/80 rounded-full shadow-lg opacity-80 absolute left-2 top-2" />
-              <span className="animate-ai-sparkle2 w-1.5 h-1.5 bg-fuchsia-300 rounded-full shadow-md opacity-70 absolute right-3 bottom-3" />
-              <span className="animate-ai-sparkle3 w-1 h-1 bg-blue-300 rounded-full shadow-md opacity-60 absolute left-4 bottom-2" />
+              <span className="animate-ai-sparkle w-2 h-2 bg-white/80 rounded-full shadow-lg opacity-80 absolute left-3 top-2" />
+              <span className="animate-ai-sparkle2 w-1.5 h-1.5 bg-fuchsia-300 rounded-full shadow-md opacity-70 absolute right-4 bottom-3" />
+              <span className="animate-ai-sparkle3 w-1 h-1 bg-blue-300 rounded-full shadow-md opacity-60 absolute left-6 bottom-2" />
             </span>
-            {/* Icon layer */}
-            <span className="absolute inset-0 flex items-center justify-center z-20">
-              <span className="w-11 h-11 bg-zinc-950 rounded-full flex items-center justify-center group-hover:bg-zinc-900 transition-colors duration-300">
-                <Wand2 className="h-6 w-6 text-fuchsia-300 drop-shadow-[0_0_6px_#a21caf] animate-ai-wand group-hover:scale-110 group-hover:rotate-12 transition-transform duration-300" />
-              </span>
+            {/* Content layer */}
+            <span className="relative z-20 flex items-center justify-center w-full h-full px-6 py-2 bg-[#27272A] rounded-lg group-hover:bg-zinc-900/90 transition-colors duration-300">
+              <span className="text-fuchsia-200 font-semibold text-base mr-2 select-none">Build With AI</span>
+              <Wand2 className="h-5 w-5 text-fuchsia-300 drop-shadow-[0_0_6px_#a21caf] animate-ai-wand group-hover:scale-110 group-hover:rotate-12 transition-transform duration-300 ml-1" />
             </span>
             {/* Hover mask effect */}
-            <span className="absolute inset-0 rounded-full z-30 pointer-events-none group-hover:bg-fuchsia-500/10 group-hover:backdrop-blur-[0.5px] transition-all duration-300" />
+            <span className="absolute inset-0 rounded-lg z-30 pointer-events-none group-hover:bg-fuchsia-500/10 group-hover:backdrop-blur-[0.5px] transition-all duration-300" />
           </button>
           {/* Tailwind keyframes for animation */}
           <style jsx>{`
