@@ -9,7 +9,7 @@ import { ComponentProvider } from "./component-context"
 export function ArDacityBuilder() {
   return (
     <ComponentProvider>
-      <div className="h-screen flex flex-col bg-zinc-950 text-white">
+      <div className="h-screen flex flex-col bg-zinc-950 text-white w-full">
         <BuilderNavbar />
         <div className="flex-1 flex overflow-hidden relative">
           <ComponentLibrary />
