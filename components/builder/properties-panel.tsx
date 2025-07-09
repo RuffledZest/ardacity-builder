@@ -11,6 +11,94 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { getComponentByType } from "@/lib/component-registry"
 import { getDynamicComponent, isDynamicComponent } from '@/lib/dynamic-component-compiler'
 
+// Utility to detect prop type
+function getPropType(value: any): "string" | "number" | "boolean" | "array" | "object" {
+  if (Array.isArray(value)) return "array";
+  if (value === null) return "string";
+  if (typeof value === "object") return "object";
+  return typeof value as "string" | "number" | "boolean";
+}
+
+// Recursive property editor
+function PropertyEditor({
+  value,
+  onChange,
+  propSchema,
+  propName = "",
+}: {
+  value: any;
+  onChange: (v: any) => void;
+  propSchema: any;
+  propName?: string;
+}) {
+  const type = getPropType(propSchema);
+
+  if (type === "object") {
+    return (
+      <div className="border border-zinc-700 rounded p-2 mb-2 bg-zinc-900/40">
+        <div className="font-semibold text-zinc-400 mb-1">{propName}</div>
+        {Object.keys(propSchema).map((key) => (
+          <PropertyEditor
+            key={key}
+            value={value?.[key]}
+            onChange={(v) => onChange({ ...value, [key]: v })}
+            propSchema={propSchema[key]}
+            propName={key}
+          />
+        ))}
+      </div>
+    );
+  }
+
+  if (type === "array") {
+    return (
+      <div className="border border-zinc-700 rounded p-2 mb-2 bg-zinc-900/40">
+        <div className="font-semibold text-zinc-400 mb-1">{propName}</div>
+        {(value || []).map((item: any, idx: number) => (
+          <div key={idx} className="mb-2">
+            <PropertyEditor
+              value={item}
+              onChange={(v) => {
+                const newArr = [...value];
+                newArr[idx] = v;
+                onChange(newArr);
+              }}
+              propSchema={propSchema[0]}
+              propName={`${propName}[${idx}]`}
+            />
+            <Button size="sm" variant="destructive" onClick={() => onChange(value.filter((_: any, i: number) => i !== idx))}>
+              Remove
+            </Button>
+          </div>
+        ))}
+        <Button
+          size="sm"
+          variant="outline"
+          className="bg-black/60"
+          onClick={() => onChange([...(value || []), propSchema[0]])}
+        >
+          Add {propName}
+        </Button>
+      </div>
+    );
+  }
+
+  // Primitive types
+  return (
+    <div className="mb-2">
+      <Label className="text-sm font-medium text-zinc-300 capitalize">{propName}</Label>
+      <Input
+        type={type === "number" ? "number" : "text"}
+        value={value ?? ""}
+        onChange={(e) =>
+          onChange(type === "number" ? Number(e.target.value) : e.target.value)
+        }
+        className="bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-400"
+      />
+    </div>
+  );
+}
+
 export function PropertiesPanel() {
   const { selectedComponent, updateComponent, deleteComponent, moveComponent, components } = useComponents()
   const [showCode, setShowCode] = useState(false)
@@ -36,8 +124,12 @@ export function PropertiesPanel() {
   const isFirst = componentIndex === 0
   const isLast = componentIndex === components.length - 1
 
-  const handlePropertyChange = (key: string, value: any) => {
-    updateComponent(selectedComponent.id, { [key]: value })
+  // Get schema from registry
+  const definition = getComponentByType(selectedComponent.type)
+  const propSchema = definition?.defaultProps || selectedComponent.props
+
+  const handlePropsChange = (newProps: any) => {
+    updateComponent(selectedComponent.id, newProps)
   }
 
   const generateCode = () => {
@@ -55,80 +147,15 @@ export function PropertiesPanel() {
     if (!definition) return `<${selectedComponent.type} />`
 
     const propsString = Object.entries(selectedComponent.props)
-      .map(([key, value]) => `  ${key}="${value}"`)
+      .map(([key, value]) => {
+        if (typeof value === "object") {
+          return `  ${key}={${JSON.stringify(value, null, 2)}}`
+        }
+        return `  ${key}="${value}"`
+      })
       .join("\n")
 
     return `<${definition.type}\n${propsString}\n/>`
-  }
-
-  const renderPropertyInputs = () => {
-    return Object.entries(selectedComponent.props).map(([key, value]) => (
-      <div key={key} className="space-y-2">
-        <Label htmlFor={key} className="text-sm font-medium text-zinc-300 capitalize">
-          {key.replace(/([A-Z])/g, " $1").trim()}
-        </Label>
-        {key === "variant" || key === "position" || key === "theme" ? (
-          <Select value={value} onValueChange={(newValue) => handlePropertyChange(key, newValue)}>
-            <SelectTrigger className="bg-zinc-800 border-zinc-700 text-white">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="bg-zinc-800 border-zinc-700">
-              {key === "variant" && (
-                <>
-                  <SelectItem value="default" className="text-white">
-                    Default
-                  </SelectItem>
-                  <SelectItem value="outline" className="text-white">
-                    Outline
-                  </SelectItem>
-                  <SelectItem value="floating" className="text-white">
-                    Floating
-                  </SelectItem>
-                </>
-              )}
-              {key === "position" && (
-                <>
-                  <SelectItem value="sticky" className="text-white">
-                    Sticky
-                  </SelectItem>
-                  <SelectItem value="fixed" className="text-white">
-                    Fixed
-                  </SelectItem>
-                  <SelectItem value="relative" className="text-white">
-                    Relative
-                  </SelectItem>
-                </>
-              )}
-              {key === "theme" && (
-                <>
-                  <SelectItem value="light" className="text-white">
-                    Light
-                  </SelectItem>
-                  <SelectItem value="dark" className="text-white">
-                    Dark
-                  </SelectItem>
-                </>
-              )}
-            </SelectContent>
-          </Select>
-        ) : Array.isArray(value) ? (
-          <Input
-            id={key}
-            value={value.join(", ")}
-            onChange={(e) => handlePropertyChange(key, e.target.value.split(", ").filter(Boolean))}
-            className="bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-400"
-            placeholder="Comma separated values"
-          />
-        ) : (
-          <Input
-            id={key}
-            value={value}
-            onChange={(e) => handlePropertyChange(key, e.target.value)}
-            className="bg-zinc-800 border-zinc-700 text-white placeholder:text-zinc-400"
-          />
-        )}
-      </div>
-    ))
   }
 
   return (
@@ -203,7 +230,11 @@ export function PropertiesPanel() {
 
         <div className="space-y-4">
           <h4 className="text-sm font-medium text-zinc-400">Properties</h4>
-          {renderPropertyInputs()}
+          <PropertyEditor
+            value={selectedComponent.props}
+            onChange={handlePropsChange}
+            propSchema={propSchema}
+          />
         </div>
 
         <div className="mt-6">

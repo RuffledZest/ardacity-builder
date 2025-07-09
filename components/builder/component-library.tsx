@@ -14,6 +14,7 @@ export function ComponentLibrary() {
     header: true,
     arweave: true,
     ui: true,
+    footer: true,
   })
   const { addComponent, searchQuery } = useComponents()
 
@@ -34,6 +35,7 @@ export function ComponentLibrary() {
     { key: "header", title: "Header Section" },
     { key: "arweave", title: "Arweave Blocks" },
     { key: "ui", title: "UI Components" },
+    { key: "footer", title: "Footer Components" },
   ]
 
   return (
