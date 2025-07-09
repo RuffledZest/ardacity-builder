@@ -65,6 +65,27 @@
         "description": ""
       },
       "description": "A message signing component for AO/Arweave wallets."
+    },
+    {
+      "type": "chatroom-on-chain",
+      "renderable": true,
+      "props": {
+        "serverUrl": "https://ardacity-backrooms.onrender.com",
+        "className": "",
+        "quickMessages": [
+          "ggs",
+          "nice play",
+          "let's play again",
+          "good luck",
+          "well played",
+          "wp",
+          "ez",
+          "clutch",
+          "noob",
+          "pro"
+        ]
+      },
+      "description": "Real-time on-chain chatroom with emoji picker and quick messages. Builder-friendly and fully self-contained."
     }
   ],
   "footers": [
@@ -502,10 +523,31 @@
       "type": "nft-theme-hero",
       "renderable": true,
       "props": {
-        "title": "",
-        "description": ""
+        "title": "Explore Metaverse Art",
+        "description": "Dive into exclusive collections of digital art",
+        "backgroundImage": "/ArDacitypfp.png",
+        "gradientFrom": "indigo-900",
+        "gradientVia": "purple-800",
+        "gradientTo": "pink-900",
+        "primaryBtnText": "Start Exploring",
+        "secondaryBtnText": "Mint Your NFT",
+        "animate": true
       },
       "description": "A hero section for NFT collections with a title and description."
+    },
+    {
+      "type": "dark-theme-header",
+      "renderable": true,
+      "props": {
+        "title": "Experience Creative Precision",
+        "subtitle": "Visual harmony driven by real geometry and motion.",
+        "ctaText": "Request Demo",
+        "onCtaClick": "() => alert('Clicked!')",
+        "imageSrc": "/ArDacitypfp.png",
+        "showImage": true,
+        "customClassName": ""
+      },
+      "description": "Animated dark theme header with geometric background, hero text, CTA button, and image. Highly customizable."
     }
   ],
   "components": [
@@ -526,6 +568,353 @@
         "placeholder": ""
       },
       "description": "A chat UI for customer support. Not a login form."
+    }
+  ],
+  "landing": [
+    {
+      "type": "web3-landing-page",
+      "renderable": true,
+      "props": {
+        "contained": true,
+        "heroTitle": "The Future of On-Chain Development",
+        "heroSubtitle": "Build exceptional decentralized applications with our comprehensive Web3 component library. Secure, scalable, and beautifully designed for the blockchain era.",
+        "heroButtonText": "Explore Components",
+        "heroSecondaryButtonText": "View Documentation",
+        "heroImage": "/ArDacitypfp.png?height=400&width=400",
+        "aboutTitle": "Empowering Web3 Innovation",
+        "aboutDescription": "ArDacity revolutionizes blockchain development with a comprehensive suite of battle-tested components. Our library combines cutting-edge security with elegant design, enabling developers to create stunning decentralized applications faster than ever before.",
+        "aboutImage": "/ArDacitypfp.png?height=500&width=600",
+        "aboutStats": [
+          {
+            "label": "Active Components",
+            "value": "300+",
+            "icon": "🧩"
+          },
+          {
+            "label": "Developer Community",
+            "value": "25K+",
+            "icon": "👥"
+          },
+          {
+            "label": "dApps Powered",
+            "value": "8K+",
+            "icon": "🚀"
+          },
+          {
+            "label": "Blockchain Networks",
+            "value": "20+",
+            "icon": "🌐"
+          }
+        ],
+        "featuresTitle": "Built for the Decentralized Web",
+        "featuresSubtitle": "Comprehensive tools and components designed specifically for Web3 development",
+        "features": [
+          {
+            "icon": "🔐",
+            "title": "Security Audited",
+            "description": "Every component undergoes rigorous security audits to ensure your users' assets remain protected."
+          },
+          {
+            "icon": "⚡",
+            "title": "Gas Optimized",
+            "description": "Intelligent optimization reduces transaction costs while maintaining peak performance."
+          },
+          {
+            "icon": "🎨",
+            "title": "Design System",
+            "description": "Cohesive design language that scales beautifully across all your decentralized applications."
+          },
+          {
+            "icon": "🔗",
+            "title": "Multi-Chain Ready",
+            "description": "Seamless integration across Ethereum, Polygon, Arbitrum, and 17+ other networks."
+          },
+          {
+            "icon": "📱",
+            "title": "Mobile First",
+            "description": "Responsive components optimized for mobile wallets and cross-platform compatibility."
+          },
+          {
+            "icon": "🛠️",
+            "title": "Developer Tools",
+            "description": "Comprehensive CLI, testing suite, and debugging tools for streamlined development."
+          }
+        ],
+        "pricingTitle": "Scale with Confidence",
+        "pricingSubtitle": "Choose the perfect plan for your Web3 development journey",
+        "pricingPlans": [
+          {
+            "name": "Starter",
+            "price": "Free",
+            "period": "forever",
+            "buttonText": "Get Started",
+            "features": [
+              "100+ core components",
+              "Basic templates",
+              "Community support",
+              "MIT license",
+              "Documentation access",
+              "GitHub integration"
+            ]
+          },
+          {
+            "name": "Professional",
+            "price": "$79",
+            "period": "per month",
+            "popular": true,
+            "buttonText": "Start Free Trial",
+            "features": [
+              "300+ premium components",
+              "Advanced templates",
+              "Priority support",
+              "Custom themes",
+              "Team collaboration",
+              "Advanced analytics",
+              "API access",
+              "White-label options"
+            ]
+          },
+          {
+            "name": "Enterprise",
+            "price": "Custom",
+            "period": "contact us",
+            "buttonText": "Contact Sales",
+            "features": [
+              "Unlimited components",
+              "Custom development",
+              "24/7 dedicated support",
+              "On-premise deployment",
+              "SLA guarantee",
+              "Security compliance",
+              "Training & onboarding",
+              "Custom integrations"
+            ]
+          }
+        ]
+      },
+      "description": "Modern, customizable Web3 landing page with hero, about, features, and pricing sections."
+    },
+    {
+      "type": "web3-landing-page-2",
+      "renderable": true,
+      "props": {
+        "contained": true,
+        "heroTitle": "Build Stunning On-Chain Components",
+        "heroSubtitle": "The ultimate component library for blockchain developers. Create beautiful, responsive, and secure decentralized applications with our comprehensive collection of Web3-ready components that seamlessly integrate with your dApps.",
+        "heroButtonText": "Start Building",
+        "heroImage": "/ArDacitypfp.png?height=500&width=700",
+        "aboutTitle": "Revolutionizing Web3 Development",
+        "aboutDescription": "ArDacity is the premier on-chain component library designed specifically for blockchain developers. We provide battle-tested, secure, and beautifully crafted components that seamlessly integrate with your decentralized applications, making Web3 development faster and more efficient than ever before.",
+        "aboutImage": "/ArDacitypfp.png?height=400&width=500",
+        "aboutStats": [
+          {
+            "label": "Components",
+            "value": "200+"
+          },
+          {
+            "label": "Developers",
+            "value": "10K+"
+          },
+          {
+            "label": "dApps Built",
+            "value": "5K+"
+          },
+          {
+            "label": "Blockchains",
+            "value": "15+"
+          }
+        ],
+        "featuresTitle": "Powerful Web3 Components",
+        "featuresSubtitle": "Everything you need to build exceptional decentralized applications",
+        "features": [
+          {
+            "icon": "zap",
+            "title": "Blockchain Native",
+            "description": "Components built specifically for Web3 with native blockchain integration and smart contract compatibility."
+          },
+          {
+            "icon": "shield",
+            "title": "Security First",
+            "description": "Audited components with built-in security best practices to protect your users and their assets."
+          },
+          {
+            "icon": "⚡",
+            "title": "Lightning Fast",
+            "description": "Optimized for performance with minimal gas costs and instant UI updates for the best user experience."
+          },
+          {
+            "icon": "🎨",
+            "title": "Customizable Design",
+            "description": "Fully themeable components that adapt to your brand while maintaining Web3 functionality."
+          },
+          {
+            "icon": "🌐",
+            "title": "Multi-Chain Support",
+            "description": "Works seamlessly across Ethereum, Polygon, BSC, and 12+ other popular blockchain networks."
+          },
+          {
+            "icon": "📱",
+            "title": "Mobile Optimized",
+            "description": "Responsive components that work perfectly on desktop, mobile, and Web3 wallet browsers."
+          }
+        ],
+        "pricingTitle": "Choose Your Plan",
+        "pricingSubtitle": "Flexible pricing for developers and teams building the future of Web3",
+        "pricingPlans": [
+          {
+            "name": "Developer",
+            "price": "$0",
+            "period": "forever",
+            "features": [
+              "50 components",
+              "Basic templates",
+              "Community support",
+              "MIT license",
+              "Documentation access"
+            ]
+          },
+          {
+            "name": "Pro",
+            "price": "$49",
+            "period": "per month",
+            "popular": true,
+            "features": [
+              "200+ components",
+              "Premium templates",
+              "Priority support",
+              "Advanced integrations",
+              "Custom themes",
+              "Team collaboration"
+            ]
+          },
+          {
+            "name": "Enterprise",
+            "price": "$199",
+            "period": "per month",
+            "features": [
+              "Unlimited components",
+              "White-label solution",
+              "24/7 dedicated support",
+              "Custom development",
+              "On-premise deployment",
+              "SLA guarantee"
+            ]
+          }
+        ]
+      },
+      "description": "Modern, animated Web3 landing page with hero, about, features, and pricing sections."
+    },
+    {
+      "type": "product-landing-page",
+      "renderable": true,
+      "props": {
+        "contained": true,
+        "companyName": "ModernApp",
+        "heroTitle": "Build Something Amazing",
+        "heroSubtitle": "Transform your ideas into reality with our cutting-edge platform designed for creators and innovators.",
+        "ctaText": "Start Free Trial",
+        "aboutTitle": "About Our Vision",
+        "aboutDescription": "We're on a mission to democratize technology and make powerful tools accessible to everyone. Our platform combines cutting-edge technology with intuitive design to help you achieve more.",
+        "features": [
+          {
+            "icon": "zap",
+            "title": "Lightning Fast",
+            "description": "Experience blazing fast performance with our optimized infrastructure",
+            "color": "from-yellow-400 to-orange-500"
+          },
+          {
+            "icon": "shield",
+            "title": "Secure & Reliable",
+            "description": "Enterprise-grade security with 99.9% uptime guarantee",
+            "color": "from-green-400 to-blue-500"
+          },
+          {
+            "icon": "users",
+            "title": "Team Collaboration",
+            "description": "Seamless collaboration tools for your entire team",
+            "color": "from-purple-400 to-pink-500"
+          }
+        ],
+        "pricing": [
+          {
+            "name": "Starter",
+            "price": "$9",
+            "features": [
+              "5 Projects",
+              "10GB Storage",
+              "Email Support",
+              "Basic Analytics"
+            ],
+            "popular": false
+          },
+          {
+            "name": "Professional",
+            "price": "$29",
+            "features": [
+              "Unlimited Projects",
+              "100GB Storage",
+              "Priority Support",
+              "Advanced Analytics",
+              "Team Collaboration"
+            ],
+            "popular": true
+          },
+          {
+            "name": "Enterprise",
+            "price": "$99",
+            "features": [
+              "Everything in Pro",
+              "Unlimited Storage",
+              "24/7 Phone Support",
+              "Custom Integrations",
+              "SLA Guarantee"
+            ],
+            "popular": false
+          }
+        ],
+        "testimonials": [
+          {
+            "name": "Sarah Johnson",
+            "role": "CEO, TechCorp",
+            "content": "This platform completely transformed how we work. The results speak for themselves.",
+            "rating": 5,
+            "avatar": "/ArDacitypfp.png"
+          },
+          {
+            "name": "Mike Chen",
+            "role": "CTO, StartupXYZ",
+            "content": "Incredible performance and ease of use. Our team productivity increased by 300%.",
+            "rating": 5,
+            "avatar": "/ArDacitypfp.png"
+          },
+          {
+            "name": "Emily Rodriguez",
+            "role": "Product Manager, InnovateCo",
+            "content": "The best investment we've made for our development workflow.",
+            "rating": 5,
+            "avatar": "/ArDacitypfp.png"
+          }
+        ],
+        "stats": [
+          {
+            "value": "100K+",
+            "label": "Active Users"
+          },
+          {
+            "value": "99.9%",
+            "label": "Uptime"
+          },
+          {
+            "value": "50M+",
+            "label": "API Calls"
+          },
+          {
+            "value": "24/7",
+            "label": "Support"
+          }
+        ]
+      },
+      "description": "Modern, animated product landing page with hero, about, features, testimonials, and pricing sections."
     }
   ],
   "builder": [
