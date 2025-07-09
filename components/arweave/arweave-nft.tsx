@@ -1,226 +1,112 @@
 "use client"
 
-import type React from "react"
+import React, { useState } from 'react';
+import Arweave from 'arweave';
 
-import { useState } from "react"
-import LuaIDE from "./lua-ide"
+const arweave = Arweave.init({
+  host: 'arweave.net',
+  port: 443,
+  protocol: 'https'
+});
 
-export interface ArweaveNFTProps {
-  title?: string
-  description?: string
-  imageUrl?: string
-  tokenId?: string
-  owner?: string
-  initialLuaCode?: string
-  onTransfer?: (data: {
-    to: string
-    tokenId: string
-    luaCode: string
-  }) => void
-  className?: string
-  style?: React.CSSProperties
-}
+const TransferNFT: React.FC = () => {
+  const [recipient, setRecipient] = useState('');
+  const [nftTxId, setNftTxId] = useState('');
+  const [status, setStatus] = useState('');
 
-export const ArweaveNFT: React.FC<ArweaveNFTProps> = ({
-  title = "Arweave NFT",
-  description = "View and interact with your Arweave NFT",
-  imageUrl = "/ArweaveNFT.png",
-  tokenId = "your-token-id",
-  owner = "your-wallet-address",
-  initialLuaCode = `-- NFT transfer handler
-function transferNFT(to, tokenId)
-  -- Get the current owner
-  local currentOwner = ao.getActiveAddress()
-  
-  -- Check if the sender is the owner
-  if currentOwner ~= owner then
-    return {
-      success = false,
-      error = "Only the owner can transfer this NFT"
-    }
-  end
-  
-  -- Transfer the NFT
-  local result = ao.transferNFT(to, tokenId)
-  
-  -- Return the result
-  return {
-    success = true,
-    transactionId = result.id
-  }
-end
-
--- Example usage:
--- local result = transferNFT("recipient-address", "token-id")
--- print("Transfer result:", result)`,
-  onTransfer,
-  className = "",
-  style = {},
-}) => {
-  const [luaCode, setLuaCode] = useState(initialLuaCode)
-  const [recipient, setRecipient] = useState("")
-  const [isTransferring, setIsTransferring] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState<string | null>(null)
-
-  const handleTransfer = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (isTransferring || !recipient.trim()) return
-
-    setIsTransferring(true)
-    setError(null)
-    setSuccess(null)
-
+  const handleTransfer = async () => {
     try {
-      const result = {
-        to: recipient,
-        tokenId,
-        luaCode,
+      await window.arweaveWallet.connect(["ACCESS_ADDRESS", "SIGN_TRANSACTION"]);
+      const sender = await window.arweaveWallet.getActiveAddress();
+      const recipientAddr = recipient;
+      const tokenId = nftTxId;
+      const tx = await arweave.createTransaction({ data: "Transfer Token" });
+      tx.addTag("App-Name", "SmartWeaveAction");
+      tx.addTag("App-Version", "0.3.0");
+      tx.addTag(
+        "Input",
+        JSON.stringify({
+          function: "transfer",
+          target: recipientAddr,
+          id: tokenId
+        })
+      );
+      await window.arweaveWallet.sign(tx);
+      if (!tx.signature) throw new Error("Transaction not signed");
+      const response = await arweave.transactions.post(tx);
+      if (response.status === 200 || response.status === 202) {
+        setStatus(`✅ Token transfer posted! TX ID: ${tx.id}`);
+        console.log("Transfer complete:", tx.id);
+      } else {
+        setStatus(`❌ Failed to post transaction: ${response.status}`);
+        console.log("Failed to post transaction:", response.status);
       }
-
-      if (onTransfer) {
-        await onTransfer(result)
-      }
-      setSuccess("NFT transferred successfully!")
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to transfer NFT")
-    } finally {
-      setIsTransferring(false)
+    } catch (error) {
+      setStatus(`Error: ${(error as Error).message}`);
+      console.error("FT transfer error:", error);
     }
-  }
+  };
 
   return (
-    <div
-      className={`bg-black shadow-xl p-8 border border-zinc-700  ${className}`}
-      style={style}
-    >
-      <div className="mb-8">
-        <h2 className="text-3xl font-bold text-white mb-3">{title}</h2>
-        <p className="text-zinc-400 text-lg">{description}</p>
+    <div className="bg-zinc-950 shadow-2xl rounded-3xl max-w-4xl mx-auto flex flex-col md:flex-row overflow-hidden border-4 border-blue-600">
+      {/* Left: NFT Image */}
+      <div className="flex-1 flex flex-col items-center justify-center bg-zinc-900 p-10 min-w-[320px] rounded-l-3xl md:rounded-l-3xl md:rounded-tr-none md:rounded-bl-3xl">
+        <div className="rounded-3xl border-4 border-zinc-800 shadow-lg bg-zinc-950 flex items-center justify-center aspect-square w-72 h-72 mb-6">
+          {nftTxId ? (
+            <img
+              src={`https://arweave.net/${nftTxId}`}
+              alt="NFT Preview"
+              className="w-full h-full object-contain rounded-3xl"
+              onError={e => (e.currentTarget.style.display = 'none')}
+            />
+          ) : (
+            <span className="text-zinc-600">NFT Preview</span>
+          )}
+        </div>
+        <div className="w-full text-center">
+          <h2 className="text-2xl font-bold text-white mb-1 tracking-tight">NFT Transfer</h2>
+          <p className="text-zinc-400 text-base mb-2">Transfer your NFT on ArDacity</p>
+        </div>
       </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* NFT Display */}
-        <div className="bg-blac max-w-7xl rounded-lg p-6 shadow-md transition-all hover:border-zinc-600">
-          <div className="aspect-square w-full overflow-hidden  mb-6">
-            <img src={imageUrl || "/placeholder.svg"} alt={title} className="w-full h-full object-cover" />
+      {/* Right: Transfer Form */}
+      <div className="flex-1 flex flex-col justify-center bg-zinc-950 p-10 min-w-[320px] border-l border-zinc-800 rounded-r-3xl md:rounded-r-3xl md:rounded-tl-none md:rounded-br-3xl">
+        <form onSubmit={e => { e.preventDefault(); handleTransfer(); }} className="space-y-6">
+          <div>
+            <label className="block text-sm font-semibold text-zinc-300 mb-2">NFT Token ID</label>
+            <input
+              className="w-full p-3 bg-zinc-800 border border-zinc-700 rounded-2xl text-white placeholder-zinc-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+              placeholder="NFT Token ID (image hash)"
+              value={nftTxId}
+              onChange={e => setNftTxId(e.target.value)}
+              required
+            />
           </div>
-          <div className="space-y-4">
-            <div>
-              <h3 className="text-lg font-semibold text-white mb-2">Token ID</h3>
-              <p className="font-mono text-sm text-zinc-300 break-all bg-zinc-800 p-3 rounded-md border border-zinc-700">
-                {tokenId}
-              </p>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold text-white mb-2">Owner</h3>
-              <p className="font-mono text-sm text-zinc-300 break-all bg-zinc-800 p-3 rounded-md border border-zinc-700">
-                {owner}
-              </p>
-            </div>
+          <div>
+            <label className="block text-sm font-semibold text-zinc-300 mb-2">Recipient Address</label>
+            <input
+              className="w-full p-3 bg-zinc-800 border border-zinc-700 rounded-2xl text-white placeholder-zinc-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+              placeholder="Recipient Arweave Address"
+              value={recipient}
+              onChange={e => setRecipient(e.target.value)}
+              required
+            />
           </div>
-        </div>
-
-        {/* Transfer Form */}
-        <div className="bg-zinc-800/30 rounded-lg p-6 shadow-md border border-zinc-700">
-          <form onSubmit={handleTransfer} className="space-y-6">
-            <div>
-              <label className="block text-sm font-semibold text-zinc-300 mb-3">Recipient Address</label>
-              <input
-                type="text"
-                value={recipient}
-                onChange={(e) => setRecipient(e.target.value)}
-                placeholder="Enter recipient's Arweave address"
-                className="w-full p-3 bg-zinc-800 border border-zinc-600 rounded-md text-white placeholder-zinc-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                required
-              />
+          <button
+            type="submit"
+            className="w-full py-3 px-6 rounded-2xl text-white font-semibold text-lg transition-all transform hover:scale-[1.02] bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg hover:shadow-xl"
+          >
+            Transfer NFT
+          </button>
+          {status && (
+            <div className={`p-3 rounded-2xl text-sm font-semibold text-center mt-2 ${status.startsWith('✅') ? 'bg-green-900/30 border border-green-700 text-green-300 animate-pulse' : 'bg-red-900/30 border border-red-700 text-red-300'}`}>
+              {status}
             </div>
-
-            {/* Lua Code Editor */}
-            <div>
-              <label className="block text-sm font-semibold text-zinc-300 mb-3">Transfer Handler Code</label>
-              <div className="border border-zinc-600 rounded-lg overflow-hidden">
-                <LuaIDE
-                  cellId="nft-transfer-lua"
-                  initialCode={luaCode}
-                  onCodeChange={setLuaCode}
-                  onProcessId={(pid) => console.log("Process ID:", pid)}
-                  onNewMessage={(msgs) => console.log("New messages:", msgs)}
-                  onInbox={(inbox) => console.log("Inbox:", inbox)}
-                />
-              </div>
-            </div>
-
-            {/* Error Display */}
-            {error && (
-              <div className="p-4 bg-red-900/30 border border-red-700 rounded-lg">
-                <div className="flex items-center">
-                  <svg className="w-5 h-5 text-red-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                  <p className="text-red-300 font-medium">{error}</p>
-                </div>
-              </div>
-            )}
-
-            {/* Success Display */}
-            {success && (
-              <div className="p-4 bg-green-900/30 border border-green-700 rounded-lg">
-                <div className="flex items-center">
-                  <svg className="w-5 h-5 text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                  </svg>
-                  <p className="text-green-300 font-medium">{success}</p>
-                </div>
-              </div>
-            )}
-
-            {/* Transfer Button */}
-            <button
-              type="submit"
-              disabled={isTransferring || !recipient.trim()}
-              className={`w-full py-3 px-6 rounded-lg text-white font-semibold text-lg transition-all transform hover:scale-[1.02] ${
-                isTransferring || !recipient.trim()
-                  ? "bg-zinc-600 cursor-not-allowed"
-                  : "bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg hover:shadow-xl"
-              }`}
-            >
-              {isTransferring ? (
-                <div className="flex items-center justify-center">
-                  <svg
-                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                  Transferring...
-                </div>
-              ) : (
-                "Transfer NFT"
-              )}
-            </button>
-          </form>
-        </div>
+          )}
+        </form>
       </div>
     </div>
-  )
-}
+  );
+};
+
+export default TransferNFT;
+export { TransferNFT as ArweaveNFT };

@@ -32,9 +32,9 @@ export function ComponentLibrary() {
 
   const filteredComponents = searchComponents(searchQuery)
   const sections = [
+    { key: "arweave", title: "Arweave Blocks" },
     { key: "navigation", title: "Navigation Bar" },
     { key: "header", title: "Header Section" },
-    { key: "arweave", title: "Arweave Blocks" },
     { key: "ui", title: "UI Components" },
     { key: "footer", title: "Footer Components" },
     { key: "landing", title: "Landing Pages" },
@@ -45,7 +45,17 @@ export function ComponentLibrary() {
       <h2 className="text-lg font-semibold mb-4 text-white">Components</h2>
 
       {sections.map((section) => {
-        const sectionComponents = filteredComponents.filter((comp) => comp.category === section.key)
+        let sectionComponents = filteredComponents.filter((comp) => comp.category === section.key)
+        // For Arweave Blocks, move AO Message Signer to the end
+        if (section.key === "arweave") {
+          const aoIndex = sectionComponents.findIndex(
+            (comp) => comp.type === "AOMessageSigner" || comp.id === "ao-message-signer"
+          );
+          if (aoIndex !== -1) {
+            const [aoComp] = sectionComponents.splice(aoIndex, 1);
+            sectionComponents.push(aoComp);
+          }
+        }
 
         if (sectionComponents.length === 0 && searchQuery) return null
 
