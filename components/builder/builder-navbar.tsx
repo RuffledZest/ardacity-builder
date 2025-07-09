@@ -89,7 +89,7 @@ export function BuilderNavbar() {
     <>
       {showMobileBanner && (
         <div className="block w-full bg-fuchsia-700 text-white text-center py-2 text-xs font-semibold z-50">
-          Use desktop mode for a wonderful experience of builder
+          Use desktop mode for a wonderful experience of builder 
         </div>
       )}
       <nav className="h-14 w-full overflow-hidden border-b border-zinc-800 bg-zinc-900/50 backdrop-blur-sm flex items-center px-4 gap-4">
