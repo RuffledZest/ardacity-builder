@@ -28,12 +28,18 @@ import Web3LandingPage2 from "../landing/web3-landing-page-2"
 import ProductLandingPage from "../landing/product-landing-page"
 import { ChatRoom } from "../arweave/chatroom-on-chain"
 import { DarkHeader } from "../headers/dark-theme-header"
+import { ComponentHoverControls } from "./component-hover-controls"
 
 interface ComponentRendererProps {
   component: ComponentInstance
+  isRoot?: boolean
+  index?: number
+  totalSiblings?: number
+  hoveredComponent?: string | null
+  setHoveredComponent?: (id: string | null) => void
 }
 
-export function ComponentRenderer({ component }: ComponentRendererProps) {
+export function ComponentRenderer({ component, isRoot = false, index = 0, totalSiblings = 1, hoveredComponent, setHoveredComponent }: ComponentRendererProps) {
   const { selectComponent, selectedComponent } = useComponents()
 
   const handleClick = () => {
@@ -41,6 +47,27 @@ export function ComponentRenderer({ component }: ComponentRendererProps) {
   }
 
   const isSelected = selectedComponent?.id === component.id
+  const isHovered = hoveredComponent === component.id
+
+  // Drag-and-drop handlers for nested drop
+  const handleDrop = (e: React.DragEvent) => {
+    e.stopPropagation()
+    e.preventDefault()
+    const componentData = JSON.parse(e.dataTransfer.getData("application/json"))
+    // Try to get AI-generated sample data for this component type
+    // (reuse logic from builder-canvas if needed)
+    // addComponent({
+    //   type: componentData.type,
+    //   category: componentData.category,
+    //   props: componentData.defaultProps,
+    //   position: { x: 0, y: 0 },
+    // }, component.id)
+  }
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+  }
 
       // Utility to convert kebab-case to PascalCase
     function kebabToPascalCase(str: string) {
@@ -161,10 +188,19 @@ export function ComponentRenderer({ component }: ComponentRendererProps) {
 
   return (
     <div
+      className={`relative group${isRoot ? '' : ' ml-4'}${isSelected ? ' ring-2 ring-blue-500 ring-opacity-50' : ''}`}
       onClick={handleClick}
-      className={`cursor-pointer transition-all ${isSelected ? "ring-2 ring-blue-500 ring-opacity-50" : ""}`}
+      onMouseEnter={() => setHoveredComponent && setHoveredComponent(component.id)}
+      onMouseLeave={() => setHoveredComponent && setHoveredComponent(null)}
     >
       {renderComponent()}
+      {isHovered && typeof isRoot !== 'undefined' && setHoveredComponent && (
+        <ComponentHoverControls
+          component={component}
+          isFirst={index === 0}
+          isLast={index === (totalSiblings - 1)}
+        />
+      )}
     </div>
   )
 }

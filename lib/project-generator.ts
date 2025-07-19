@@ -1,5 +1,6 @@
 import type { ComponentInstance } from "@/components/builder/component-context"
 import { getComponentByType } from "./component-registry"
+import { isDynamicComponent, getDynamicComponentCode } from "./dynamic-component-compiler"
 
 export function generateProjectFiles(components: ComponentInstance[]): Record<string, string> {
   const files: Record<string, string> = {}
@@ -115,7 +116,7 @@ function getPackageVersion(packageName: string): string {
     "@radix-ui/react-select": "^2.0.0",
     jszip: "^3.10.1",
   }
-  return versions[packageName] || "^1.0.0"
+  return versions[packageName] || "latest"
 }
 
 function generateNextConfig(): string {
@@ -272,16 +273,34 @@ function generateMainPage(components: ComponentInstance[]): string {
 
   // Add component imports
   components.forEach((component) => {
-    const definition = getComponentByType(component.type)
-    if (definition) {
-      definition.imports.forEach((imp) => imports.add(imp))
+    if (isDynamicComponent(component.type)) {
+      imports.add(`import ${component.type} from "../components/dynamic/${component.type}"`)
+    } else {
+      const definition = getComponentByType(component.type)
+      if (definition) {
+        definition.imports.forEach((imp) => imports.add(imp))
+      }
     }
   })
+
+  function serializePropValue(value: any) {
+    if (typeof value === 'string') {
+      // Escape quotes in string
+      return `"${value.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`
+    } else if (typeof value === 'number' || typeof value === 'boolean') {
+      return `{${value}}`
+    } else if (Array.isArray(value) || typeof value === 'object') {
+      // Output as JS expression
+      return `{${JSON.stringify(value, null, 2)}}`
+    } else {
+      return `{${JSON.stringify(value)}}`
+    }
+  }
 
   const componentJSX = components
     .map((component) => {
       const propsString = Object.entries(component.props)
-        .map(([key, value]) => `${key}="${value}"`)
+        .map(([key, value]) => `${key}=${serializePropValue(value)}`)
         .join(" ")
 
       return `      <${component.type} ${propsString} />`
@@ -391,10 +410,23 @@ function generateGlobalStyles(): string {
 
 function generateComponentFiles(components: ComponentInstance[], files: Record<string, string>) {
   const usedComponents = new Set<string>()
+  const dynamicTypes = new Set<string>()
 
   components.forEach((component) => {
     usedComponents.add(component.type)
+    if (isDynamicComponent(component.type)) {
+      dynamicTypes.add(component.type)
+    }
   })
+
+  // Write dynamic component files
+  dynamicTypes.forEach(type => {
+    const code = getDynamicComponentCode(type)
+    if (code) {
+      files[`components/dynamic/${type}.tsx`] = code
+    }
+  })
+
   // Generate landing page
   if (usedComponents.has("Web3LandingPage")) {
     files["components/landing/web3-landing-page.tsx"] = generateWeb3LandingPage()
@@ -419,7 +451,17 @@ function generateComponentFiles(components: ComponentInstance[], files: Record<s
   if (usedComponents.has("SmoothScrollHero")) {
     files["components/headers/smooth-scroll-hero.tsx"] = generateSmoothScrollHero()
   }
-  
+
+  if (usedComponents.has("Masonry")) {
+    files["components/ui/masonry.tsx"] = generateMasonry()
+  }
+  if (usedComponents.has("ClipPathLinks")) {
+    files["components/ui/clip-path-links.tsx"] = generateClipPathLinks()
+  }
+
+  if (usedComponents.has("FlowingMenu")) {
+    files["components/ui/flowing-menu.tsx"] = generateFlowingMenu()
+  }
   if (usedComponents.has("DarkHeader")) {
     files["components/headers/dark-theme-header.tsx"] = generateDarkHeader()
   }
@@ -449,7 +491,7 @@ function generateComponentFiles(components: ComponentInstance[], files: Record<s
   }
 
   if (usedComponents.has("FancyColumnFooter")) {
-    files["components/footer/fancy-column-footer.tsx"] = generateFancyFooter()
+    files["components/footers/fancy-column-footer.tsx"] = generateFancyFooter()
   }
 
   if (usedComponents.has("NftThemeHero")) {
@@ -468,9 +510,14 @@ function generateComponentFiles(components: ComponentInstance[], files: Record<s
     files["components/arweave/chatroom-on-chain.tsx"] = generateArweaveChatroom()
   }
 
+
   if (usedComponents.has("ArweaveNFT")) {
     files["components/arweave/arweave-nft.tsx"] = generateArweaveNFT()
     files["components/arweave/lua-ide.tsx"] = generateLuaIDE()
+  }
+  if (usedComponents.has("ArweaveSearch")) {
+    files["components/arweave/arweave-search.tsx"] = generateArweaveSearch()
+    files["lib/apollo-client.ts"] = generateApolloClient()
   }
 
   // Generate UI components
@@ -3125,7 +3172,6 @@ interface DarkHeaderProps {
   title?: string
   subtitle?: string
   ctaText?: string
-  onCtaClick?: () => void
   imageSrc?: string
   showImage?: boolean
   customClassName?: string
@@ -3135,7 +3181,6 @@ export const DarkHeader: React.FC<DarkHeaderProps> = ({
   title = "Precision in Motion",
   subtitle = "A balance of structure and creativity, brought to life.",
   ctaText = "Start Building",
-  onCtaClick,
   imageSrc = "/header-image.png",
   showImage = true,
   customClassName = "",
@@ -3196,7 +3241,6 @@ export const DarkHeader: React.FC<DarkHeaderProps> = ({
 
         {ctaText && (
           <button
-            onClick={onCtaClick}
             className="mt-8 inline-block px-6 py-3 text-base sm:text-lg font-semibold rounded-lg bg-gradient-to-r from-pink-600 to-orange-500 hover:from-pink-700 hover:to-orange-600 transition-all duration-300 shadow-lg"
           >
             {ctaText}
@@ -3226,8 +3270,644 @@ export const DarkHeader: React.FC<DarkHeaderProps> = ({
   `
 }
 
+function generateFlowingMenu(): string {
+  return `
+  import React from "react";
+import { gsap } from "gsap";
 
-  function generateSmoothScrollHero(): string {
+interface MenuItemProps {
+  link: string;
+  text: string;
+  image: string;
+}
+
+interface FlowingMenuProps {
+  items?: MenuItemProps[];
+}
+
+const FlowingMenu: React.FC<FlowingMenuProps> = ({ items = [] }) => {
+  // Ensure we have items, fallback to defaults if empty
+  const menuItems = items.length > 0 ? items : [
+    { link: "#", text: "Home", image: "/placeholder.jpg" },
+    { link: "#", text: "About", image: "/placeholder.jpg" },
+    { link: "#", text: "Services", image: "/placeholder.jpg" },
+    { link: "#", text: "Contact", image: "/placeholder.jpg" }
+  ];
+
+  return (
+    <div className="w-full h-full overflow-hidden">
+      <nav className="flex flex-col h-full m-0 p-0">
+        {menuItems.map((item, idx) => (
+          <MenuItem key={idx} {...item} />
+        ))}
+      </nav>
+    </div>
+  );
+};
+
+const MenuItem: React.FC<MenuItemProps> = ({ link, text, image }) => {
+  const itemRef = React.useRef<HTMLDivElement>(null);
+  const marqueeRef = React.useRef<HTMLDivElement>(null);
+  const marqueeInnerRef = React.useRef<HTMLDivElement>(null);
+
+  const animationDefaults = { duration: 0.6, ease: "expo" };
+
+  const findClosestEdge = (
+    mouseX: number,
+    mouseY: number,
+    width: number,
+    height: number
+  ): "top" | "bottom" => {
+    const topEdgeDist = Math.pow(mouseX - width / 2, 2) + Math.pow(mouseY, 2);
+    const bottomEdgeDist =
+      Math.pow(mouseX - width / 2, 2) + Math.pow(mouseY - height, 2);
+    return topEdgeDist < bottomEdgeDist ? "top" : "bottom";
+  };
+
+  const handleMouseEnter = (ev: React.MouseEvent<HTMLAnchorElement>) => {
+    if (!itemRef.current || !marqueeRef.current || !marqueeInnerRef.current)
+      return;
+    const rect = itemRef.current.getBoundingClientRect();
+    const edge = findClosestEdge(
+      ev.clientX - rect.left,
+      ev.clientY - rect.top,
+      rect.width,
+      rect.height
+    );
+
+    const tl = gsap.timeline({ defaults: animationDefaults });
+    tl.set(marqueeRef.current, { y: edge === "top" ? "-101%" : "101%" })
+      .set(marqueeInnerRef.current, { y: edge === "top" ? "101%" : "-101%" })
+      .to([marqueeRef.current, marqueeInnerRef.current], { y: "0%" });
+  };
+
+  const handleMouseLeave = (ev: React.MouseEvent<HTMLAnchorElement>) => {
+    if (!itemRef.current || !marqueeRef.current || !marqueeInnerRef.current)
+      return;
+    const rect = itemRef.current.getBoundingClientRect();
+    const edge = findClosestEdge(
+      ev.clientX - rect.left,
+      ev.clientY - rect.top,
+      rect.width,
+      rect.height
+    );
+
+    const tl = gsap.timeline({ defaults: animationDefaults });
+    tl.to(marqueeRef.current, { y: edge === "top" ? "-101%" : "101%" }).to(
+      marqueeInnerRef.current,
+      { y: edge === "top" ? "101%" : "-101%" }
+    );
+  };
+
+  const repeatedMarqueeContent = React.useMemo(() => {
+    return Array.from({ length: 4 }).map((_, idx) => (
+      <React.Fragment key={idx}>
+        <span className="text-[#060010] uppercase font-normal text-[4vh] leading-[1.2] p-[1vh_1vw_0]">
+          {text}
+        </span>
+        <div
+          className="w-[200px] h-[7vh] my-[2em] mx-[2vw] p-[1em_0] rounded-[50px] bg-cover bg-center"
+          style={{ backgroundImage: \`url(\${image})\` }}
+        />
+      </React.Fragment>
+    ));
+  }, [text, image]);
+
+  return (
+    <div
+      className="flex-1 relative overflow-hidden text-center shadow-[0_-1px_0_0_#fff]"
+      ref={itemRef}
+    >
+      <a
+        className="flex items-center justify-center h-full relative cursor-pointer uppercase no-underline font-semibold text-white text-[4vh] hover:text-[#060010] focus:text-white focus-visible:text-[#060010]"
+        href={link}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        {text}
+      </a>
+      <div
+        className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none bg-white translate-y-[101%]"
+        ref={marqueeRef}
+      >
+        <div className="h-full w-[200%] flex" ref={marqueeInnerRef}>
+          <div className="flex items-center relative h-full w-[200%] will-change-transform animate-marquee">
+            {repeatedMarqueeContent}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export { FlowingMenu }; 
+  `
+}
+
+function generateMasonry(): string{
+  return `
+  import React, {
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { gsap } from "gsap";
+
+const useMedia = (
+  queries: string[],
+  values: number[],
+  defaultValue: number
+): number => {
+  const get = () =>
+    values[queries.findIndex((q) => matchMedia(q).matches)] ?? defaultValue;
+
+  const [value, setValue] = useState<number>(get);
+
+  useEffect(() => {
+    const handler = () => setValue(get);
+    queries.forEach((q) => matchMedia(q).addEventListener("change", handler));
+    return () =>
+      queries.forEach((q) =>
+        matchMedia(q).removeEventListener("change", handler)
+      );
+  }, [queries]);
+
+  return value;
+};
+
+const useMeasure = <T extends HTMLElement>() => {
+  const ref = useRef<T | null>(null);
+  const [size, setSize] = useState({ width: 0, height: 0 });
+
+  useLayoutEffect(() => {
+    if (!ref.current) return;
+    const ro = new ResizeObserver(([entry]) => {
+      const { width, height } = entry.contentRect;
+      setSize({ width, height });
+    });
+    ro.observe(ref.current);
+    return () => ro.disconnect();
+  }, []);
+
+  return [ref, size] as const;
+};
+
+const preloadImages = async (urls: string[]): Promise<void> => {
+  await Promise.all(
+    urls.map(
+      (src) =>
+        new Promise<void>((resolve) => {
+          const img = new Image();
+          img.src = src;
+          img.onload = img.onerror = () => resolve();
+        })
+    )
+  );
+};
+
+interface Item {
+  id: string;
+  img: string;
+  url: string;
+  height: number;
+}
+
+interface MasonryProps {
+  items?: Item[];
+  ease?: string;
+  duration?: number;
+  stagger?: number;
+  animateFrom?: "bottom" | "top" | "left" | "right" | "center" | "random";
+  scaleOnHover?: boolean;
+  hoverScale?: number;
+  blurToFocus?: boolean;
+  colorShiftOnHover?: boolean;
+}
+
+export const Masonry: React.FC<MasonryProps> = ({
+  items = [],
+  ease = "power3.out",
+  duration = 0.6,
+  stagger = 0.05,
+  animateFrom = "bottom",
+  scaleOnHover = true,
+  hoverScale = 0.95,
+  blurToFocus = true,
+  colorShiftOnHover = false,
+}) => {
+  const columns = useMedia(
+    [
+      "(min-width:1500px)",
+      "(min-width:1000px)",
+      "(min-width:600px)",
+      "(min-width:400px)",
+    ],
+    [5, 4, 3, 2],
+    1
+  );
+
+  const [containerRef, { width }] = useMeasure<HTMLDivElement>();
+  const [imagesReady, setImagesReady] = useState(false);
+
+  const getInitialPosition = (item: any) => {
+    const containerRect = containerRef.current?.getBoundingClientRect();
+    if (!containerRect) return { x: item.x, y: item.y };
+
+    let direction = animateFrom;
+    if (animateFrom === "random") {
+      const dirs = ["top", "bottom", "left", "right"];
+      direction = dirs[
+        Math.floor(Math.random() * dirs.length)
+      ] as typeof animateFrom;
+    }
+
+    switch (direction) {
+      case "top":
+        return { x: item.x, y: -200 };
+      case "bottom":
+        return { x: item.x, y: window.innerHeight + 200 };
+      case "left":
+        return { x: -200, y: item.y };
+      case "right":
+        return { x: window.innerWidth + 200, y: item.y };
+      case "center":
+        return {
+          x: containerRect.width / 2 - item.w / 2,
+          y: containerRect.height / 2 - item.h / 2,
+        };
+      default:
+        return { x: item.x, y: item.y + 100 };
+    }
+  };
+
+  useEffect(() => {
+    if (items.length > 0) {
+      preloadImages(items.map((i) => i.img)).then(() => setImagesReady(true));
+    } else {
+      setImagesReady(true);
+    }
+  }, [items]);
+
+  const grid = useMemo(() => {
+    if (!width || items.length === 0) return [];
+    const colHeights = new Array(columns).fill(0);
+    const columnWidth = width / columns;
+
+    return items.map((child) => {
+      const col = colHeights.indexOf(Math.min(...colHeights));
+      const x = columnWidth * col;
+      const height = child.height / 2;
+      const y = colHeights[col];
+
+      colHeights[col] += height;
+      return { ...child, x, y, w: columnWidth, h: height };
+    });
+  }, [columns, items, width]);
+
+  const hasMounted = useRef(false);
+
+  useLayoutEffect(() => {
+    if (!imagesReady) return;
+
+    grid.forEach((item, index) => {
+      const selector = \`[data-key="\${item.id}"]\`;
+      const animProps = { x: item.x, y: item.y, width: item.w, height: item.h };
+
+      if (!hasMounted.current) {
+        const start = getInitialPosition(item);
+        gsap.fromTo(
+          selector,
+          {
+            opacity: 0,
+            x: start.x,
+            y: start.y,
+            width: item.w,
+            height: item.h,
+            ...(blurToFocus && { filter: "blur(10px)" }),
+          },
+          {
+            opacity: 1,
+            ...animProps,
+            ...(blurToFocus && { filter: "blur(0px)" }),
+            duration: 0.8,
+            ease: "power3.out",
+            delay: index * stagger,
+          }
+        );
+      } else {
+        gsap.to(selector, {
+          ...animProps,
+          duration,
+          ease,
+          overwrite: "auto",
+        });
+      }
+    });
+
+    hasMounted.current = true;
+  }, [grid, imagesReady, stagger, animateFrom, blurToFocus, duration, ease]);
+
+  const handleMouseEnter = (id: string, element: HTMLElement) => {
+    if (scaleOnHover) {
+      gsap.to(\`[data-key="\${id}"]\`, {
+        scale: hoverScale,
+        duration: 0.3,
+        ease: "power2.out"
+      });
+    }
+    if (colorShiftOnHover) {
+      const overlay = element.querySelector(".color-overlay") as HTMLElement;
+      if (overlay) gsap.to(overlay, { opacity: 0.3, duration: 0.3 });
+    }
+  };
+
+  const handleMouseLeave = (id: string, element: HTMLElement) => {
+    if (scaleOnHover) {
+      gsap.to(\`[data-key="\${id}"]\`, {
+        scale: 1,
+        duration: 0.3,
+        ease: "power2.out"
+      });
+    }
+    if (colorShiftOnHover) {
+      const overlay = element.querySelector(".color-overlay") as HTMLElement;
+      if (overlay) gsap.to(overlay, { opacity: 0, duration: 0.3 });
+    }
+  };
+
+  return (
+    <div ref={containerRef} className="relative w-full h-full">
+      {grid.map((item) => (
+        <div
+          key={item.id}
+          data-key={item.id}
+          className="absolute box-content p-2"
+          style={{ willChange: "transform, width, height, opacity" }}
+          onClick={() => window.open(item.url, "_blank", "noopener")}
+          onMouseEnter={(e) => handleMouseEnter(item.id, e.currentTarget)}
+          onMouseLeave={(e) => handleMouseLeave(item.id, e.currentTarget)}
+        >
+          <div
+            className="relative w-full h-full bg-cover bg-center rounded-[10px] shadow-[0px_10px_50px_-10px_rgba(0,0,0,0.2)] uppercase text-[10px] leading-[10px]"
+            style={{ backgroundImage: \`url(\${item.img})\` }}
+          >
+            {colorShiftOnHover && (
+              <div className="color-overlay absolute inset-0 rounded-[10px] bg-gradient-to-tr from-pink-500/50 to-sky-500/50 opacity-0 pointer-events-none" />
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}; 
+  `
+}
+
+function generateClipPathLinks(): string {
+return `
+import React from "react";
+import {
+  SiAdobe,
+  SiApple,
+  SiFacebook,
+  SiGoogle,
+  SiLinkedin,
+  SiShopify,
+  SiSoundcloud,
+  SiSpotify,
+  SiTiktok,
+} from "react-icons/si";
+import { useAnimate } from "framer-motion";
+
+interface LinkItem {
+  icon: React.ElementType | string;
+  href: string;
+  label?: string;
+}
+
+interface ClipPathLinksProps {
+  className?: string;
+  style?: React.CSSProperties;
+  links?: LinkItem[];
+  gridLayout?: '2x2' | '3x3' | '4x4' | 'custom';
+  customGrid?: string;
+  iconSize?: 'sm' | 'md' | 'lg' | 'xl';
+  hoverColor?: string;
+  backgroundColor?: string;
+  borderColor?: string;
+  animationDuration?: number;
+}
+
+// Icon mapping for string-based icons from registry
+const iconMap: Record<string, React.ElementType> = {
+  SiGoogle,
+  SiShopify,
+  SiApple,
+  SiSoundcloud,
+  SiAdobe,
+  SiFacebook,
+  SiTiktok,
+  SiSpotify,
+  SiLinkedin,
+};
+
+const getIconComponent = (icon: React.ElementType | string): React.ElementType => {
+  if (typeof icon === 'string') {
+    return iconMap[icon] || SiGoogle; // fallback to Google icon
+  }
+  return icon;
+};
+
+export const ClipPathLinks: React.FC<ClipPathLinksProps> = ({ 
+  className = "", 
+  style = {},
+  links = [
+    { icon: SiGoogle, href: "#", label: "Google" },
+    { icon: SiShopify, href: "#", label: "Shopify" },
+    { icon: SiApple, href: "#", label: "Apple" },
+    { icon: SiSoundcloud, href: "#", label: "Soundcloud" },
+    { icon: SiAdobe, href: "#", label: "Adobe" },
+    { icon: SiFacebook, href: "#", label: "Facebook" },
+    { icon: SiTiktok, href: "#", label: "TikTok" },
+    { icon: SiSpotify, href: "#", label: "Spotify" },
+    { icon: SiLinkedin, href: "#", label: "LinkedIn" }
+  ],
+  gridLayout = '3x3',
+  customGrid = '',
+  iconSize = 'md',
+  hoverColor = '#1a1a1a',
+  backgroundColor = 'transparent',
+  borderColor = '#1a1a1a',
+  animationDuration = 0.3
+}) => {
+  const getGridClasses = () => {
+    switch (gridLayout) {
+      case '2x2':
+        return 'grid-cols-2';
+      case '3x3':
+        return 'grid-cols-3';
+      case '4x4':
+        return 'grid-cols-4';
+      case 'custom':
+        return customGrid;
+      default:
+        return 'grid-cols-3';
+    }
+  };
+
+  const getIconSize = () => {
+    switch (iconSize) {
+      case 'sm':
+        return 'text-lg';
+      case 'md':
+        return 'text-2xl';
+      case 'lg':
+        return 'text-3xl';
+      case 'xl':
+        return 'text-4xl';
+      default:
+        return 'text-2xl';
+    }
+  };
+
+  return (
+    <div 
+      className={\`divide-y divide-[\${borderColor}] border border-[\${borderColor}] \${className}\`} 
+      style={{ 
+        backgroundColor,
+        ...style 
+      }}
+    >
+      <div className={\`grid \${getGridClasses()} divide-x divide-[\${borderColor}]\`}>
+        {links.map((link, index) => (
+          <LinkBox 
+            key={index}
+            Icon={getIconComponent(link.icon)}
+            href={link.href}
+            label={link.label}
+            iconSize={getIconSize()}
+            hoverColor={hoverColor}
+            animationDuration={animationDuration}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const NO_CLIP = "polygon(0 0, 100% 0, 100% 100%, 0% 100%)";
+const BOTTOM_RIGHT_CLIP = "polygon(0 0, 100% 0, 0 0, 0% 100%)";
+const TOP_RIGHT_CLIP = "polygon(0 0, 0 100%, 100% 100%, 0% 100%)";
+const BOTTOM_LEFT_CLIP = "polygon(100% 100%, 100% 0, 100% 100%, 0 100%)";
+const TOP_LEFT_CLIP = "polygon(0 0, 100% 0, 100% 100%, 100% 0)";
+
+const ENTRANCE_KEYFRAMES = {
+  left: [BOTTOM_RIGHT_CLIP, NO_CLIP],
+  bottom: [BOTTOM_RIGHT_CLIP, NO_CLIP],
+  top: [BOTTOM_RIGHT_CLIP, NO_CLIP],
+  right: [TOP_LEFT_CLIP, NO_CLIP],
+};
+
+const EXIT_KEYFRAMES = {
+  left: [NO_CLIP, TOP_RIGHT_CLIP],
+  bottom: [NO_CLIP, TOP_RIGHT_CLIP],
+  top: [NO_CLIP, TOP_RIGHT_CLIP],
+  right: [NO_CLIP, BOTTOM_LEFT_CLIP],
+};
+
+interface LinkBoxProps {
+  Icon: React.ElementType;
+  href: string;
+  label?: string;
+  iconSize: string;
+  hoverColor: string;
+  animationDuration: number;
+}
+
+const LinkBox: React.FC<LinkBoxProps> = ({ 
+  Icon, 
+  href, 
+  label,
+  iconSize,
+  hoverColor,
+  animationDuration
+}) => {
+  const [scope, animate] = useAnimate();
+
+  const getNearestSide = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    const box = e.currentTarget.getBoundingClientRect();
+
+    const proximityToLeft = {
+      proximity: Math.abs(box.left - e.clientX),
+      side: "left",
+    };
+    const proximityToRight = {
+      proximity: Math.abs(box.right - e.clientX),
+      side: "right",
+    };
+    const proximityToTop = {
+      proximity: Math.abs(box.top - e.clientY),
+      side: "top",
+    };
+    const proximityToBottom = {
+      proximity: Math.abs(box.bottom - e.clientY),
+      side: "bottom",
+    };
+
+    const sortedProximity = [
+      proximityToLeft,
+      proximityToRight,
+      proximityToTop,
+      proximityToBottom,
+    ].sort((a, b) => a.proximity - b.proximity);
+
+    return sortedProximity[0].side;
+  };
+
+  const handleMouseEnter = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    const side = getNearestSide(e);
+
+    animate(scope.current, {
+      clipPath: ENTRANCE_KEYFRAMES[side as keyof typeof ENTRANCE_KEYFRAMES],
+    }, { duration: animationDuration });
+  };
+
+  const handleMouseLeave = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    const side = getNearestSide(e);
+
+    animate(scope.current, {
+      clipPath: EXIT_KEYFRAMES[side as keyof typeof EXIT_KEYFRAMES],
+    }, { duration: animationDuration });
+  };
+
+  return (
+    <a
+      href={href}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      className="relative grid h-20 w-full place-content-center sm:h-28 md:h-36"
+    >
+      <Icon className={iconSize} />
+      {label && <span className="sr-only">{label}</span>}
+
+      <div
+        ref={scope}
+        style={{
+          clipPath: BOTTOM_RIGHT_CLIP,
+          backgroundColor: hoverColor,
+        }}
+        className="absolute inset-0 grid place-content-center text-white"
+      >
+        <Icon className={iconSize} />
+      </div>
+    </a>
+  );
+}; 
+`
+}
+function generateSmoothScrollHero(): string {
   return `"use client"
 
 import { motion, useMotionTemplate, useScroll, useTransform } from "framer-motion"
@@ -5416,233 +6096,351 @@ to-blue-500/15 text-white
 `
 }
 
-function generateArweaveNFT(): string {
-  return `"use client"
+function generateArweaveSearch(): string {
+  return `
+import React, { useState } from 'react';
+import { gql, useQuery, ApolloProvider } from '@apollo/client';
+import { apolloClient } from '../../lib/apollo-client';
 
-import type React from "react"
+// GraphQL query for searching transactions
+const SEARCH_TRANSACTIONS = gql\`
+  query SearchTransactions($first: Int!, $tags: [TagFilter!]) {
+    transactions(first: $first, tags: $tags) {
+      edges {
+        cursor
+        node {
+          id
+          tags {
+            name
+            value
+          }
+          block {
+            height
+          }
+          bundledIn {
+            id
+          }
+        }
+      }
+    }
+  }
+\`;
 
-import { useState } from "react"
-import LuaIDE from "./lua-ide"
-
-export interface ArweaveNFTProps {
-  title?: string
-  description?: string
-  imageUrl?: string
-  tokenId?: string
-  owner?: string
-  initialLuaCode?: string
-  onTransfer?: (data: {
-    to: string
-    tokenId: string
-    luaCode: string
-  }) => void
-  className?: string
-  style?: React.CSSProperties
+interface Tag {
+  name: string;
+  value: string;
 }
 
-export const ArweaveNFT: React.FC<ArweaveNFTProps> = ({
-  title = "Arweave NFT",
-  description = "View and interact with your Arweave NFT",
-  imageUrl = "/ArweaveNFT.png",
-  tokenId = "your-token-id",
-  owner = "your-wallet-address",
-  initialLuaCode = \`-- NFT transfer handler
-function transferNFT(to, tokenId)
-  -- Get the current owner
-  local currentOwner = ao.getActiveAddress()
-  
-  -- Check if the sender is the owner
-  if currentOwner ~= owner then
-    return {
-      success = false,
-      error = "Only the owner can transfer this NFT"
-    }
-  end
-  
-  -- Transfer the NFT
-  local result = ao.transferNFT(to, tokenId)
-  
-  -- Return the result
-  return {
-    success = true,
-    transactionId = result.id
-  }
-end
+interface Transaction {
+  id: string;
+  tags: Tag[];
+  block: {
+    height: number;
+  };
+  bundledIn: {
+    id: string;
+  } | null;
+}
 
--- Example usage:
--- local result = transferNFT("recipient-address", "token-id")
--- print("Transfer result:", result)\`,
-  onTransfer,
-  className = "",
-  style = {},
+interface SearchResult {
+  transactions: {
+    edges: {
+      cursor: string;
+      node: Transaction;
+    }[];
+  };
+}
+
+interface ArweaveSearchProps {
+  initialTags?: Tag[];
+  limit?: number;
+}
+
+const ArweaveSearchContent: React.FC<ArweaveSearchProps> = ({
+  initialTags = [],
+  limit = 10,
 }) => {
-  const [luaCode, setLuaCode] = useState(initialLuaCode)
-  const [recipient, setRecipient] = useState("")
-  const [isTransferring, setIsTransferring] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState<string | null>(null)
+  const [tags, setTags] = useState<Tag[]>(initialTags);
+  const [tagName, setTagName] = useState('');
+  const [tagValue, setTagValue] = useState('');
 
-  const handleTransfer = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (isTransferring || !recipient.trim()) return
+  const { loading, error, data, refetch } = useQuery<SearchResult>(SEARCH_TRANSACTIONS, {
+    variables: {
+      first: limit,
+      tags: tags,
+    },
+  });
 
-    setIsTransferring(true)
-    setError(null)
-    setSuccess(null)
-
-    try {
-      const result = {
-        to: recipient,
-        tokenId,
-        luaCode,
-      }
-
-      if (onTransfer) {
-        await onTransfer(result)
-      }
-      setSuccess("NFT transferred successfully!")
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to transfer NFT")
-    } finally {
-      setIsTransferring(false)
+  const addTag = () => {
+    if (tagName && tagValue) {
+      setTags([...tags, { name: tagName, value: tagValue }]);
+      setTagName('');
+      setTagValue('');
     }
-  }
+  };
+
+  const removeTag = (index: number) => {
+    const newTags = [...tags];
+    newTags.splice(index, 1);
+    setTags(newTags);
+  };
+
+  const handleSearch = () => {
+    refetch();
+  };
 
   return (
-    <div
-      className={\`bg-black shadow-xl p-8 border border-zinc-700  \${className}\`}
-      style={style}
-    >
-      <div className="mb-8">
-        <h2 className="text-3xl font-bold text-white mb-3">{title}</h2>
-        <p className="text-zinc-400 text-lg">{description}</p>
+    <div className="w-full max-w-2xl mx-auto p-6 bg-black rounded-2xl shadow-2xl border border-zinc-800 mt-8 font-mono">
+      <h2 className="text-2xl font-bold text-white mb-6 tracking-tight flex items-center gap-2">
+        <span className="inline-block w-2 h-2 bg-white rounded-full animate-pulse" />
+        Arweave Blockchain Search
+      </h2>
+      <div className="mb-6 flex flex-col md:flex-row md:items-end gap-4">
+        <div className="flex flex-col md:flex-row gap-2 flex-1">
+          <input
+            type="text"
+            placeholder="Tag Name"
+            value={tagName}
+            onChange={(e) => setTagName(e.target.value)}
+            className="bg-zinc-900 border border-zinc-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-400 placeholder:text-zinc-400 w-full md:w-40 transition"
+          />
+          <input
+            type="text"
+            placeholder="Tag Value"
+            value={tagValue}
+            onChange={(e) => setTagValue(e.target.value)}
+            className="bg-zinc-900 border border-zinc-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-400 placeholder:text-zinc-400 w-full md:w-56 transition"
+          />
+          <button
+            onClick={addTag}
+            className="bg-white text-black font-semibold px-4 py-2 rounded-lg border border-zinc-700 hover:bg-slate-800 hover:text-white transition"
+          >
+            Add Tag
+          </button>
+        </div>
+        <button
+          onClick={handleSearch}
+          className="bg-zinc-800 text-white font-bold px-6 py-2 rounded-lg border border-zinc-700 shadow hover:bg-zinc-700 transition"
+        >
+          Search
+        </button>
       </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* NFT Display */}
-        <div className="bg-blac max-w-7xl rounded-lg p-6 shadow-md transition-all hover:border-zinc-600">
-          <div className="aspect-square w-full overflow-hidden  mb-6">
-            <img src={imageUrl || "/placeholder.svg"} alt={title} className="w-full h-full object-cover" />
-          </div>
-          <div className="space-y-4">
-            <div>
-              <h3 className="text-lg font-semibold text-white mb-2">Token ID</h3>
-              <p className="font-mono text-sm text-zinc-300 break-all bg-zinc-800 p-3 rounded-md border border-zinc-700">
-                {tokenId}
-              </p>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold text-white mb-2">Owner</h3>
-              <p className="font-mono text-sm text-zinc-300 break-all bg-zinc-800 p-3 rounded-md border border-zinc-700">
-                {owner}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Transfer Form */}
-        <div className="bg-zinc-800/30 rounded-lg p-6 shadow-md border border-zinc-700">
-          <form onSubmit={handleTransfer} className="space-y-6">
-            <div>
-              <label className="block text-sm font-semibold text-zinc-300 mb-3">Recipient Address</label>
-              <input
-                type="text"
-                value={recipient}
-                onChange={(e) => setRecipient(e.target.value)}
-                placeholder="Enter recipient's Arweave address"
-                className="w-full p-3 bg-zinc-800 border border-zinc-600 rounded-md text-white placeholder-zinc-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                required
-              />
-            </div>
-
-            {/* Lua Code Editor */}
-            <div>
-              <label className="block text-sm font-semibold text-zinc-300 mb-3">Transfer Handler Code</label>
-              <div className="border border-zinc-600 rounded-lg overflow-hidden">
-                <LuaIDE
-                  cellId="nft-transfer-lua"
-                  initialCode={luaCode}
-                  onCodeChange={setLuaCode}
-                  onProcessId={(pid) => console.log("Process ID:", pid)}
-                  onNewMessage={(msgs) => console.log("New messages:", msgs)}
-                  onInbox={(inbox) => console.log("Inbox:", inbox)}
-                />
-              </div>
-            </div>
-
-            {/* Error Display */}
-            {error && (
-              <div className="p-4 bg-red-900/30 border border-red-700 rounded-lg">
-                <div className="flex items-center">
-                  <svg className="w-5 h-5 text-red-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                  <p className="text-red-300 font-medium">{error}</p>
-                </div>
-              </div>
-            )}
-
-            {/* Success Display */}
-            {success && (
-              <div className="p-4 bg-green-900/30 border border-green-700 rounded-lg">
-                <div className="flex items-center">
-                  <svg className="w-5 h-5 text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                  </svg>
-                  <p className="text-green-300 font-medium">{success}</p>
-                </div>
-              </div>
-            )}
-
-            {/* Transfer Button */}
+      <div className="flex flex-wrap gap-2 mb-6">
+        {tags.map((tag, index) => (
+          <span
+            key={index}
+            className="flex items-center bg-zinc-800 text-white px-3 py-1 rounded-full border border-zinc-600 text-xs font-semibold gap-2 shadow"
+          >
+            <span>{tag.name}: {tag.value}</span>
             <button
-              type="submit"
-              disabled={isTransferring || !recipient.trim()}
-              className={\`w-full py-3 px-6 rounded-lg text-white font-semibold text-lg transition-all transform hover:scale-[1.02] \${
-                isTransferring || !recipient.trim()
-                  ? "bg-zinc-600 cursor-not-allowed"
-                  : "bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg hover:shadow-xl"
-              }\`}
+              onClick={() => removeTag(index)}
+              className="ml-1 text-slate-400 hover:text-white focus:outline-none"
+              title="Remove tag"
             >
-              {isTransferring ? (
-                <div className="flex items-center justify-center">
-                  <svg
-                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                  Transferring...
-                </div>
-              ) : (
-                "Transfer NFT"
-              )}
+              ×
             </button>
-          </form>
-        </div>
+          </span>
+        ))}
+      </div>
+      <div className="bg-zinc-950 rounded-xl border border-zinc-800 p-4 min-h-[120px]">
+        {loading && <p className="text-zinc-400">Loading...</p>}
+        {error && <p className="text-red-400">Error: {error.message}</p>}
+        {data && (
+          <div className="grid gap-4">
+            {data.transactions.edges.length === 0 && (
+              <p className="text-zinc-400">No transactions found.</p>
+            )}
+            {data.transactions.edges.map(({ node }) => (
+              <div
+                key={node.id}
+                className="block border border-zinc-700 bg-black rounded-lg p-4 shadow-md hover:border-slate-500 transition group"
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-xs text-zinc-400">Block</span>
+                  <span className="text-white font-mono text-sm bg-zinc-900 px-2 py-0.5 rounded">
+                    #{node.block.height}
+                  </span>
+                  {node.bundledIn && (
+                    <span className="ml-2 text-xs text-slate-400 bg-zinc-900 px-2 py-0.5 rounded">
+                      Bundled: {node.bundledIn.id.slice(0, 8)}…
+                    </span>
+                  )}
+                </div>
+                <div className="flex flex-col md:flex-row md:items-center gap-2">
+                  <span className="text-xs text-zinc-400">TxID:</span>
+                  <span className="text-white font-mono text-sm break-all">
+                    {node.id}
+                  </span>
+                </div>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {node.tags.map((tag, i) => (
+                    <span
+                      key={i}
+                      className="bg-zinc-900 text-zinc-200 border border-zinc-700 rounded px-2 py-0.5 text-xs font-mono"
+                    >
+                      {tag.name}: <span className="text-slate-400">{tag.value}</span>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
-  )
+  );
+};
+
+export const ArweaveSearch: React.FC<ArweaveSearchProps> = (props) => {
+  return (
+    <ApolloProvider client={apolloClient}>
+      <ArweaveSearchContent {...props} />
+    </ApolloProvider>
+  );
+}; 
+`
 }
+
+function generateApolloClient(): string {
+  return `
+  import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
+
+// Create the HTTP link for Arweave's GraphQL endpoint
+const httpLink = createHttpLink({
+  uri: 'https://arweave.net/graphql',
+});
+
+// Create Apollo Client instance
+export const apolloClient = new ApolloClient({
+  link: httpLink,
+  cache: new InMemoryCache(),
+  defaultOptions: {
+    watchQuery: {
+      errorPolicy: 'all',
+    },
+    query: {
+      errorPolicy: 'all',
+    },
+  },
+}); 
+  `
+}
+
+function generateArweaveNFT(): string {
+  return `
+  "use client"
+
+import React, { useState } from 'react';
+import Arweave from 'arweave';
+
+const arweave = Arweave.init({
+  host: 'arweave.net',
+  port: 443,
+  protocol: 'https'
+});
+
+const TransferNFT: React.FC = () => {
+  const [recipient, setRecipient] = useState('');
+  const [nftTxId, setNftTxId] = useState('');
+  const [status, setStatus] = useState('');
+
+  const handleTransfer = async () => {
+    try {
+      await window.arweaveWallet.connect(["ACCESS_ADDRESS", "SIGN_TRANSACTION"]);
+      const sender = await window.arweaveWallet.getActiveAddress();
+      const recipientAddr = recipient;
+      const tokenId = nftTxId;
+      const tx = await arweave.createTransaction({ data: "Transfer Token" });
+      tx.addTag("App-Name", "SmartWeaveAction");
+      tx.addTag("App-Version", "0.3.0");
+      tx.addTag(
+        "Input",
+        JSON.stringify({
+          function: "transfer",
+          target: recipientAddr,
+          id: tokenId
+        })
+      );
+      await window.arweaveWallet.sign(tx);
+      if (!tx.signature) throw new Error("Transaction not signed");
+      const response = await arweave.transactions.post(tx);
+      if (response.status === 200 || response.status === 202) {
+        setStatus(\`✅ Token transfer posted! TX ID: \${tx.id}\`);
+        console.log("Transfer complete:", tx.id);
+      } else {
+        setStatus(\`❌ Failed to post transaction: \${response.status}\`);
+        console.log("Failed to post transaction:", response.status);
+      }
+    } catch (error) {
+      setStatus(\`Error: \${(error as Error).message}\`);
+      console.error("FT transfer error:", error);
+    }
+  };
+
+  return (
+    <div className="bg-zinc-950 shadow-2xl rounded-3xl max-w-4xl mx-auto flex flex-col md:flex-row overflow-hidden border-4 border-blue-600">
+      {/* Left: NFT Image */}
+      <div className="flex-1 flex flex-col items-center justify-center bg-zinc-900 p-10 min-w-[320px] rounded-l-3xl md:rounded-l-3xl md:rounded-tr-none md:rounded-bl-3xl">
+        <div className="rounded-3xl border-4 border-zinc-800 shadow-lg bg-zinc-950 flex items-center justify-center aspect-square w-72 h-72 mb-6">
+          {nftTxId ? (
+            <img
+              src={\`https://arweave.net/\${nftTxId}\`}
+              alt="NFT Preview"
+              className="w-full h-full object-contain rounded-3xl"
+              onError={e => (e.currentTarget.style.display = 'none')}
+            />
+          ) : (
+            <span className="text-zinc-600">NFT Preview</span>
+          )}
+        </div>
+        <div className="w-full text-center">
+          <h2 className="text-2xl font-bold text-white mb-1 tracking-tight">NFT Transfer</h2>
+          <p className="text-zinc-400 text-base mb-2">Transfer your NFT on ArDacity</p>
+        </div>
+      </div>
+      {/* Right: Transfer Form */}
+      <div className="flex-1 flex flex-col justify-center bg-zinc-950 p-10 min-w-[320px] border-l border-zinc-800 rounded-r-3xl md:rounded-r-3xl md:rounded-tl-none md:rounded-br-3xl">
+        <form onSubmit={e => { e.preventDefault(); handleTransfer(); }} className="space-y-6">
+          <div>
+            <label className="block text-sm font-semibold text-zinc-300 mb-2">NFT Token ID</label>
+            <input
+              className="w-full p-3 bg-zinc-800 border border-zinc-700 rounded-2xl text-white placeholder-zinc-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+              placeholder="NFT Token ID (image hash)"
+              value={nftTxId}
+              onChange={e => setNftTxId(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-zinc-300 mb-2">Recipient Address</label>
+            <input
+              className="w-full p-3 bg-zinc-800 border border-zinc-700 rounded-2xl text-white placeholder-zinc-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+              placeholder="Recipient Arweave Address"
+              value={recipient}
+              onChange={e => setRecipient(e.target.value)}
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            className="w-full py-3 px-6 rounded-2xl text-white font-semibold text-lg transition-all transform hover:scale-[1.02] bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg hover:shadow-xl"
+          >
+            Transfer NFT
+          </button>
+          {status && (
+            <div className={\`p-3 rounded-2xl text-sm font-semibold text-center mt-2 \${status.startsWith('✅') ? 'bg-green-900/30 border border-green-700 text-green-300 animate-pulse' : 'bg-red-900/30 border border-red-700 text-red-300'}\`}>
+              {status}
+            </div>
+          )}
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default TransferNFT;
+export { TransferNFT as ArweaveNFT };
+
 
 `
 }

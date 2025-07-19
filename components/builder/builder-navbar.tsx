@@ -42,9 +42,14 @@ export function BuilderNavbar() {
       return
     }
 
+    console.log("[Download Project] Button clicked.")
+    console.log("[Download Project] Components:", components)
+
     setIsDownloading(true)
     try {
+      console.log("[Download Project] Generating project files...")
       const projectFiles = generateProjectFiles(components)
+      console.log("[Download Project] Project files generated:", Object.keys(projectFiles))
 
       // Create and download zip file
       const JSZip = (await import("jszip")).default

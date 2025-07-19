@@ -32,6 +32,9 @@ const compilationErrorRegistry = new Map<string, { code: string; error: string }
 // Registry for sample data for dynamic components
 const dynamicComponentSampleData: Record<string, any> = {};
 
+// Registry for code of dynamic components
+const dynamicComponentCodeRegistry: Record<string, string> = {};
+
 function toPascalCase(str: string) {
   return str
     .split('-')
@@ -139,6 +142,34 @@ export function registerDynamicComponent(
   if (Component) {
     dynamicComponentRegistry.set(type, Component);
     dynamicComponentSampleData[type] = sampleData;
+
+    // --- Ensure code for download includes imports/exports ---
+    let downloadCode = code.trim();
+    // Add React import if missing
+    if (!/^import\s+React/.test(downloadCode)) {
+      downloadCode = 'import React from "react";\n' + downloadCode;
+    }
+    // Add export default if missing
+    if (!/export\s+default/.test(downloadCode)) {
+      // Try to find the function name
+      const funcMatch = downloadCode.match(/function\s+([A-Za-z0-9_]+)/);
+      if (funcMatch) {
+        const funcName = funcMatch[1];
+        downloadCode += `\nexport default ${funcName};`;
+      }
+    }
+    // Optionally: Add imports for Button, Card, etc. if referenced
+    const uiImports: { [k: string]: string } = {
+      Button: 'import { Button } from "../ui/button";',
+      Card: 'import { Card } from "../ui/card";',
+      Accordion: 'import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "../ui/accordion";',
+    };
+    Object.entries(uiImports).forEach(([name, imp]) => {
+      if (downloadCode.includes(name) && !downloadCode.includes(imp)) {
+        downloadCode = imp + '\n' + downloadCode;
+      }
+    });
+    dynamicComponentCodeRegistry[type] = downloadCode;
     return Component;
   }
   return null;
@@ -423,4 +454,8 @@ export function getRegisteredDynamicComponentTypes(): string[] {
 
 export function getDynamicComponentSampleData(type: string): any {
   return dynamicComponentSampleData[type];
+} 
+
+export function getDynamicComponentCode(type: string): string | undefined {
+  return dynamicComponentCodeRegistry[type];
 } 

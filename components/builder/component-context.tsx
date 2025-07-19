@@ -14,6 +14,7 @@ export interface ComponentInstance {
   category: string
   props: Record<string, any>
   position: { x: number; y: number }
+  children?: ComponentInstance[] // <-- Add this line for tree structure
 }
 
 interface ComponentContextType {
@@ -21,15 +22,14 @@ interface ComponentContextType {
   selectedComponent: ComponentInstance | null
   searchQuery: string
   setSearchQuery: (query: string) => void
-  addComponent: (component: Omit<ComponentInstance, "id">) => void
+  addComponent: (component: Omit<ComponentInstance, "id">, parentId?: string) => void // <-- Add parentId
   updateComponent: (id: string, props: Record<string, any>) => void
   selectComponent: (component: ComponentInstance | null) => void
   deleteComponent: (id: string) => void
   moveComponent: (id: string, direction: "up" | "down") => void
-  // New methods for dynamic components
   addGeneratedComponents: (generatedComponents: GeneratedComponent[]) => void
   isComponentAvailable: (type: string) => boolean
-  clearComponents: () => void // new method
+  clearComponents: () => void
 }
 
 const ComponentContext = createContext<ComponentContextType | undefined>(undefined)
@@ -39,48 +39,118 @@ export function ComponentProvider({ children }: { children: ReactNode }) {
   const [selectedComponent, setSelectedComponent] = useState<ComponentInstance | null>(null)
   const [searchQuery, setSearchQuery] = useState("")
 
-  const addComponent = (component: Omit<ComponentInstance, "id">) => {
+  // Helper: Find and update a node in the tree
+  function updateTree(
+    nodes: ComponentInstance[],
+    id: string,
+    updater: (node: ComponentInstance, parent?: ComponentInstance, index?: number, arr?: ComponentInstance[]) => boolean | void,
+    parent?: ComponentInstance
+  ): boolean {
+    for (let i = 0; i < nodes.length; i++) {
+      if (nodes[i].id === id) {
+        if (updater(nodes[i], parent, i, nodes) !== false) return true
+      }
+      if (nodes[i].children) {
+        if (updateTree(nodes[i].children!, id, updater, nodes[i])) return true
+      }
+    }
+    return false
+  }
+
+  // Helper: Remove a node from the tree
+  function removeFromTree(nodes: ComponentInstance[], id: string): ComponentInstance[] {
+    return nodes
+      .map(node => {
+        if (node.id === id) return null
+        if (node.children) {
+          node = { ...node, children: removeFromTree(node.children, id) }
+        }
+        return node
+      })
+      .filter(Boolean) as ComponentInstance[]
+  }
+
+  // Helper: Move a node up/down among siblings
+  function moveInTree(nodes: ComponentInstance[], id: string, direction: "up" | "down"): ComponentInstance[] {
+    let changed = false
+    function move(nodes: ComponentInstance[]): ComponentInstance[] {
+      for (let i = 0; i < nodes.length; i++) {
+        if (nodes[i].id === id) {
+          const newIndex = direction === "up" ? i - 1 : i + 1
+          if (newIndex >= 0 && newIndex < nodes.length) {
+            const newNodes = [...nodes]
+            const [moved] = newNodes.splice(i, 1)
+            newNodes.splice(newIndex, 0, moved)
+            changed = true
+            return newNodes
+          }
+        }
+        if (nodes[i].children) {
+          const newChildren = move(nodes[i].children!)
+          if (changed) {
+            nodes[i] = { ...nodes[i], children: newChildren }
+            return nodes
+          }
+        }
+      }
+      return nodes
+    }
+    return move(nodes)
+  }
+
+  // Add component as root or as child of parentId
+  const addComponent = (component: Omit<ComponentInstance, "id">, parentId?: string) => {
     const newComponent: ComponentInstance = {
       ...component,
       id: `component-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      children: [],
     }
-    setComponents((prev) => [...prev, newComponent])
+    setComponents(prev => {
+      if (!parentId) {
+        return [...prev, newComponent]
+      } else {
+        // Add as child to parent
+        const newTree = JSON.parse(JSON.stringify(prev))
+        updateTree(newTree, parentId, (node) => {
+          node.children = node.children || []
+          node.children.push(newComponent)
+        })
+        return newTree
+      }
+    })
     setSelectedComponent(newComponent)
   }
 
+  // Update component props (recursive)
   const updateComponent = (id: string, props: Record<string, any>) => {
-    setComponents((prev) =>
-      prev.map((comp) => (comp.id === id ? { ...comp, props: { ...comp.props, ...props } } : comp)),
-    )
+    setComponents(prev => {
+      const newTree = JSON.parse(JSON.stringify(prev))
+      updateTree(newTree, id, (node) => {
+        node.props = { ...node.props, ...props }
+      })
+      return newTree
+    })
     if (selectedComponent?.id === id) {
-      setSelectedComponent((prev) => (prev ? { ...prev, props: { ...prev.props, ...props } } : null))
+      setSelectedComponent(prev => (prev ? { ...prev, props: { ...prev.props, ...props } } : null))
     }
   }
 
+  // Select component (no change needed)
   const selectComponent = (component: ComponentInstance | null) => {
     setSelectedComponent(component)
   }
 
+  // Delete component (recursive)
   const deleteComponent = (id: string) => {
-    setComponents((prev) => prev.filter((comp) => comp.id !== id))
+    setComponents(prev => removeFromTree(prev, id))
     if (selectedComponent?.id === id) {
       setSelectedComponent(null)
     }
   }
 
+  // Move component up/down among siblings (recursive)
   const moveComponent = (id: string, direction: "up" | "down") => {
-    setComponents((prev) => {
-      const index = prev.findIndex((comp) => comp.id === id)
-      if (index === -1) return prev
-
-      const newIndex = direction === "up" ? index - 1 : index + 1
-      if (newIndex < 0 || newIndex >= prev.length) return prev
-
-      const newComponents = [...prev]
-      const [movedComponent] = newComponents.splice(index, 1)
-      newComponents.splice(newIndex, 0, movedComponent)
-      return newComponents
-    })
+    setComponents(prev => moveInTree(prev, id, direction))
   }
 
   // New method to handle AI-generated components
