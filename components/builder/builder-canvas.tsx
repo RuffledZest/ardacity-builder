@@ -53,21 +53,15 @@ export function BuilderCanvas() {
       ) : (
         <div className="min-h-full">
           {components.map((component, index) => (
-            <div
+            <ComponentRenderer
               key={component.id}
-              className="relative group"
-              onMouseEnter={() => setHoveredComponent(component.id)}
-              onMouseLeave={() => setHoveredComponent(null)}
-            >
-              <ComponentRenderer component={component} />
-              {hoveredComponent === component.id && (
-                <ComponentHoverControls
-                  component={component}
-                  isFirst={index === 0}
-                  isLast={index === components.length - 1}
-                />
-              )}
-            </div>
+              component={component}
+              isRoot={true}
+              index={index}
+              totalSiblings={components.length}
+              hoveredComponent={hoveredComponent}
+              setHoveredComponent={setHoveredComponent}
+            />
           ))}
         </div>
       )}
