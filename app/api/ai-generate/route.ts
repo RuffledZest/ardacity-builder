@@ -81,7 +81,7 @@ Return a JSON object with this exact structure:
   ],
   "generatedComponents": [
     {
-      "type": "descriptive-component-name",
+      "type": "exported function name",
       "category": "ui",
       "props": {
         "title": "Example Title"

@@ -13,7 +13,6 @@ export function ComponentLibrary() {
     navigation: true,
     header: true,
     arweave: true,
-    ui: true,
     footer: true,
     landing : true,
   })
@@ -35,7 +34,6 @@ export function ComponentLibrary() {
     { key: "arweave", title: "Arweave Blocks" },
     { key: "navigation", title: "Navigation Bar" },
     { key: "header", title: "Header Section" },
-    { key: "ui", title: "UI Components" },
     { key: "footer", title: "Footer Components" },
     { key: "landing", title: "Landing Pages" },
   ]

@@ -95,7 +95,6 @@ export const componentRegistry: ComponentDefinition[] = [
         { link: "#", text: "Services", image: "/placeholder.jpg" },
         { link: "#", text: "Contact", image: "/placeholder.jpg" },
       ],
-      className: "",
     },
     dependencies: [],
     imports: ["import { FlowingMenu } from '@/components/ui/flowing-menu'"],
@@ -436,7 +435,7 @@ export const componentRegistry: ComponentDefinition[] = [
     type: "ArweaveSearch",
     description: "Search Arweave transactions using GraphQL with tag filtering",
     defaultProps: {
-      initialTags: [], // No default tags
+      initialTags: [],
       limit: 10,
     },
     dependencies: ["@apollo/client", "graphql"],
@@ -469,7 +468,7 @@ export const componentRegistry: ComponentDefinition[] = [
     },
     dependencies: ["socket.io-client", "lucide-react"],
     imports: [
-      "import { ChatRoom as ChatRoomOnChain } from '@/components/arweave/chatroom-on-chain'"
+      "import { ChatRoom } from '@/components/arweave/chatroom-on-chain'"
     ],
     tags: ["arweave", "chat", "realtime", "socket.io", "emoji", "quick-messages", "builder-friendly"],
   },
@@ -483,12 +482,11 @@ export const componentRegistry: ComponentDefinition[] = [
       title: "Experience Creative Precision",
       subtitle: "Visual harmony driven by real geometry and motion.",
       ctaText: "Request Demo",
-      onCtaClick: "() => alert('Clicked!')",
       imageSrc: "/ArDacitypfp.png",
       showImage: true,
       customClassName: "",
     },
-    dependencies: ["framer-motion", "next/image", "react"],
+    dependencies: ["framer-motion", "react"],
     imports: [
       "import { DarkHeader } from '@/components/headers/dark-theme-header'"
     ],
@@ -678,9 +676,9 @@ export const componentRegistry: ComponentDefinition[] = [
         },
       ],
     },
-    dependencies: ["next/image"],
+    dependencies: [],
     imports: [
-      "import { Web3LandingPage } from '@/components/landing/web3-landing-page'",
+      "import  Web3LandingPage  from '@/components/landing/web3-landing-page'",
     ],
     tags: ["landing", "web3", "modern", "ui", "customizable"],
   },
@@ -794,9 +792,9 @@ export const componentRegistry: ComponentDefinition[] = [
         },
       ],
     },
-    dependencies: ["next/image"],
+    dependencies: [],
     imports: [
-      "import { Web3LandingPage2 } from '@/components/landing/web3-landing-page-2'",
+      "import  Web3LandingPage2  from '@/components/landing/web3-landing-page-2'",
     ],
     tags: ["landing", "web3", "modern", "ui", "animated"],
   },
@@ -901,7 +899,7 @@ export const componentRegistry: ComponentDefinition[] = [
         { value: "24/7", label: "Support" },
       ],
     },
-    dependencies: ["next/image", "lucide-react"],
+    dependencies: ["lucide-react"],
     imports: ["import ProductLandingPage from '@/components/landing/product-landing-page'"],
     tags: ["landing", "product", "modern", "ui", "animated"],
   },

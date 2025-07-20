@@ -8,7 +8,6 @@ interface DarkHeaderProps {
   title?: string
   subtitle?: string
   ctaText?: string
-  onCtaClick?: () => void
   imageSrc?: string
   showImage?: boolean
   customClassName?: string
@@ -18,7 +17,6 @@ export const DarkHeader: React.FC<DarkHeaderProps> = ({
   title = "Precision in Motion",
   subtitle = "A balance of structure and creativity, brought to life.",
   ctaText = "Start Building",
-  onCtaClick,
   imageSrc = "/header-image.png",
   showImage = true,
   customClassName = "",
@@ -27,7 +25,6 @@ export const DarkHeader: React.FC<DarkHeaderProps> = ({
     <header
       className={`relative overflow-hidden bg-zinc-950 text-white py-24 px-6 md:px-12 lg:px-20 flex flex-col lg:flex-row items-center justify-between gap-12 ${customClassName}`}
     >
-      {/* ✨ Geometric Background Pattern */}
       <div className="absolute inset-0 -z-10 pointer-events-none">
         <div className="w-full h-full relative">
           {[...Array(40)].map((_, i) => {
@@ -79,7 +76,6 @@ export const DarkHeader: React.FC<DarkHeaderProps> = ({
 
         {ctaText && (
           <button
-            onClick={onCtaClick}
             className="mt-8 inline-block px-6 py-3 text-base sm:text-lg font-semibold rounded-lg bg-gradient-to-r from-pink-600 to-orange-500 hover:from-pink-700 hover:to-orange-600 transition-all duration-300 shadow-lg"
           >
             {ctaText}
