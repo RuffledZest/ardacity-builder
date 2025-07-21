@@ -29,6 +29,8 @@ import ProductLandingPage from "../landing/product-landing-page"
 import { ChatRoom } from "../arweave/chatroom-on-chain"
 import { DarkHeader } from "../headers/dark-theme-header"
 import { ComponentHoverControls } from "./component-hover-controls"
+import ProfileManager from "../arweave/create-bazaar-profile"
+import FetchProfileCard from "../arweave/fetch-bazaar-profile"
 
 interface ComponentRendererProps {
   component: ComponentInstance
@@ -99,6 +101,8 @@ export function ComponentRenderer({ component, isRoot = false, index = 0, totalS
       'floating-navbar': 'FloatingNavbar',
       'signer-component': 'SignerComponent',
       'chat-box': 'ChatBox',
+      'create-bazaar-profile':'ProfileManager',
+      'fetch-bazaar-profile':'FetchProfileCard',
       'web3-landing-page':'Web3LandingPage',
       'web3-landing-page-2':'Web3LandingPage2',
       'product-landing-page':'ProductLandingPage'
@@ -150,6 +154,10 @@ export function ComponentRenderer({ component, isRoot = false, index = 0, totalS
         return <ArweaveNFT {...component.props} />
       case "ArweaveSearch":
         return <ArweaveSearch {...component.props} />
+      case "ProfileManager":
+        return <ProfileManager {...component.props} />
+      case "FetchProfileCard":
+        return <FetchProfileCard {...component.props} />
       case "ClipPathLinks":
         return <ClipPathLinks {...component.props} />
       case "FlowingMenu":
