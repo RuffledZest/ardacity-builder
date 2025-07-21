@@ -394,6 +394,32 @@ export const componentRegistry: ComponentDefinition[] = [
     tags: ["arweave", "ao", "wallet", "signing"],
   },
   {
+    id: "create-bazaar-profile",
+    name: "Create Bazaar Profile",
+    category: "arweave",
+    type: "ProfileManager",
+    description: "Create your Bazaar profile on Arweave",
+    defaultProps:{},
+    dependencies: ["react-icons"],
+    imports: [
+      "import { ProfileManager } from '@/components/arweave/create-bazaar-profile'",
+    ],
+    tags: ["arweave", "profile", "bazaar"],
+  },
+  {
+    id: "fetch-bazaar-profile",
+    name: "Fetch Bazaar Profile",
+    category: "arweave",
+    type: "FetchProfileCard",
+    description: "Fetch your Bazaar profile with a click",
+    defaultProps:{},
+    dependencies: [],
+    imports: [
+      "import { FetchProfileCard } from '@/components/arweave/fetch-bazaar-profile'",
+    ],
+    tags: ["arweave", "profile", "bazaar", "fetch profile"],
+  },
+  {
     id: "ao-chatbot",
     name: "AO ChatBot",
     category: "arweave",

@@ -208,6 +208,7 @@ export function ComponentProvider({ children }: { children: ReactNode }) {
       "AOChatBot",
       "ArweaveNFT",
       "ArweaveSearch",
+      "ProfileManager",
       "ClipPathLinks",
       "FlowingMenu",
       "Masonry",
