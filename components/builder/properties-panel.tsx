@@ -116,7 +116,7 @@ function PropertyEditor({
 export function PropertiesPanel() {
   const { selectedComponent, updateComponent, deleteComponent, moveComponent, components } = useComponents()
   const [showCode, setShowCode] = useState(false)
-
+  console.log("Selected component:", selectedComponent?.props? selectedComponent.props : "None");
   if (!selectedComponent) {
     return (
       <div className="w-80 border-l border-zinc-800 bg-zinc-900/30 p-4 overflow-y-auto scrollbar-thin scrollbar-track-zinc-900 scrollbar-thumb-zinc-700 hover:scrollbar-thumb-zinc-600">
@@ -244,11 +244,15 @@ export function PropertiesPanel() {
 
         <div className="space-y-4">
           <h4 className="text-sm font-medium text-zinc-400">Properties</h4>
-          <PropertyEditor
-            value={selectedComponent.props}
-            onChange={handlePropsChange}
-            propSchema={propSchema}
-          />
+          {!selectedComponent.props || Object.keys(selectedComponent.props).length === 0 ? (
+            <div className="text-zinc-500 text-sm">No properties available for this component.</div>
+          ) : (
+            <PropertyEditor
+              value={selectedComponent.props}
+              onChange={handlePropsChange}
+              propSchema={propSchema}
+            />
+          )}
         </div>
 
         <div className="mt-6">
