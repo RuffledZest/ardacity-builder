@@ -519,6 +519,18 @@ function generateComponentFiles(components: ComponentInstance[], files: Record<s
     files["components/arweave/arweave-search.tsx"] = generateArweaveSearch()
     files["lib/apollo-client.ts"] = generateApolloClient()
   }
+  if (usedComponents.has("ProfileManager")) {
+    files["components/arweave/create-bazaar-profile.tsx"] = generateCreateBazaarProfile()
+    files["lib/permaweb.ts"] = generatePermawebLib()
+  }
+  if (usedComponents.has("FetchProfileCard")) {
+    files["components/arweave/fetch-bazaar-profile.tsx"] = generateFetchProfileCard()
+    files["lib/permaweb.ts"] = generatePermawebLib()
+  }
+  if (usedComponents.has("AtomicAssetsManager")) {
+    files["components/arweave/atomic-asset.tsx"] = generateAtomicAssetsManager()
+    files["lib/getWalletAddress.ts"] = generateGetWalletAddrLib()
+  }
 
   // Generate UI components
   files["components/ui/button.tsx"] = generateButtonComponent()
@@ -529,6 +541,7 @@ function generateComponentFiles(components: ComponentInstance[], files: Record<s
   files["components/ui/label.tsx"] = generateLabelComponent()
   files["components/ui/scroll-area.tsx"] = generateScrollAreaComponent()
   files["components/ui/badge.tsx"] = generateBadgeComponent()
+  files["components/ui/toast.tsx"] = generateToastComponent()
 
   files["types/ao.d.ts"] = generateAOTypes()
 }
@@ -3048,6 +3061,106 @@ export { ScrollArea, ScrollBar }
 `
 }
 
+function generateToastComponent(): string {
+  return `
+  import React, { useEffect, useState } from 'react';
+  
+  interface ToastProps {
+    message: string;
+    type?: 'success' | 'error' | 'info';
+    duration?: number;
+    onClose: () => void;
+  }
+  
+  const Toast: React.FC<ToastProps> = ({ 
+    message, 
+    type = 'success', 
+    duration = 3000, 
+    onClose 
+  }) => {
+    const [isVisible, setIsVisible] = useState(false);
+  
+    useEffect(() => {
+      // Trigger animation on mount
+      setIsVisible(true);
+  
+      // Auto-hide after duration
+      const timer = setTimeout(() => {
+        setIsVisible(false);
+        setTimeout(onClose, 300); // Wait for animation to complete
+      }, duration);
+  
+      return () => clearTimeout(timer);
+    }, [duration, onClose]);
+  
+    const getTypeStyles = () => {
+      switch (type) {
+        case 'success':
+          return 'bg-green-600 border-green-500';
+        case 'error':
+          return 'bg-red-600 border-red-500';
+        case 'info':
+          return 'bg-blue-600 border-blue-500';
+        default:
+          return 'bg-green-600 border-green-500';
+      }
+    };
+  
+    const getIcon = () => {
+      switch (type) {
+        case 'success':
+          return (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+          );
+        case 'error':
+          return (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          );
+        case 'info':
+          return (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          );
+        default:
+          return null;
+      }
+    };
+  
+    return (
+      <div
+        className={\`fixed top-4 right-4 z-50 flex items-center gap-3 px-4 py-3 rounded-lg border text-white shadow-lg transition-all duration-300 ease-in-out transform \${
+          isVisible 
+            ? 'translate-x-0 opacity-100 scale-100' 
+            : 'translate-x-full opacity-0 scale-95'
+        } \${getTypeStyles()}\`}
+      >
+        <div className="flex-shrink-0">
+          {getIcon()}
+        </div>
+        <span className="text-sm font-medium">{message}</span>
+        <button
+          onClick={() => {
+            setIsVisible(false);
+            setTimeout(onClose, 300);
+          }}
+          className="flex-shrink-0 ml-2 text-white hover:text-gray-200 transition-colors"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+    );
+  };
+  
+  export default Toast;
+  `
+}
 function generateBadgeComponent(): string {
   return `import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
@@ -6096,7 +6209,1125 @@ to-blue-500/15 text-white
 `
 }
 
-function generateArweaveSearch(): string {
+function generateGetWalletAddrLib(): string {
+  return `
+  export const getWalletAddress = async (): Promise<string | null> => {
+    try {
+      if (!window.arweaveWallet) {
+        throw new Error("Arweave wallet not installed.");
+      }
+  
+      // Request permissions (safe even if already granted)
+      await window.arweaveWallet.connect([
+        "ACCESS_ADDRESS",
+        "ACCESS_PUBLIC_KEY",
+        "SIGN_TRANSACTION",
+        "DISPATCH"
+      ]);
+  
+      // Now get the active wallet address
+      const address = await window.arweaveWallet.getActiveAddress();
+      return address;
+    } catch (err) {
+      console.error("Error getting wallet address:", err);
+      return null;
+    }
+  };
+  `
+}
+function generateAtomicAssetsManager(): string {
+  return `
+  import React, { useEffect, useState } from "react";
+  import Arweave from "arweave";
+  import { getWalletAddress } from "../../lib/getWalletAddress";
+  import Toast from "../ui/toast";
+  
+  interface AtomicAsset {
+    id: string;
+    name: string;
+    description: string;
+    creator: string;
+    topics: string[];
+    dateCreated: number;
+    assetType: string;
+    contentType: string;
+  }
+  
+  const arweave = Arweave.init({
+    host: "arweave.net",
+    port: 443,
+    protocol: "https",
+  });
+  
+  const AtomicAssetsManager: React.FC = () => {
+    const [assets, setAssets] = useState<AtomicAsset[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [showForm, setShowForm] = useState(false);
+    const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
+  
+    const [formData, setFormData] = useState({
+      title: "",
+      description: "",
+      type: "",
+      topics: "",
+      contentType: "",
+      file: null as File | null,
+    });
+  
+    const fetchAssets = async () => {
+      try {
+        setLoading(true);
+        const address = await getWalletAddress();
+        if (!address) {
+          setError("Wallet not connected");
+          return;
+        }
+        const query = {
+          query: \`
+            query {
+              transactions(owners: ["\${address}"], tags: [{ name: "Protocol-Name", values: ["Permaweb Atomic Asset"] }]) {
+                edges {
+                  node {
+                    id
+                    tags {
+                      name
+                      value
+                    }
+                    block {
+                      timestamp
+                    }
+                  }
+                }
+              }
+            }
+          \`,
+        };
+  
+        const response = await fetch("https://arweave.net/graphql", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(query),
+        });
+  
+        const result = await response.json();
+        const nodes = result?.data?.transactions?.edges || [];
+  
+        const parsedAssets: AtomicAsset[] = nodes.map(({ node }: any) => {
+          const tags: Record<string, string> = {};
+          node.tags.forEach((tag: any) => {
+            tags[tag.name] = tag.value;
+          });
+  
+          return {
+            id: node.id,
+            name: tags["Title"] || "Untitled",
+            description: tags["Description"] || "No description",
+            creator: address,
+            topics: tags["Topics"]?.split(",") || [],
+            dateCreated: node.block?.timestamp * 1000 || Date.now(),
+            assetType: tags["Type"] || "Unknown",
+            contentType: tags["Content-Type"] || "N/A",
+          };
+        });
+  
+        setAssets(parsedAssets);
+      } catch (err) {
+        console.error("Error fetching assets:", err);
+        setError("Failed to load assets");
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    const handleCreateAsset = () => setShowForm(true);
+    const closeForm = () => setShowForm(false);
+  
+    const handleChange = (
+      e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    ) => {
+      const { name, value, files } = e.target as any;
+      setFormData((prev) => ({
+        ...prev,
+        [name]: files ? files[0] : value,
+      }));
+    };
+  
+    const handleSubmit = async (e: React.FormEvent) => {
+      e.preventDefault();
+  
+      if (!formData.file) {
+        setToast({ message: "File is required", type: "error" });
+        return;
+      }
+  
+      try {
+        await window.arweaveWallet.connect(["ACCESS_ADDRESS", "SIGN_TRANSACTION", "DISPATCH"]);
+  
+        const data = await formData.file.arrayBuffer();
+        const tx = await arweave.createTransaction({ data });
+  
+        tx.addTag("App-Name", "Permaweb Atomic Asset Uploader");
+        tx.addTag("Protocol-Name", "Permaweb Atomic Asset");
+        tx.addTag("Title", formData.title);
+        tx.addTag("Description", formData.description);
+        tx.addTag("Type", formData.type);
+        tx.addTag("Topics", formData.topics);
+        tx.addTag("Content-Type", formData.contentType);
+  
+        // Use ArConnect dispatch to sign and upload
+        await window.arweaveWallet.dispatch(tx);
+  
+        setToast({ message: "Asset uploaded successfully!", type: "success" });
+        setShowForm(false);
+        setFormData({
+          title: "",
+          description: "",
+          type: "",
+          topics: "",
+          contentType: "",
+          file: null,
+        });
+        fetchAssets();
+      } catch (err: any) {
+        console.error("Upload error:", err);
+        setToast({ 
+          message: "Upload error: " + (err?.message || "Unknown error"), 
+          type: "error" 
+        });
+      }
+    };
+  
+    useEffect(() => {
+      fetchAssets();
+    }, []);
+  
+    return (
+      <div className="bg-zinc-950 py-10 px-2 flex flex-col items-center">
+        {/* Toast notification */}
+        {toast && (
+          <Toast
+            message={toast.message}
+            type={toast.type}
+            onClose={() => setToast(null)}
+          />
+        )}
+        
+        <div className="w-full max-w-3xl mx-auto flex flex-col gap-8">
+          <h2 className="text-2xl font-bold mb-4 text-center text-white">Your Atomic Assets</h2>
+          {error && <p className="text-red-500 text-center">{error}</p>}
+          <div className="flex justify-center mb-4">
+            <button
+              onClick={handleCreateAsset}
+              className="px-6 py-2 rounded-full font-semibold text-white bg-gradient-to-r from-blue-500 via-blue-700 to-purple-600 shadow-lg flex items-center gap-2 relative overflow-hidden group transition-all duration-300"
+            >
+              <span className="relative z-10 flex items-center gap-2">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
+                Upload or Create Asset
+              </span>
+              {/* Glowing animated effect on hover */}
+              <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-r from-blue-400 via-blue-600 to-purple-500 blur-lg animate-pulse" />
+            </button>
+          </div>
+          <div className="relative flex flex-col items-center">
+            {/* Slide-up Form */}
+            <div
+              className={\`w-full max-w-md mx-auto transition-all duration-500 ease-in-out z-50 \${showForm ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 translate-y-8 pointer-events-none'} fixed left-1/2 -translate-x-1/2 top-32\`}
+            >
+              <div className="bg-zinc-900 border border-zinc-700 rounded-2xl shadow-2xl p-8 w-full flex flex-col relative">
+                <button
+                  type="button"
+                  onClick={closeForm}
+                  className="absolute top-4 right-4 text-zinc-400 hover:text-zinc-100 text-2xl font-bold"
+                  aria-label="Close"
+                >
+                  &times;
+                </button>
+                <h3 className="text-xl font-semibold mb-4 text-white">Create Atomic Asset</h3>
+                <form onSubmit={handleSubmit} className="space-y-3">
+                  <input
+                    className="w-full border border-zinc-700 bg-zinc-800 text-zinc-100 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    type="text"
+                    name="title"
+                    placeholder="Title"
+                    value={formData.title}
+                    onChange={handleChange}
+                    required
+                  />
+                  <textarea
+                    className="w-full border border-zinc-700 bg-zinc-800 text-zinc-100 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    name="description"
+                    placeholder="Description"
+                    value={formData.description}
+                    onChange={handleChange}
+                    required
+                  />
+                  <input
+                    className="w-full border border-zinc-700 bg-zinc-800 text-zinc-100 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    type="text"
+                    name="type"
+                    placeholder="Type (e.g. image, doc)"
+                    value={formData.type}
+                    onChange={handleChange}
+                  />
+                  <input
+                    className="w-full border border-zinc-700 bg-zinc-800 text-zinc-100 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    type="text"
+                    name="topics"
+                    placeholder="Topics (comma-separated)"
+                    value={formData.topics}
+                    onChange={handleChange}
+                  />
+                  <input
+                    className="w-full border border-zinc-700 bg-zinc-800 text-zinc-100 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    type="text"
+                    name="contentType"
+                    placeholder="Content-Type (e.g. image/png)"
+                    value={formData.contentType}
+                    onChange={handleChange}
+                    required
+                  />
+                  <input
+                    className="w-full border border-zinc-700 bg-zinc-800 text-zinc-100 rounded px-3 py-2"
+                    type="file"
+                    name="file"
+                    accept="*"
+                    onChange={handleChange}
+                    required
+                  />
+                  <div className="flex justify-end space-x-3 mt-4">
+                    <button
+                      type="button"
+                      onClick={closeForm}
+                      className="px-4 py-2 border-1 border-zinc-700 text-zinc-100 rounded hover:bg-zinc-600"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="px-4 py-2 bg-zinc-600 text-white rounded hover:bg-zinc-900 cursor-pointer transition duration-200 hover:outline-2"
+                    >
+                      Upload
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+            {/* Asset List or Empty State */}
+            {loading ? (
+              <div className="flex justify-center items-center py-16">
+                <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500" />
+              </div>
+            ) : assets.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {assets.map((asset) => (
+                  <div
+                    key={asset.id}
+                    className="bg-zinc-900 border border-zinc-700 rounded-2xl shadow-lg p-5 flex flex-col hover:shadow-2xl hover:border-blue-500 transition group"
+                  >
+                    <h3 className="font-semibold text-lg mb-1 text-white group-hover:text-blue-400 transition">{asset.name}</h3>
+                    <p className="text-sm mb-1 text-zinc-300">{asset.description}</p>
+                    <p className="text-xs text-zinc-500 mb-1">
+                      Created: {new Date(asset.dateCreated).toLocaleString()}
+                    </p>
+                    <p className="text-xs text-zinc-400 mb-1">
+                      Type: {asset.assetType}
+                    </p>
+                    {asset.topics?.length > 0 && (
+                      <p className="text-xs mt-1 text-zinc-400">
+                        Topics: {asset.topics.join(", ")}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-16 bg-zinc-900 rounded-2xl border border-zinc-700 mt-2">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-zinc-600 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6 1a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                <span className="text-zinc-500 text-lg mb-4">You have no Atomic Assets yet.</span>
+                <button
+                  onClick={handleCreateAsset}
+                  className="px-5 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition font-semibold"
+                >
+                  Upload or Create Asset
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+  
+  export default AtomicAssetsManager;
+  `
+}
+function generateFetchProfileCard(): string {
+  return `
+  import React, { useState, useRef, useEffect } from "react";
+  import { initPermaweb } from "../../lib/permaweb";
+  
+  type ProfileData = {
+    id: string;
+    walletAddress: string;
+    owner: string;
+    username: string;
+    displayName: string;
+    description: string;
+    thumbnail: string;
+    banner: string;
+    assets: {
+      id: string;
+      quantity: string;
+      dateCreated: number;
+      lastUpdate: number;
+    }[];
+  };
+  
+  function getAverageRGB(imgEl: HTMLImageElement | null): string {
+    // fallback to blue if not possible
+    if (!imgEl) return "#2563eb";
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext && canvas.getContext("2d");
+    if (!context) return "#2563eb";
+    canvas.width = imgEl.naturalWidth;
+    canvas.height = imgEl.naturalHeight;
+    context.drawImage(imgEl, 0, 0);
+    try {
+      const data = context.getImageData(0, 0, canvas.width, canvas.height).data;
+      let r = 0,
+        g = 0,
+        b = 0,
+        count = 0;
+      for (let i = 0; i < data.length; i += 4) {
+        r += data[i];
+        g += data[i + 1];
+        b += data[i + 2];
+        count++;
+      }
+      r = Math.floor(r / count);
+      g = Math.floor(g / count);
+      b = Math.floor(b / count);
+      return \`rgb(\${r},\${g},\${b})\`;
+    } catch {
+      return "#2563eb";
+    }
+  }
+  
+  const FetchProfileCard: React.FC = () => {
+    const [fetchType, setFetchType] = useState<"profileId" | "walletAddress">(
+      "profileId"
+    );
+    const [profileId, setProfileId] = useState("");
+    const [walletAddress, setWalletAddress] = useState("");
+    const [profile, setProfile] = useState<ProfileData | null>(null);
+    const [copied, setCopied] = useState(false);
+    const [borderColor, setBorderColor] = useState<string>("#2563eb");
+    const bannerRef = useRef<HTMLImageElement>(null);
+    const [permaweb, setPermaweb] = useState<any | null>(null);
+    const [loading, setLoading] = useState(false);
+  
+    useEffect(() => {
+      const init = async () => {
+        try {
+          const pw = await initPermaweb();
+          setPermaweb(pw);
+        } catch (err) {
+          console.error("Failed to initialize permaweb:", err);
+          alert(
+            "Failed to connect to ArConnect. Please ensure it's installed and unlocked."
+          );
+        }
+      };
+      init();
+    }, []);
+    useEffect(() => {
+      if (profile && profile.banner && bannerRef.current) {
+        const img = bannerRef.current;
+        if (img.complete) {
+          setBorderColor(getAverageRGB(img));
+        } else {
+          img.onload = () => setBorderColor(getAverageRGB(img));
+        }
+      } else {
+        setBorderColor("#2563eb");
+      }
+    }, [profile?.banner]);
+  
+    const fetchById = async () => {
+      if (!profileId) return alert("Enter Profile ID first");
+      setLoading(true);
+  
+      try {
+        const fetchedProfile = await permaweb.getProfileById(profileId);
+        if (!fetchedProfile) {
+          alert("No profile found with this ID.");
+          return;
+        }
+        setProfile(fetchedProfile);
+      } catch (err) {
+        console.error("Fetch by ID failed:", err);
+        alert("Failed to fetch profile.");
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    const fetchByWallet = async () => {
+      if (!walletAddress) return alert("Enter Wallet Address first");
+      setLoading(true);
+  
+      try {
+        const fetchedProfile = await permaweb.getProfileByWalletAddress(
+          walletAddress
+        );
+        if (!fetchedProfile) {
+          alert("No profile found for this wallet.");
+          return;
+        }
+        setProfile(fetchedProfile);
+      } catch (err) {
+        console.error("Fetch by Wallet failed:", err);
+        alert("Failed to fetch profile.");
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    // Copy wallet address
+    const handleCopy = (address: string) => {
+      navigator.clipboard.writeText(address);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1200);
+    };
+  
+    return (
+      <div className="w-full flex flex-col gap-6 items-center bg-zinc-900 py-10">
+        {/* Profile Card */}
+        <div
+          className="relative mx-auto max-w-md w-full bg-zinc-900 border-2 rounded-2xl shadow-2xl p-0 overflow-visible"
+          style={{
+            borderColor: "#a1a1aa", // zinc-400
+            boxShadow: \`0 8px 32px 0 rgba(31,41,55,0.4), 0 0 0 4px #27272a33\`, // zinc-800
+          }}
+        >
+          {/* Shiny border animation */}
+          <div
+            className="absolute inset-0 pointer-events-none rounded-2xl z-10 animate-[shimmer_2.5s_linear_infinite]"
+            style={{
+              background: \`linear-gradient(120deg, #a1a1aa 0%, #27272a 60%, #a1a1aa 100%)\`,
+              opacity: 0.18,
+              filter: "blur(8px)",
+            }}
+          />
+          {profile ? (
+            <>
+              {/* Banner as cover */}
+              <div className="relative w-full h-36 bg-zinc-800 rounded-2xl">
+                {profile.banner ? (
+                  <img
+                    ref={bannerRef}
+                    src={
+                      profile.banner.startsWith("data:image")
+                        ? profile.banner
+                        : \`https://arweave.net/\${profile.banner}\`
+                    }
+                    alt="Banner"
+                    className="w-full h-36 object-cover rounded-t-2xl"
+                  />
+                ) : (
+                  <div className="w-full h-36 bg-zinc-800 flex rounded-t-2xl items-center justify-center text-zinc-500 text-sm">
+                    No Banner
+                  </div>
+                )}
+                {/* Circular thumbnail, overlapping */}
+                <div className="absolute left-1/2 -bottom-12 -translate-x-1/2 z-10">
+                  {profile.thumbnail ? (
+                    <img
+                      src={
+                        profile.thumbnail.startsWith("data:image")
+                          ? profile.thumbnail
+                          : \`https://arweave.net/\${profile.thumbnail}\`
+                      }
+                      alt="Thumbnail"
+                      className="w-24 h-24 object-cover rounded-full border-4 border-zinc-900 shadow-lg bg-zinc-800"
+                    />
+                  ) : (
+                    <div className="w-24 h-24 rounded-full border-4 border-zinc-900 shadow-lg bg-zinc-800 flex items-center justify-center text-zinc-500 text-xs">
+                      No Image
+                    </div>
+                  )}
+                </div>
+              </div>
+              {/* Main profile info */}
+              <div className="pt-16 pb-6 px-6 flex flex-col items-center">
+                <h3 className="text-2xl font-bold text-white mb-1">
+                  {profile.displayName || (
+                    <span className="text-zinc-500">No Display Name</span>
+                  )}
+                </h3>
+                <span className="text-xs bg-zinc-800 border border-zinc-700 rounded px-2 py-0.5 text-zinc-400 mb-2">
+                  @{profile.username || "username"}
+                </span>
+                <div className="flex items-center gap-2 mt-2 mb-2">
+                  <span className="text-zinc-400 text-xs font-mono truncate max-w-[120px]">
+                    {profile.owner}
+                  </span>
+                  <button
+                    onClick={() => handleCopy(profile.owner)}
+                    className="ml-1 px-2 py-1 rounded bg-zinc-800 border border-zinc-700 text-zinc-400 hover:text-white hover:bg-zinc-700 transition text-xs"
+                    title="Copy wallet address"
+                  >
+                    {copied ? "Copied!" : "Copy"}
+                  </button>
+                </div>
+                <div className="text-zinc-500 text-xs mb-2">
+                  Profile ID:{" "}
+                  <span className="font-mono break-all">{profile.id}</span>
+                </div>
+                <p className="text-zinc-300 text-sm mb-4 text-center max-w-xl">
+                  {profile.description || (
+                    <span className="italic">No description</span>
+                  )}
+                </p>
+                {/* Asset section */}
+                <div className="w-full mt-2">
+                  <h4 className="font-bold text-zinc-200 mb-2 text-left">
+                    Assets
+                  </h4>
+                  {profile.assets?.length > 0 ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {profile.assets.map((asset) => (
+                        <div
+                          key={asset.id}
+                          className="bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 flex flex-col hover:shadow-lg transition"
+                        >
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="font-semibold text-zinc-100 text-xs">
+                              ID:
+                            </span>
+                            <span className="font-mono text-zinc-400 text-xs truncate">
+                              {asset.id}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="font-semibold text-zinc-100 text-xs">
+                              Qty:
+                            </span>
+                            <span className="text-zinc-300 text-xs text-right">
+                              {asset.quantity}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="font-semibold text-zinc-100 text-xs">
+                              Created:
+                            </span>
+                            <span className="text-zinc-400 text-xs text-right">
+                              {new Date(asset.dateCreated).toLocaleString()}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="font-semibold text-zinc-100 text-xs">
+                              Updated:
+                            </span>
+                            <span className="text-zinc-400 text-xs text-right">
+                              {new Date(asset.lastUpdate).toLocaleString()}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center py-8 bg-zinc-800 rounded-lg border border-zinc-700 mt-2">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-8 w-8 text-zinc-600 mb-2"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 8v4l3 3m6 1a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                      <span className="text-zinc-500 text-sm">
+                        No assets found for this profile.
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </>
+          ) : (
+            // Skeleton loader (unchanged)
+            <div className="w-full flex flex-col items-center animate-pulse pb-8 rounded-2xl">
+              {/* Banner skeleton */}
+              <div className="relative w-full h-36 bg-zinc-800 rounded-2xl">
+                <div className="w-full h-36 bg-zinc-800 rounded-t-2xl" />
+                {/* Thumbnail skeleton */}
+                <div className="absolute left-1/2 -bottom-12 -translate-x-1/2 z-10">
+                  <div className="w-24 h-24 rounded-full border-4 border-zinc-900 bg-zinc-800" />
+                </div>
+              </div>
+              <div className="pt-16 pb-6 px-6 flex flex-col items-center w-full">
+                <div className="h-6 w-40 bg-zinc-800 rounded mb-2" />
+                <div className="h-4 w-24 bg-zinc-800 rounded mb-2" />
+                <div className="h-4 w-32 bg-zinc-800 rounded mb-2" />
+                <div className="h-4 w-64 bg-zinc-800 rounded mb-4" />
+                {/* Asset skeletons */}
+                <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
+                  {[1, 2].map((i) => (
+                    <div
+                      key={i}
+                      className="bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-4 flex flex-col gap-2"
+                    >
+                      <div className="h-3 w-24 bg-zinc-700 rounded" />
+                      <div className="h-3 w-16 bg-zinc-700 rounded" />
+                      <div className="h-3 w-28 bg-zinc-700 rounded" />
+                      <div className="h-3 w-20 bg-zinc-700 rounded" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+        {/* Fetch Form */}
+        <div className="bg-zinc-900 border border-zinc-700 rounded-2xl shadow-lg p-6">
+          <h2 className="text-xl font-bold text-white mb-4">Fetch Profile</h2>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (fetchType === "profileId") fetchById();
+              else fetchByWallet();
+            }}
+            className="flex flex-col md:flex-row gap-4 items-center"
+          >
+            <div className="flex w-full md:w-auto gap-2 items-center">
+              <select
+                value={fetchType}
+                onChange={(e) =>
+                  setFetchType(e.target.value as "profileId" | "walletAddress")
+                }
+                className="border border-zinc-700 rounded px-2 py-2 bg-zinc-800 text-zinc-100 focus:outline-none focus:ring-2 focus:ring-zinc-500"
+              >
+                <option value="profileId">Profile ID</option>
+                <option value="walletAddress">Wallet Address</option>
+              </select>
+              <input
+                placeholder={
+                  fetchType === "profileId" ? "Profile ID" : "Wallet Address"
+                }
+                value={fetchType === "profileId" ? profileId : walletAddress}
+                onChange={(e) =>
+                  fetchType === "profileId"
+                    ? setProfileId(e.target.value)
+                    : setWalletAddress(e.target.value)
+                }
+                className="border border-zinc-700 rounded px-3 py-2 bg-zinc-800 text-zinc-100 focus:outline-none focus:ring-2 focus:ring-zinc-500 w-full md:w-64"
+                required
+              />
+            </div>
+            <button
+              type="submit"
+              className={\`px-6 py-2 rounded-lg font-semibold transition w-full md:w-auto flex items-center justify-center
+                \${
+                  loading
+                    ? "bg-zinc-600 text-zinc-300 cursor-not-allowed"
+                    : "bg-zinc-700 hover:bg-zinc-600 text-white"
+                }\`}
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <svg
+                    className="animate-spin h-5 w-5 mr-2 text-zinc-200"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v8z"
+                    ></path>
+                  </svg>
+                  Fetching...
+                </>
+              ) : (
+                "Fetch"
+              )}
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  };
+  
+  export default FetchProfileCard;
+  
+  `
+}
+
+  function generateCreateBazaarProfile(): string {
+  return `
+  import React, { useEffect, useState } from "react";
+  import { MdOutlineSwapVert } from "react-icons/md";
+  import { initPermaweb } from "../../lib/permaweb";
+  
+  type ProfileData = {
+    id: string;
+    walletAddress: string;
+    owner: string;
+    username: string;
+    displayName: string;
+    description: string;
+    thumbnail: string;
+    banner: string;
+    assets: {
+      id: string;
+      quantity: string;
+      dateCreated: number;
+      lastUpdate: number;
+    }[];
+  };
+  const ProfileManager: React.FC= () => {
+    const [permaweb, setPermaweb] = useState<any | null>(null);
+    const [copied, setCopied] = useState(false);
+  
+    useEffect(() => {
+      const init = async () => {
+        try {
+          const pw = await initPermaweb();
+          setPermaweb(pw);
+        } catch (err) {
+          console.error("Failed to initialize permaweb:", err);
+          alert(
+            "Failed to connect to ArConnect. Please ensure it's installed and unlocked."
+          );
+        }
+      };
+      init();
+    }, []);
+    const [form, setForm] = useState({
+      username: "",
+      displayName: "",
+      description: "",
+      thumbnail: "",
+      banner: "",
+    });
+    const [profileId, setProfileId] = useState("");
+    const [mode, setMode] = useState<"create" | "update">("create");
+    const [bannerError, setBannerError] = useState("");
+    const [thumbError, setThumbError] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [success, setSuccess] = useState("");
+    const [error, setError] = useState("");
+  
+    const handleInputChange = (
+      e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    ) => {
+      setForm({ ...form, [e.target.name]: e.target.value });
+    };
+  
+    // Image upload handler with size check
+    const handleImageUpload = async (
+      e: React.ChangeEvent<HTMLInputElement>,
+      type: "thumbnail" | "banner"
+    ) => {
+      const file = e.target.files?.[0];
+      if (file) {
+        if (file.size > 102400) {
+          // 100kb
+          if (type === "banner") setBannerError("Image must be 100kb or less");
+          if (type === "thumbnail") setThumbError("Image must be 100kb or less");
+          return;
+        } else {
+          if (type === "banner") setBannerError("");
+          if (type === "thumbnail") setThumbError("");
+        }
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setForm((prev) => ({ ...prev, [type]: reader.result as string }));
+        };
+        reader.readAsDataURL(file);
+      }
+    };
+    // Copy wallet address
+    const handleCopy = (address: string) => {
+      navigator.clipboard.writeText(address);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1200);
+    };
+    const createProfile = async () => {
+      setLoading(true);
+      setError("");
+      setSuccess("");
+      try {
+        const newProfileId = await permaweb.createProfile(form);
+        setProfileId(newProfileId);
+        setSuccess("Profile created successfully! ID: " + newProfileId);
+      } catch (err: any) {
+        console.error("Create profile failed:", err);
+        if (err?.message?.includes("cancelled")) {
+          setError("You cancelled the signing. Please try again.");
+        } else {
+          setError("Failed to create profile.");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    const updateProfile = async () => {
+      setLoading(true);
+      setError("");
+      setSuccess("");
+      if (!profileId) {
+        setError("Please provide a profile ID to update.");
+        setLoading(false);
+        return;
+      }
+      try {
+        const updatedId = await permaweb.updateProfile(form, profileId);
+        setSuccess("Profile updated. Update ID: " + updatedId);
+      } catch (err: any) {
+        console.error("Update failed:", err);
+        setError("Failed to update profile.");
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    return (
+      <div className="bg-zinc-950 py-10 px-2">
+        <div className="max-w-md mx-auto flex flex-col gap-8">
+          <div className="bg-zinc-900 border border-zinc-700 rounded-2xl shadow-lg relative overflow-visible">
+            <div className="absolute left-1/2 -translate-x-1/2 -top-6 flex items-center gap-2 z-20">
+              <span className="text-lg font-bold text-white bg-zinc-900 px-4 py-1 rounded-full shadow border border-zinc-700">
+                {mode === "create" ? "Create Profile" : "Update Profile"}
+              </span>
+              <div className="relative group">
+                <button
+                  type="button"
+                  onClick={() => setMode(mode === "create" ? "update" : "create")}
+                  className="ml-1 p-2 rounded-full bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-zinc-200 transition"
+                  aria-label={
+                    mode === "create"
+                      ? "Switch to Update Profile"
+                      : "Switch to Create Profile"
+                  }
+                >
+                  <MdOutlineSwapVert />
+                </button>
+                {/* Tooltip */}
+                <div className="absolute left-1/2 -translate-x-1/2 top-10 bg-zinc-800 text-zinc-100 text-xs rounded px-3 py-1 shadow opacity-0 group-hover:opacity-100 pointer-events-none transition whitespace-nowrap z-30">
+                  {mode === "create"
+                    ? "Switch to Update Profile"
+                    : "Switch to Create Profile"}
+                </div>
+              </div>
+            </div>
+            {/* Banner and Thumbnail Preview as File Inputs */}
+            <div className="flex flex-col items-center mb-6">
+              {/* Banner as file input */}
+              <div className="w-full flex justify-center">
+                <label className="w-full h-38 max-w-md block cursor-pointer group relative">
+                  {form.banner ? (
+                    <img
+                      src={
+                        form.banner.startsWith("data:image")
+                          ? form.banner
+                          : \`https://arweave.net/\${form.banner}\`
+                      }
+                      alt="Banner"
+                      className="w-full h-38 object-cover rounded-t-2xl border border-zinc-700"
+                    />
+                  ) : (
+                    <div className="w-full h-36 bg-zinc-800 rounded-t-xl flex flex-col border border-zinc-700 flex items-center justify-center text-zinc-500 text-sm">
+                      No Banner/Click to upload image
+                      {bannerError && (
+                        <div className="text-red-500 text-xs">{bannerError}</div>
+                      )}
+                    </div>
+                  )}
+                  {/* Hover overlay */}
+                  <div className="absolute inset-0 bg-zinc-900 bg-opacity-60 opacity-0 group-hover:opacity-100 flex items-center justify-center text-xs text-zinc-200 rounded-t-2xl transition pointer-events-none">
+                    Max size: 100kb
+                  </div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleImageUpload(e, "banner")}
+                    className="hidden"
+                  />
+                </label>
+              </div>
+              {/* Thumbnail as file input (circular, overlaps banner) */}
+              <div className="-mt-12 mb-2 z-10">
+                <label className="block cursor-pointer group relative">
+                  {form.thumbnail ? (
+                    <img
+                      src={
+                        form.thumbnail.startsWith("data:image")
+                          ? form.thumbnail
+                          : \`https://arweave.net/\${form.thumbnail}\`
+                      }
+                      alt="Thumbnail"
+                      className="w-24 h-24 object-cover rounded-full border-4 border-zinc-900 shadow-lg bg-zinc-800"
+                    />
+                  ) : (
+                    <div className="w-24 h-24 rounded-full border-4 border-zinc-900 shadow-lg bg-zinc-800 flex items-center justify-center text-zinc-500 text-[10px]">
+                      Upload image
+                    </div>
+                  )}
+                  {/* Hover overlay */}
+                  <div className="absolute inset-0 bg-zinc-900 bg-opacity-60 opacity-0 group-hover:opacity-100 flex items-center justify-center text-xs text-zinc-200 rounded-full transition pointer-events-none">
+                    Max size: 100kb
+                  </div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleImageUpload(e, "thumbnail")}
+                    className="hidden"
+                  />
+                </label>
+              </div>
+              {thumbError && (
+                <div className="text-red-500 text-xs text-center">
+                  {thumbError}
+                </div>
+              )}
+            </div>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (mode === "create") createProfile();
+                else updateProfile();
+              }}
+              className="space-y-4 px-6 pb-6"
+            >
+              {mode === "update" && (
+                <input
+                  name="profileId"
+                  placeholder="Profile ID"
+                  value={profileId}
+                  onChange={(e) => setProfileId(e.target.value)}
+                  className="border border-zinc-700 rounded px-3 py-2 bg-zinc-800 text-zinc-100 focus:outline-none focus:ring-2 focus:ring-zinc-500 w-full"
+                  required
+                />
+              )}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input
+                  name="username"
+                  placeholder="Username"
+                  value={form.username}
+                  onChange={handleInputChange}
+                  className="border border-zinc-700 rounded px-3 py-2 bg-zinc-800 text-zinc-100 focus:outline-none focus:ring-2 focus:ring-zinc-500 w-full"
+                  required
+                />
+                <input
+                  name="displayName"
+                  placeholder="Display Name"
+                  value={form.displayName}
+                  onChange={handleInputChange}
+                  className="border border-zinc-700 rounded px-3 py-2 bg-zinc-800 text-zinc-100 focus:outline-none focus:ring-2 focus:ring-zinc-500 w-full"
+                  required
+                />
+              </div>
+              <textarea
+                name="description"
+                placeholder="Description"
+                value={form.description}
+                onChange={handleInputChange}
+                className="border border-zinc-700 rounded px-3 py-2 bg-zinc-800 text-zinc-100 focus:outline-none focus:ring-2 focus:ring-zinc-500 w-full min-h-[60px]"
+              />
+              <div className="flex items-center justify-center">
+                <button
+                  type="submit"
+                  className={\`px-6 py-2 rounded-lg font-semibold transition w-full md:w-auto flex items-center justify-center
+                    \${loading ? 'bg-zinc-600 text-zinc-300 cursor-not-allowed' : success ? 'bg-green-600 text-white border-2 border-zinc-500' : 'bg-zinc-700 hover:bg-zinc-600 text-white'}\`}
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <>
+                      <svg className="animate-spin h-5 w-5 mr-2 text-zinc-200" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path></svg>
+                      {mode === "create" ? "Creating..." : "Updating..."}
+                    </>
+                  ) : success ? (
+                    <>
+                      <svg className="h-5 w-5 mr-2 text-green-200" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                      Success
+                    </>
+                  ) : (
+                    mode === "create" ? "Create Profile" : "Update Profile"
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+          {/* Feedback messages */}
+          {error && (
+            <div className="bg-red-900 border border-red-700 text-red-200 rounded-lg px-4 py-3 text-center shadow">
+              {error}
+            </div>
+          )}
+          {success && (<>
+            <div className="relative bg-zinc-900 border border-zinc-300/20 text-green-300 rounded-lg px-4 py-3 text-center shadow">
+              {success}
+            <button
+              onClick={() => handleCopy(profileId)}
+              className="absolute top-0 right-0 ml-1 px-2 py-1 rounded bg-zinc-100/10 text-zinc-400 hover:text-white hover:bg-zinc-700 transition text-xs"
+              title="Copy wallet address"
+            >
+              {copied ? 'Copied!' : 'Copy'}
+            </button>
+            </div>
+          </>
+          )}
+        </div>
+      </div>
+    );
+  };
+  
+  export default ProfileManager;
+  `
+}
+
+function generatePermawebLib(): string {
+  return `
+  import Arweave from "arweave";
+  import { connect, createDataItemSigner } from "@permaweb/aoconnect";
+  import Permaweb from "@permaweb/libs";
+  
+  export const initPermaweb = async () => {
+    // Connect to ArConnect browser extension
+    await window.arweaveWallet.connect(["ACCESS_ADDRESS", "SIGN_TRANSACTION"]);
+  
+    // Initialize SDK
+    const permaweb = Permaweb.init({
+      ao: connect(),
+      arweave: Arweave.init(),
+      signer: createDataItemSigner(window.arweaveWallet),
+    });
+  
+    return permaweb;
+  };
+  `
+}
+
+  function generateArweaveSearch(): string {
   return `
 import React, { useState } from 'react';
 import { gql, useQuery, ApolloProvider } from '@apollo/client';
