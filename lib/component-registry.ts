@@ -402,9 +402,22 @@ export const componentRegistry: ComponentDefinition[] = [
     defaultProps:{},
     dependencies: ["react-icons"],
     imports: [
-      "import { ProfileManager } from '@/components/arweave/create-bazaar-profile'",
+      "import  ProfileManager from '@/components/arweave/create-bazaar-profile'",
     ],
     tags: ["arweave", "profile", "bazaar"],
+  },
+  {
+    id: "atomic-asset",
+    name: "Create Atomic Assets",
+    category: "arweave",
+    type: "AtomicAssetsManager",
+    description: "Create atomic assets on Arweave Permaweb",
+    defaultProps:{},
+    dependencies: ["react-icons"],
+    imports: [
+      "import AtomicAssetsManager from '@/components/arweave/atomic-asset'",
+    ],
+    tags: ["arweave", "permaweb", "atomic assets", "create assets"],
   },
   {
     id: "fetch-bazaar-profile",
@@ -415,7 +428,7 @@ export const componentRegistry: ComponentDefinition[] = [
     defaultProps:{},
     dependencies: [],
     imports: [
-      "import { FetchProfileCard } from '@/components/arweave/fetch-bazaar-profile'",
+      "import  FetchProfileCard  from '@/components/arweave/fetch-bazaar-profile'",
     ],
     tags: ["arweave", "profile", "bazaar", "fetch profile"],
   },
@@ -934,19 +947,16 @@ export const componentRegistry: ComponentDefinition[] = [
 export function getComponentByType(
   type: string
 ): ComponentDefinition | undefined {
-  console.log("Looking for component by type:", type);
 
   // First try to find by type (PascalCase)
   let component = componentRegistry.find((comp) => comp.type === type);
   if (component) {
-    console.log("Found component by type:", component.id);
     return component;
   }
 
   // If not found, try to find by id (kebab-case)
   component = componentRegistry.find((comp) => comp.id === type);
   if (component) {
-    console.log("Found component by id:", component.id);
     return component;
   }
 
@@ -955,14 +965,11 @@ export function getComponentByType(
     .split("-")
     .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
     .join("");
-  console.log("Trying PascalCase conversion:", pascalCase);
   component = componentRegistry.find((comp) => comp.type === pascalCase);
   if (component) {
-    console.log("Found component by PascalCase:", component.id);
     return component;
   }
 
-  console.log("Component not found in registry");
   return component;
 }
 

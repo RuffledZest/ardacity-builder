@@ -31,6 +31,7 @@ import { DarkHeader } from "../headers/dark-theme-header"
 import { ComponentHoverControls } from "./component-hover-controls"
 import ProfileManager from "../arweave/create-bazaar-profile"
 import FetchProfileCard from "../arweave/fetch-bazaar-profile"
+import AtomicAssetsManager from "../arweave/atomic-asset"
 
 interface ComponentRendererProps {
   component: ComponentInstance
@@ -103,6 +104,7 @@ export function ComponentRenderer({ component, isRoot = false, index = 0, totalS
       'chat-box': 'ChatBox',
       'create-bazaar-profile':'ProfileManager',
       'fetch-bazaar-profile':'FetchProfileCard',
+      'atomic-asset':'AtomicAssetsManager',
       'web3-landing-page':'Web3LandingPage',
       'web3-landing-page-2':'Web3LandingPage2',
       'product-landing-page':'ProductLandingPage'
@@ -112,12 +114,10 @@ export function ComponentRenderer({ component, isRoot = false, index = 0, totalS
     const resolvedType = specialCaseMapping[component.type] || kebabToPascalCase(component.type);
 
   const renderComponent = () => {
-    console.log('Rendering component with type:', component.type, 'resolved as:', resolvedType);
     
     // Always check dynamic registry first
     const DynamicComponent = getDynamicComponent(component.type);
     if (DynamicComponent) {
-      console.log('Rendering dynamic component:', component.type);
       return <DynamicComponent {...component.props} />;
     }
     // Only fall back to static components if not found in dynamic registry
@@ -158,6 +158,8 @@ export function ComponentRenderer({ component, isRoot = false, index = 0, totalS
         return <ProfileManager {...component.props} />
       case "FetchProfileCard":
         return <FetchProfileCard {...component.props} />
+      case "AtomicAssetsManager":
+        return <AtomicAssetsManager {...component.props} />
       case "ClipPathLinks":
         return <ClipPathLinks {...component.props} />
       case "FlowingMenu":
