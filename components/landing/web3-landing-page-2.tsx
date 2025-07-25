@@ -166,7 +166,7 @@ export default function Web3LandingPage2(props: Web3LandingPage2Props & { contai
   }
 
   return (
-    <div className={contained ? "rounded-xl border bg-zinc-900 p-4 w-full max-w-4xl mx-auto" : "min-h-screen bg-black text-white relative overflow-hidden"}>
+    <div className={contained ? "rounded-xl border bg-zinc-900 p-4 w-full mx-auto" : "min-h-screen bg-black text-white relative overflow-hidden"}>
       {/* Enhanced Geometric Background Pattern */}
       {!contained && (
         <div className="fixed inset-0 z-0">

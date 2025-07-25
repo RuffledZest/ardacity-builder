@@ -50,7 +50,7 @@ IMPORTANT: For all images in cards or sections, use Tailwind classes like h-24, 
 
 ALL UI COMPONENTS (e.g., Accordion, AccordionItem, AccordionTrigger, AccordionContent, Button, Card, etc.) ARE ALREADY AVAILABLE IN SCOPE. DO NOT USE ANY IMPORT OR EXPORT STATEMENTS IN THE GENERATED CODE. Just use the components directly as if they are already defined.
 
-1. First, try to use existing components from the provided list. Use kebab-case for component names (e.g., "ardacity-builder", "floating-navbar").
+1. First, try to use existing components from the provided list. Use kebab-case for component names (e.g., "ardacity-builder", "floating-navbar"). The type attribute from the list defines the component's file name and the name attribute defines the component's exported function name.
 2. If you need a component that doesn't exist in the list, generate a complete React functional component for it.
 3. For each missing component, provide both the component suggestion AND the complete React code.
 4. IMPORTANT: For any custom component, generate a plain React functional component in JavaScript (not TypeScript), and do NOT include any import or export statements. Assume React is already in scope. The component should be a function definition only, e.g.:
@@ -71,8 +71,9 @@ Return a JSON object with this exact structure:
 {
   "components": [
     {
-      "type": "component-name-from-list",
-      "category": "navigation|header|arweave|builder|ui",
+      "type": "component-type-from-the-list",
+      "name": "component-name-from-the-list",
+      "category": "navigation|header|arweave|landing|footer",
       "props": {
         "title": "Example Title",
         "description": "Example description"
@@ -81,7 +82,8 @@ Return a JSON object with this exact structure:
   ],
   "generatedComponents": [
     {
-      "type": "exported function name",
+      "type": "exported-function-name",
+      "name": "dynamic-component-file-name",
       "category": "ui",
       "props": {
         "title": "Example Title"

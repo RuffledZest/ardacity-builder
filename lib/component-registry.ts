@@ -715,7 +715,7 @@ export const componentRegistry: ComponentDefinition[] = [
         },
       ],
     },
-    dependencies: [],
+    dependencies: ["react-icons"],
     imports: [
       "import  Web3LandingPage  from '@/components/landing/web3-landing-page'",
     ],
