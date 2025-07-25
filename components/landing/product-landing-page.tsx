@@ -373,7 +373,7 @@ const ProductLandingPage = (props: ProductLandingPageProps = {}) => {
   };
 
   return (
-    <div className={contained ? "rounded-xl border bg-zinc-900 p-4 w-full max-w-4xl mx-auto" : "bg-black text-white min-h-screen relative overflow-hidden"}>
+    <div className={contained ? "rounded-xl border bg-zinc-900 p-4 w-full mx-auto" : "bg-black text-white min-h-screen relative overflow-hidden"}>
       {/* Animated Background Particles */}
       {!contained && (
         <div className="fixed inset-0 pointer-events-none">

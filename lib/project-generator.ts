@@ -548,7 +548,7 @@ function generateComponentFiles(components: ComponentInstance[], files: Record<s
 
 function generateProductLandingPage(): string {
   return `
-  import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import {
   Star,
@@ -923,7 +923,7 @@ const ProductLandingPage = (props: ProductLandingPageProps = {}) => {
   };
 
   return (
-    <div className={contained ? "rounded-xl border bg-zinc-900 p-4 w-full max-w-4xl mx-auto" : "bg-black text-white min-h-screen relative overflow-hidden"}>
+    <div className={contained ? "rounded-xl border bg-zinc-900 p-4 w-full mx-auto" : "bg-black text-white min-h-screen relative overflow-hidden"}>
       {/* Animated Background Particles */}
       {!contained && (
         <div className="fixed inset-0 pointer-events-none">
@@ -1053,7 +1053,7 @@ const ProductLandingPage = (props: ProductLandingPageProps = {}) => {
                 </button>
                 <button
                   onClick={() => setIsPlaying(!isPlaying)}
-                  className="border border-white/30 px-8 py-4 rounded-full font-semibold hover:bg-white/10 transition-all duration-300 transform hover:scale-105 flex items-center"
+                  className="border border-white/30 px-8 py-4 rounded-full font-semibold hover:bg-white/10 transition-all duration-300 transform hover:scale-105 flex items-center text-white/50"
                 >
                   {isPlaying ? (
                     <Pause className="w-5 h-5 mr-2" />
@@ -1067,7 +1067,7 @@ const ProductLandingPage = (props: ProductLandingPageProps = {}) => {
               {/* Stats Section */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-2xl mx-auto">
                 {(stats ?? []).map((stat, index) => (
-                  <div key={index} className="text-center">
+                  <div key={index} className="text-center text-white/60">
                     <div className="text-2xl md:text-3xl font-bold mb-2">
                       <AnimatedCounter value={stat.value} />
                     </div>
@@ -1086,7 +1086,7 @@ const ProductLandingPage = (props: ProductLandingPageProps = {}) => {
           <div className="container mx-auto px-10">
             <div className="grid lg:grid-cols-2 gap-16 items-center">
               <div>
-                <h2 className="text-4xl md:text-5xl font-bold mb-6">
+                <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">
                   {(aboutTitle ?? '').split(" ").slice(0, 2).join(" ")}
                   <span className="block text-gray-400">
                     {(aboutTitle ?? '').split(" ").slice(2).join(" ")}
@@ -1099,7 +1099,7 @@ const ProductLandingPage = (props: ProductLandingPageProps = {}) => {
                 <div className="space-y-6">
                   {[
                     {
-                      icon: <Award className="w-6 h-6" />,
+                      icon: <Award className="w-6 h-6 b" />,
                       text: "Founded by industry veterans",
                     },
                     {
@@ -1115,7 +1115,7 @@ const ProductLandingPage = (props: ProductLandingPageProps = {}) => {
                       key={index}
                       className="flex items-center space-x-4 group"
                     >
-                      <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center group-hover:bg-white/20 transition-colors">
+                      <div className="w-12 h-12 bg-white/50 rounded-full flex items-center justify-center group-hover:bg-white/20 transition-colors">
                         {item.icon}
                       </div>
                       <span className="text-gray-300 group-hover:text-white transition-colors">
@@ -1140,10 +1140,10 @@ const ProductLandingPage = (props: ProductLandingPageProps = {}) => {
 
                 {/* Floating Elements */}
                 <div className="absolute top-4 right-4 bg-white/10 backdrop-blur-sm rounded-lg p-3 animate-pulse">
-                  <Code className="w-6 h-6" />
+                  <Code className="w-6 h-6 text-white" />
                 </div>
                 <div className="absolute bottom-4 left-4 bg-white/10 backdrop-blur-sm rounded-lg p-3 animate-bounce">
-                  <Rocket className="w-6 h-6" />
+                  <Rocket className="w-6 h-6 text-white" />
                 </div>
                 <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-white rounded-full flex items-center justify-center animate-pulse">
                   <div className="text-center">
@@ -1165,7 +1165,7 @@ const ProductLandingPage = (props: ProductLandingPageProps = {}) => {
         >
           <div className="container mx-auto px-6">
             <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-bold mb-6">
+              <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">
                 Powerful Features
               </h2>
               <p className="text-xl text-gray-300 max-w-2xl mx-auto">
@@ -1188,14 +1188,14 @@ const ProductLandingPage = (props: ProductLandingPageProps = {}) => {
 
                   <div className="relative z-10">
                     <div className="mb-6 transform group-hover:scale-110 transition-transform duration-300">
-                      <div className="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center group-hover:bg-white/20 transition-colors">
+                      <div className="w-16 h-16 bg-white/10 text-white rounded-2xl flex items-center justify-center group-hover:bg-white/20 transition-colors">
                         {iconMap[feature.icon] || feature.icon}
                       </div>
                     </div>
-                    <h3 className="text-xl font-semibold mb-4">
+                    <h3 className="text-xl font-semibold mb-4 text-white">
                       {feature.title}
                     </h3>
-                    <p className="text-gray-300 leading-relaxed">
+                    <p className="text-gray-500 leading-relaxed">
                       {feature.description}
                     </p>
                   </div>
@@ -1226,7 +1226,7 @@ const ProductLandingPage = (props: ProductLandingPageProps = {}) => {
         >
           <div className="container mx-auto px-6">
             <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-bold mb-6">
+              <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">
                 What Our Customers Say
               </h2>
               <p className="text-xl text-gray-300 max-w-2xl mx-auto">
@@ -1248,7 +1248,7 @@ const ProductLandingPage = (props: ProductLandingPageProps = {}) => {
                     priority
                   />
                   <div>
-                    <h4 className="font-semibold text-lg">
+                    <h4 className="font-semibold text-lg text-white">
                       {testimonials?.[currentTestimonial]?.name}
                     </h4>
                     <p className="text-gray-400">
@@ -1297,7 +1297,7 @@ const ProductLandingPage = (props: ProductLandingPageProps = {}) => {
         >
           <div className="container mx-auto px-6">
             <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-bold mb-6">
+              <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">
                 Simple Pricing
               </h2>
               <p className="text-xl text-gray-300 max-w-2xl mx-auto">
@@ -1306,7 +1306,7 @@ const ProductLandingPage = (props: ProductLandingPageProps = {}) => {
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto text-white">
               {(pricing ?? []).map((plan, index) => (
                 <div
                   key={index}
@@ -1378,7 +1378,7 @@ const ProductLandingPage = (props: ProductLandingPageProps = {}) => {
 
         {/* CTA Section */}
         <section className={contained ? "py-8 bg-white/5 border-t border-white/10" : "py-20 bg-white/5 border-t border-white/10"}>
-          <div className="container mx-auto px-6 text-center">
+          <div className="container mx-auto px-6 text-center text-white">
             <h2 className="text-4xl md:text-5xl font-bold mb-6">
               Ready to Get Started?
             </h2>
@@ -1401,12 +1401,12 @@ const ProductLandingPage = (props: ProductLandingPageProps = {}) => {
     </div>
   );
 };
-
 export default ProductLandingPage;
-  `
+`
 }
 function generateWeb3LandingPage2(): string {
   return `
+  
   "use client"
   
   import { useState, useEffect } from "react"
@@ -1575,7 +1575,7 @@ function generateWeb3LandingPage2(): string {
     }
   
     return (
-      <div className={contained ? "rounded-xl border bg-zinc-900 p-4 w-full max-w-4xl mx-auto" : "min-h-screen bg-black text-white relative overflow-hidden"}>
+      <div className={contained ? "rounded-xl border bg-zinc-900 p-4 w-full mx-auto" : "min-h-screen bg-black text-white relative overflow-hidden"}>
         {/* Enhanced Geometric Background Pattern */}
         {!contained && (
           <div className="fixed inset-0 z-0">
@@ -1604,7 +1604,7 @@ function generateWeb3LandingPage2(): string {
             {/* Additional floating elements */}
             <div
               className="absolute top-1/4 right-1/4 w-64 h-64 bg-white/5 rounded-full blur-2xl animate-pulse"
-              style={{ transform: \`translate(${scrollY * 0.1}px, \${scrollY * 0.05}px)\` }}
+              style={{ transform: \`translate(0px, \${scrollY * 0.05}px)\` }}
             ></div>
             <div
               className="absolute bottom-1/3 left-1/3 w-80 h-80 bg-white/3 rounded-full blur-3xl animate-pulse delay-1000"
@@ -1665,7 +1665,7 @@ function generateWeb3LandingPage2(): string {
                       <div className="w-2 h-2 bg-white rounded-full animate-pulse delay-200"></div>
                       <span className="text-sm font-medium tracking-wide uppercase">Innovation Starts Here</span>
                     </div>
-                    <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold leading-tight tracking-tight">
+                    <h1 className="text-5xl sm:text-6xl lg:text-7xl text-white font-bold leading-tight tracking-tight">
                       {mergedProps.heroTitle?.split(" ").map((word, index) => (
                         <span
                           key={index}
@@ -1726,7 +1726,7 @@ function generateWeb3LandingPage2(): string {
                 <div className="space-y-8">
                   <div className="space-y-4">
                     <div className="w-12 h-1 bg-white"></div>
-                    <h2 className="text-4xl lg:text-5xl font-bold leading-tight">{mergedProps.aboutTitle}</h2>
+                    <h2 className="text-4xl lg:text-5xl text-white font-bold leading-tight">{mergedProps.aboutTitle}</h2>
                   </div>
                   <p className="text-lg text-gray-300 leading-relaxed">{mergedProps.aboutDescription}</p>
                   <div className="grid grid-cols-2 gap-8">
@@ -1753,7 +1753,7 @@ function generateWeb3LandingPage2(): string {
                   <span className="text-sm font-medium tracking-wide uppercase">Features</span>
                   <div className="w-8 h-1 bg-white"></div>
                 </div>
-                <h2 className="text-4xl lg:text-5xl font-bold mb-6">{mergedProps.featuresTitle}</h2>
+                <h2 className="text-4xl lg:text-5xl text-white font-bold mb-6">{mergedProps.featuresTitle}</h2>
                 <p className="text-xl text-gray-300 max-w-3xl mx-auto">{mergedProps.featuresSubtitle}</p>
               </div>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -1792,7 +1792,7 @@ function generateWeb3LandingPage2(): string {
                   <span className="text-sm font-medium tracking-wide uppercase">Pricing</span>
                   <div className="w-8 h-1 bg-white"></div>
                 </div>
-                <h2 className="text-4xl lg:text-5xl font-bold mb-6">{mergedProps.pricingTitle}</h2>
+                <h2 className="text-4xl lg:text-5xl font-bold mb-6 text-white">{mergedProps.pricingTitle}</h2>
                 <p className="text-xl text-gray-300 max-w-3xl mx-auto">{mergedProps.pricingSubtitle}</p>
               </div>
               <div className="grid md:grid-cols-3 gap-8">
@@ -1814,7 +1814,7 @@ function generateWeb3LandingPage2(): string {
                         <div className="text-center">
                           <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
                           <div className="flex items-baseline justify-center">
-                            <span className="text-5xl font-bold">{plan.price}</span>
+                            <span className="text-5xl text-white font-bold">{plan.price}</span>
                             <span className="text-gray-300 ml-2">/{plan.period}</span>
                           </div>
                         </div>
@@ -1852,7 +1852,7 @@ function generateWeb3LandingPage2(): string {
                   <div className="flex justify-center">
                     <div className="w-16 h-1 bg-white"></div>
                   </div>
-                  <h2 className="text-4xl lg:text-5xl font-bold">Ready to Get Started?</h2>
+                  <h2 className="text-4xl lg:text-5xl text-white font-bold">Ready to Get Started?</h2>
                 </div>
                 <p className="text-xl text-gray-300 max-w-2xl mx-auto">
                   Join thousands of businesses already transforming their digital presence with our platform.
@@ -1878,7 +1878,7 @@ function generateWeb3LandingPage2(): string {
 
 function generateWeb3LandingPage(): string {
   return `
- "use client"
+"use client"
 import { useState, useEffect } from "react"
 import Image from "next/image"
 
@@ -2054,7 +2054,7 @@ export default function Web3LandingPage(props: Web3LandingPageProps & { containe
   }
 
   return (
-    <div className={contained ? "rounded-xl border bg-zinc-900 p-4 w-full max-w-4xl mx-auto" : "min-h-screen bg-black text-white relative overflow-hidden"}>
+    <div className={contained ? "rounded-xl border bg-zinc-900 p-4 w-full mx-auto" : "min-h-screen bg-black text-white relative overflow-hidden"}>
       {/* Animated Background Elements */}
       {!contained && (
         <div className="fixed inset-0 z-0">
@@ -2070,7 +2070,7 @@ export default function Web3LandingPage(props: Web3LandingPageProps & { containe
             style={{
               backgroundImage: \`radial-gradient(circle at 1px 1px, white 1px, transparent 0)\`,
               backgroundSize: "50px 50px",
-              transform: \`translateY(\${scrollY * 0.1}px)\`,
+              transform: \`translateY(${scrollY * 0.1}px)\`,
             }}
           ></div>
         </div>
@@ -2117,7 +2117,7 @@ export default function Web3LandingPage(props: Web3LandingPageProps & { containe
               {/* Hero Badge */}
               <div className="inline-flex items-center px-6 py-3 bg-white/10 rounded-full border border-white/20 backdrop-blur-sm mb-8 group hover:bg-white/15 transition-all duration-300">
                 <span className="text-sm font-medium mr-2">🚀</span>
-                <span className="text-sm font-medium">Trusted by 25K+ Web3 developers</span>
+                <span className="text-sm font-medium text-white/50">Trusted by 25K+ Web3 developers</span>
               </div>
 
               {/* Main Title */}
@@ -2135,7 +2135,7 @@ export default function Web3LandingPage(props: Web3LandingPageProps & { containe
                 <div className="absolute inset-0 bg-gradient-to-r from-white/20 via-white/10 to-white/20 rounded-3xl blur-2xl group-hover:blur-3xl transition-all duration-500"></div>
                 <div className="relative w-80 h-80 mx-auto">
                   <Image
-                    src={mergedProps.heroImage! || "/place.jpg"}
+                    src={mergedProps.heroImage! || "https://images.pexels.com/photos/235990/pexels-photo-235990.jpeg"}
                     alt="Hero"
                     width={400}
                     height={400}
@@ -2313,7 +2313,7 @@ export default function Web3LandingPage(props: Web3LandingPageProps & { containe
           <div className="relative max-w-4xl mx-auto text-center px-6 lg:px-8">
             <div className="space-y-8">
               <h2 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-                Start Building Tomorrow\`&apos;\`s Web
+                Start Building Tomorrow&apos;s Web
               </h2>
               <p className="text-xl text-gray-300 max-w-2xl mx-auto">
                 Join the revolution of decentralized development. Build faster, more secure, and beautifully designed

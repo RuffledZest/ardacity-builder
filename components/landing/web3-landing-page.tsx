@@ -174,7 +174,7 @@ export default function Web3LandingPage(props: Web3LandingPageProps & { containe
   }
 
   return (
-    <div className={contained ? "rounded-xl border bg-zinc-900 p-4 w-full max-w-4xl mx-auto" : "min-h-screen bg-black text-white relative overflow-hidden"}>
+    <div className={contained ? "rounded-xl border bg-zinc-900 p-4 w-full mx-auto" : "min-h-screen bg-black text-white relative overflow-hidden"}>
       {/* Animated Background Elements */}
       {!contained && (
         <div className="fixed inset-0 z-0">
