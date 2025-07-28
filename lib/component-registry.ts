@@ -512,6 +512,61 @@ export const componentRegistry: ComponentDefinition[] = [
     tags: ["arweave", "chat", "realtime", "socket.io", "emoji", "quick-messages", "builder-friendly"],
   },
   {
+    id: "arns-record-lookup",
+    name: "ARNS Record Lookup",
+    category: "arweave",
+    type: "ARNSRecordLookup",
+    description: "Minecraft-themed ARNS record lookup interface with wallet integration and JSON viewer. Lookup ARNS names and interact with AO processes.",
+    defaultProps: {},
+    dependencies: ["ao-js-sdk"],
+    imports: [
+      "import ARNSRecordLookup from '@/components/arweave/arns-record-lookup'"
+    ],
+    tags: ["arweave", "arns", "wallet", "minecraft", "json", "lookup", "ao"],
+  },
+  {
+    id: "botega-liquidity-pool-info",
+    name: "Botega Liquidity Pool Info",
+    category: "arweave",
+    type: "BotegaLiquidityPoolInfo",
+    description: "Comprehensive liquidity pool interface with price operations, token management, and real-time data display. Connect to Botega liquidity pools and manage trading operations.",
+    defaultProps: {
+      processId: "ixjnbCaGfzSJ64IQ9X_B3dQUWyMy2OGSFUP2Yw-NpRM"
+    },
+    dependencies: ["ao-js-sdk"],
+    imports: [
+      "import BotegaLiquidityPoolInfo from '@/components/arweave/botega-liquidity-pool-info'"
+    ],
+    tags: ["arweave", "liquidity", "pool", "trading", "price", "tokens", "botega", "defi"],
+  },
+  {
+    id: "staking-panel",
+    name: "Staking Panel",
+    category: "arweave",
+    type: "StakingPanel",
+    description: "Retro-style staking interface with real-time message logging. Stake, unstake, and finalize operations with AO process integration and ArConnect wallet support.",
+    defaultProps: {},
+    dependencies: ["@permaweb/aoconnect"],
+    imports: [
+      "import StakingPanel from '@/components/arweave/staking-panel'"
+    ],
+    tags: ["arweave", "staking", "retro", "logging", "ao", "defi", "wallet"],
+  },
+  {
+    id: "bazaar-nft-portfolio",
+    name: "Bazaar NFT Portfolio",
+    category: "arweave",
+    type: "BazaarNftPortfolio",
+    description: "Comprehensive NFT portfolio explorer with 3D carousel, profile management, and asset discovery. Search by wallet address or profile ID with retro pixel art styling.",
+    defaultProps: {},
+    dependencies: ["@permaweb/libs", "@permaweb/aoconnect", "arweave"],
+    imports: [
+      "import BazaarNftPortfolio from '@/components/arweave/bazaar-nft-portfolio'"
+    ],
+    tags: ["arweave", "nft", "portfolio", "carousel", "3d", "profile", "assets", "bazaar", "pixel-art"],
+  },
+
+  {
     id: "dark-theme-header",
     name: "Dark Theme Header",
     category: "header",

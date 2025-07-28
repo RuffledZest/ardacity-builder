@@ -78,7 +78,38 @@
         ]
       },
       "description": "Real-time on-chain chatroom with emoji picker and quick messages. Builder-friendly and fully self-contained."
+    },
+    {
+      "type": "ARNSRecordLookup",
+      "name": "arns-record-lookup",
+      "renderable": true,
+      "props": {},
+      "description": "Minecraft-themed ARNS record lookup interface with wallet integration and JSON viewer. Lookup ARNS names and interact with AO processes."
+    },
+    {
+      "type": "BotegaLiquidityPoolInfo",
+      "name": "botega-liquidity-pool-info",
+      "renderable": true,
+      "props": {
+        "processId": "ixjnbCaGfzSJ64IQ9X_B3dQUWyMy2OGSFUP2Yw-NpRM"
+      },
+      "description": "Comprehensive liquidity pool interface with price operations, token management, and real-time data display. Connect to Botega liquidity pools and manage trading operations."
+    },
+    {
+      "type": "StakingPanel",
+      "name": "staking-panel",
+      "renderable": true,
+      "props": {},
+      "description": "Retro-style staking interface with real-time message logging. Stake, unstake, and finalize operations with AO process integration and ArConnect wallet support."
+    },
+    {
+      "type": "BazaarNftPortfolio",
+      "name": "bazaar-nft-portfolio",
+      "renderable": true,
+      "props": {},
+      "description": "Comprehensive NFT portfolio explorer with 3D carousel, profile management, and asset discovery. Search by wallet address or profile ID with retro pixel art styling."
     }
+
   ],
   "footers": [
     {
