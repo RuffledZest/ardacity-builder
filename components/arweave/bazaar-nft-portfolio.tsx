@@ -1,7 +1,6 @@
 "use client"
 import type React from "react"
-import { useState } from "react"
-import { usePermaweb } from "./providers/PermawebProvider"
+import { useState, useEffect } from "react"
 import AssetCarousel3D from "./asset-caraousel-3d"
 
 interface Asset {
@@ -47,8 +46,90 @@ interface Profile {
 
 type DisplayType = "all" | "collections" | "atomic" | "nft" | "carousel"
 
+// Mock data for fallback when Arweave is not available
+const mockAssets: Asset[] = [
+  {
+    id: "mock-asset-1",
+    name: "Cyberpunk NFT #001",
+    description: "A futuristic digital artwork featuring neon cityscapes and cybernetic characters",
+    contentType: "image/png",
+    creator: "0x1234567890abcdef",
+    dateCreated: Date.now() - 86400000,
+    assetType: "nft"
+  },
+  {
+    id: "mock-asset-2", 
+    name: "Pixel Art Collection",
+    description: "Retro-style pixel art pieces with vibrant colors and nostalgic themes",
+    contentType: "image/png",
+    creator: "0x1234567890abcdef",
+    dateCreated: Date.now() - 172800000,
+    assetType: "atomic"
+  },
+  {
+    id: "mock-asset-3",
+    name: "Digital Landscape",
+    description: "Beautiful digital landscape with mountains, forests, and flowing rivers",
+    contentType: "image/png", 
+    creator: "0x1234567890abcdef",
+    dateCreated: Date.now() - 259200000,
+    assetType: "nft"
+  },
+  {
+    id: "mock-asset-4",
+    name: "Abstract Composition",
+    description: "Modern abstract art piece with geometric shapes and bold colors",
+    contentType: "image/png",
+    creator: "0x1234567890abcdef", 
+    dateCreated: Date.now() - 345600000,
+    assetType: "atomic"
+  },
+  {
+    id: "mock-asset-5",
+    name: "Portrait Series",
+    description: "Collection of digital portraits showcasing diverse characters and emotions",
+    contentType: "image/png",
+    creator: "0x1234567890abcdef",
+    dateCreated: Date.now() - 432000000,
+    assetType: "nft"
+  }
+]
+
+const mockCollections: Collection[] = [
+  {
+    id: "mock-collection-1",
+    title: "Cyberpunk Universe",
+    description: "A collection of futuristic cyberpunk themed digital artworks",
+    creator: "0x1234567890abcdef",
+    assets: ["mock-asset-1", "mock-asset-3"],
+    dateCreated: Date.now() - 86400000
+  },
+  {
+    id: "mock-collection-2",
+    title: "Pixel Art Masters",
+    description: "Retro pixel art collection featuring classic gaming aesthetics",
+    creator: "0x1234567890abcdef", 
+    assets: ["mock-asset-2"],
+    dateCreated: Date.now() - 172800000
+  }
+]
+
+const mockProfile: Profile = {
+  id: "mock-profile-1",
+  walletAddress: "0x1234567890abcdef",
+  username: "digital_artist",
+  displayName: "Digital Artist",
+  description: "Creating unique digital artworks and NFTs on the Arweave network",
+  assets: [
+    { id: "mock-asset-1", quantity: "1", dateCreated: Date.now() - 86400000, lastUpdate: Date.now() },
+    { id: "mock-asset-2", quantity: "1", dateCreated: Date.now() - 172800000, lastUpdate: Date.now() },
+    { id: "mock-asset-3", quantity: "1", dateCreated: Date.now() - 259200000, lastUpdate: Date.now() },
+    { id: "mock-asset-4", quantity: "1", dateCreated: Date.now() - 345600000, lastUpdate: Date.now() },
+    { id: "mock-asset-5", quantity: "1", dateCreated: Date.now() - 432000000, lastUpdate: Date.now() }
+  ]
+}
+
 const BazaarNftPortfolio: React.FC = () => {
-  const { libs } = usePermaweb()
   const [identifier, setIdentifier] = useState("")
   const [displayType, setDisplayType] = useState<DisplayType>("carousel")
   const [assets, setAssets] = useState<Asset[]>([])
@@ -56,6 +137,7 @@ const BazaarNftPortfolio: React.FC = () => {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [useMockData, setUseMockData] = useState(false)
 
   const assetFallbackImage =
     "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iIzIyMjIyMiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjMDBGRjAwIiBmb250LWZhbWlseT0ibW9ub3NwYWNlIiBmb250LXNpemU9IjE2Ij5OTyBJTUFHRTwvdGV4dD48L3N2Zz4="
@@ -66,8 +148,41 @@ const BazaarNftPortfolio: React.FC = () => {
   const profileFallbackImage =
     "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTUwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iIzIyMjIyMiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjMDBGRkZGIiBmb250LWZhbWlseT0ibW9ub3NwYWNlIiBmb250LXNpemU9IjE0Ij5QUk9GSUxFPC90ZXh0Pjwvc3ZnPg=="
 
+  // Try to initialize Arweave libraries
+  const initializeArweave = async () => {
+    try {
+      // Check if we're in a browser environment with Arweave support
+      if (typeof window !== 'undefined') {
+        // Try to dynamically import Arweave libraries
+        const Arweave = await import('arweave').catch(() => null)
+        const { connect, createDataItemSigner } = await import('@permaweb/aoconnect').catch(() => ({ connect: null, createDataItemSigner: null }))
+        const Permaweb = await import('@permaweb/libs').catch(() => null)
+
+        if (Arweave && connect && Permaweb) {
+          const arweave = Arweave.default.init({
+            host: 'arweave.net',
+            port: 443,
+            protocol: 'https',
+          })
+
+          const permawebInstance = Permaweb.default.init({
+            ao: connect(),
+            arweave,
+            signer: undefined, // No wallet in builder environment
+          })
+
+          return permawebInstance
+        }
+      }
+      return null
+    } catch (error) {
+      console.log('Arweave libraries not available, using mock data')
+      return null
+    }
+  }
+
   const fetchData = async () => {
-    if (!libs || !identifier) return
+    if (!identifier) return
     setIsLoading(true)
     setError(null)
     setAssets([])
@@ -75,48 +190,87 @@ const BazaarNftPortfolio: React.FC = () => {
     setProfile(null)
 
     try {
-      let profileData: Profile | null = null
-      try {
-        profileData = await libs.getProfileById(identifier)
-        if (profileData) {
-          setProfile(profileData)
-          const assetIds = profileData.assets?.map((a) => a.id) || []
-          if (assetIds.length) {
-            const fetchedAssets = await libs.getAtomicAssets(assetIds)
-            setAssets(fetchedAssets || [])
+      const libs = await initializeArweave()
+      
+      if (libs) {
+        // Try to fetch real data from Arweave
+        try {
+          let profileData: Profile | null = null
+          
+          // Try to get profile by ID
+          try {
+            profileData = await libs.getProfileById(identifier)
+            if (profileData) {
+              setProfile(profileData)
+              const assetIds = profileData.assets?.map((a) => a.id) || []
+              if (assetIds.length) {
+                const fetchedAssets = await libs.getAtomicAssets(assetIds)
+                setAssets(fetchedAssets || [])
+              }
+              const fetchedCollections = await libs.getCollections({ creator: profileData.id })
+              setCollections(fetchedCollections || [])
+              setUseMockData(false)
+              return
+            }
+          } catch {
+            console.log("Not a profile ID, checking as wallet address")
           }
-          const fetchedCollections = await libs.getCollections({ creator: profileData.id })
-          setCollections(fetchedCollections || [])
-          return
-        }
-      } catch {
-        console.log("Not a profile ID, checking as wallet address")
-      }
 
-      try {
-        profileData = await libs.getProfileByWalletAddress(identifier)
-        if (profileData) {
-          setProfile(profileData)
-          const assetIds = profileData.assets?.map((a) => a.id) || []
-          if (assetIds.length) {
-            const fetchedAssets = await libs.getAtomicAssets(assetIds)
-            setAssets(fetchedAssets || [])
+          // Try to get profile by wallet address
+          try {
+            profileData = await libs.getProfileByWalletAddress(identifier)
+            if (profileData) {
+              setProfile(profileData)
+              const assetIds = profileData.assets?.map((a) => a.id) || []
+              if (assetIds.length) {
+                const fetchedAssets = await libs.getAtomicAssets(assetIds)
+                setAssets(fetchedAssets || [])
+              }
+              const fetchedCollections = await libs.getCollections({ creator: profileData.id })
+              setCollections(fetchedCollections || [])
+              setUseMockData(false)
+              return
+            }
+          } catch {
+            console.log("No profile found for wallet address")
           }
-          const fetchedCollections = await libs.getCollections({ creator: profileData.id })
-          setCollections(fetchedCollections || [])
-        }
-      } catch {
-        console.log("No profile found for wallet address")
-      }
 
-      try {
-        const walletAssets = await libs.getAssetsByOwner(identifier)
-        setAssets((prev) => [...prev, ...(walletAssets || [])])
-      } catch (e) {
-        console.error("Error fetching wallet assets:", e)
+          // Try to get assets by owner
+          try {
+            const walletAssets = await libs.getAssetsByOwner(identifier)
+            if (walletAssets && walletAssets.length > 0) {
+              setAssets(walletAssets)
+              setUseMockData(false)
+              return
+            }
+          } catch (e) {
+            console.error("Error fetching wallet assets:", e)
+          }
+
+          // If no real data found, use mock data
+          setUseMockData(true)
+          setProfile(mockProfile)
+          setAssets(mockAssets)
+          setCollections(mockCollections)
+          
+        } catch (err) {
+          console.error("Error fetching real data:", err)
+          // Fallback to mock data
+          setUseMockData(true)
+          setProfile(mockProfile)
+          setAssets(mockAssets)
+          setCollections(mockCollections)
+        }
+      } else {
+        // No Arweave libraries available, use mock data
+        setUseMockData(true)
+        setProfile(mockProfile)
+        setAssets(mockAssets)
+        setCollections(mockCollections)
       }
-    } catch (err) {
-      console.error("Error fetching data:", err)
+      
+    } catch (err: any) {
+      console.error("Error in fetchData:", err)
       setError("FAILED TO LOAD DATA. CHECK ID AND TRY AGAIN.")
     } finally {
       setIsLoading(false)
@@ -141,7 +295,16 @@ const BazaarNftPortfolio: React.FC = () => {
   })
 
   const renderAssetImage = (asset: Asset) => {
-    const imageUrl = `https://7ptgafldwjjywnnog6tz2etox4fvot6piuov5t77beqxshk4lgxa.arweave.net/${asset.id}`
+    let imageUrl: string
+    
+    if (useMockData) {
+      // Use placeholder images for mock data
+      imageUrl = `https://picsum.photos/300/200?random=${asset.id}`
+    } else {
+      // Use real Arweave URLs for actual data
+      imageUrl = `https://7ptgafldwjjywnnog6tz2etox4fvot6piuov5t77beqxshk4lgxa.arweave.net/${asset.id}`
+    }
+    
     return (
       <div className="relative overflow-hidden">
         <img
@@ -214,6 +377,11 @@ const BazaarNftPortfolio: React.FC = () => {
                 <strong className="text-yellow-400">{collections.length}</strong> COLLECTIONS
               </span>
             </div>
+            {useMockData && (
+              <div className="mt-2 text-xs text-yellow-400 font-mono pixel-text">
+                ⚠ DEMO MODE - SHOWING MOCK DATA
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -300,7 +468,7 @@ const BazaarNftPortfolio: React.FC = () => {
                   ░ ASSETS CAROUSEL ({filteredAssets.length}) ░
                 </h2>
                 <div className="border-4 border-cyan-400 pixel-corners bg-gray-900 p-4">
-                  <AssetCarousel3D assets={filteredAssets} onAssetClick={handleAssetClick} />
+                  <AssetCarousel3D assets={filteredAssets} onAssetClick={handleAssetClick} useMockData={useMockData} />
                 </div>
               </div>
             )}

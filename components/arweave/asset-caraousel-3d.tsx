@@ -20,9 +20,10 @@ interface Asset {
 interface AssetCarousel3DProps {
   assets: Asset[]
   onAssetClick?: (asset: Asset) => void
+  useMockData?: boolean
 }
 
-export default function AssetCarousel3D({ assets, onAssetClick }: AssetCarousel3DProps) {
+export default function AssetCarousel3D({ assets, onAssetClick, useMockData = false }: AssetCarousel3DProps) {
   const [progress, setProgress] = useState(50)
   const [active, setActive] = useState(0)
   const [isDown, setIsDown] = useState(false)
@@ -84,7 +85,13 @@ export default function AssetCarousel3D({ assets, onAssetClick }: AssetCarousel3
   }
 
   const getAssetImage = (asset: Asset) => {
-    return `https://7ptgafldwjjywnnog6tz2etox4fvot6piuov5t77beqxshk4lgxa.arweave.net/${asset.id}`
+    if (useMockData) {
+      // Use placeholder images for mock data
+      return `https://picsum.photos/300/200?random=${asset.id}`
+    } else {
+      // Use real Arweave URLs for actual data
+      return `https://7ptgafldwjjywnnog6tz2etox4fvot6piuov5t77beqxshk4lgxa.arweave.net/${asset.id}`
+    }
   }
 
   const truncateText = (text: string | undefined | null, maxLength: number): string => {
