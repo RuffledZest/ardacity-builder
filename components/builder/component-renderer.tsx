@@ -32,6 +32,10 @@ import { ComponentHoverControls } from "./component-hover-controls"
 import ProfileManager from "../arweave/create-bazaar-profile"
 import FetchProfileCard from "../arweave/fetch-bazaar-profile"
 import AtomicAssetsManager from "../arweave/atomic-asset"
+import ARNSRecordLookup from "../arweave/arns-record-lookup"
+import BotegaLiquidityPoolInfo from "../arweave/botega-liquidity-pool-info"
+import StakingPanel from "../arweave/staking-panel"
+import BazaarNftPortfolio from "../arweave/bazaar-nft-portfolio"
 
 interface ComponentRendererProps {
   component: ComponentInstance
@@ -105,6 +109,10 @@ export function ComponentRenderer({ component, isRoot = false, index = 0, totalS
       'create-bazaar-profile':'ProfileManager',
       'fetch-bazaar-profile':'FetchProfileCard',
       'atomic-asset':'AtomicAssetsManager',
+      'arns-record-lookup':'ARNSRecordLookup',
+      'botega-liquidity-pool-info':'BotegaLiquidityPoolInfo',
+      'staking-panel':'StakingPanel',
+      'bazaar-nft-portfolio':'BazaarNftPortfolio',
       'web3-landing-page':'Web3LandingPage',
       'web3-landing-page-2':'Web3LandingPage2',
       'product-landing-page':'ProductLandingPage'
@@ -160,6 +168,14 @@ export function ComponentRenderer({ component, isRoot = false, index = 0, totalS
         return <FetchProfileCard {...component.props} />
       case "AtomicAssetsManager":
         return <AtomicAssetsManager {...component.props} />
+      case "ARNSRecordLookup":
+        return <ARNSRecordLookup {...component.props} />
+      case "BotegaLiquidityPoolInfo":
+        return <BotegaLiquidityPoolInfo {...component.props} />
+      case "StakingPanel":
+        return <StakingPanel {...component.props} />
+      case "BazaarNftPortfolio":
+        return <BazaarNftPortfolio {...component.props} />
       case "ClipPathLinks":
         return <ClipPathLinks {...component.props} />
       case "FlowingMenu":
