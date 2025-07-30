@@ -394,17 +394,17 @@ export const componentRegistry: ComponentDefinition[] = [
     tags: ["arweave", "ao", "wallet", "signing"],
   },
   {
-    id: "create-bazaar-profile",
-    name: "Create Bazaar Profile",
+    id: "create-permaweb-profile",
+    name: "Create Permaweb Profile",
     category: "arweave",
     type: "ProfileManager",
-    description: "Create your Bazaar profile on Arweave",
+    description: "Create your Permaweb profile on Arweave",
     defaultProps:{},
     dependencies: ["react-icons"],
     imports: [
-      "import  ProfileManager from '@/components/arweave/create-bazaar-profile'",
+      "import  ProfileManager from '@/components/arweave/create-permaweb-profile'",
     ],
-    tags: ["arweave", "profile", "bazaar"],
+    tags: ["arweave", "profile", "permaweb"],
   },
   {
     id: "atomic-asset",
@@ -421,16 +421,16 @@ export const componentRegistry: ComponentDefinition[] = [
   },
   {
     id: "fetch-bazaar-profile",
-    name: "Fetch Bazaar Profile",
+    name: "Fetch Permaweb/Bazaar Profile",
     category: "arweave",
     type: "FetchProfileCard",
-    description: "Fetch your Bazaar profile with a click",
+    description: "Fetch your Permaweb/Bazaar profile with a click",
     defaultProps:{},
     dependencies: [],
     imports: [
       "import  FetchProfileCard  from '@/components/arweave/fetch-bazaar-profile'",
     ],
-    tags: ["arweave", "profile", "bazaar", "fetch profile"],
+    tags: ["arweave", "profile", "permaweb", "bazaar", "fetch profile"],
   },
   {
     id: "ao-chatbot",
@@ -531,7 +531,8 @@ export const componentRegistry: ComponentDefinition[] = [
     type: "BotegaLiquidityPoolInfo",
     description: "Comprehensive liquidity pool interface with price operations, token management, and real-time data display. Connect to Botega liquidity pools and manage trading operations.",
     defaultProps: {
-      processId: "ixjnbCaGfzSJ64IQ9X_B3dQUWyMy2OGSFUP2Yw-NpRM"
+      processId: "ixjnbCaGfzSJ64IQ9X_B3dQUWyMy2OGSFUP2Yw-NpRM",
+      tokenId: "xU9zFkq3X2ZQ6olwNVvr1vUWIjc3kXTWr7xKQD6dh10"
     },
     dependencies: ["ao-js-sdk"],
     imports: [

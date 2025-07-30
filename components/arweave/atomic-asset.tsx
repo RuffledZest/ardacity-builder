@@ -12,6 +12,7 @@ interface AtomicAsset {
   dateCreated: number;
   assetType: string;
   contentType: string;
+  transactionHash: string;
 }
 
 const arweave = Arweave.init({
@@ -26,6 +27,15 @@ const AtomicAssetsManager: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
+
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setToast({ message: "Transaction hash copied to clipboard!", type: "success" });
+    } catch (err) {
+      setToast({ message: "Failed to copy to clipboard", type: "error" });
+    }
+  };
 
   const [formData, setFormData] = useState({
     title: "",
@@ -89,6 +99,7 @@ const AtomicAssetsManager: React.FC = () => {
           dateCreated: node.block?.timestamp * 1000 || Date.now(),
           assetType: tags["Type"] || "Unknown",
           contentType: tags["Content-Type"] || "N/A",
+          transactionHash: node.id,
         };
       });
 
@@ -299,6 +310,23 @@ const AtomicAssetsManager: React.FC = () => {
                       Topics: {asset.topics.join(", ")}
                     </p>
                   )}
+                  <div className="mt-2 pt-2 border-t border-zinc-700">
+                    <p className="text-xs text-zinc-500 mb-1">Transaction Hash:</p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-xs text-blue-400 font-mono break-all flex-1">
+                        {asset.transactionHash}
+                      </p>
+                      <button
+                        onClick={() => copyToClipboard(asset.transactionHash)}
+                        className="text-xs text-zinc-400 hover:text-blue-400 transition-colors"
+                        title="Copy transaction hash"
+                      >
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>

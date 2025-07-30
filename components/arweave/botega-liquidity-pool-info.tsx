@@ -1,13 +1,32 @@
+"use client"
+
 import React, { useState, useRef } from 'react';
 import { BotegaLiquidityPoolClient } from 'ao-js-sdk';
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Card, CardContent } from "@/components/ui/card"
+
+// Loading Overlay Component
+const LoadingOverlay = () => (
+  <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50 rounded-lg">
+    <div className="flex items-center justify-center p-6 bg-white rounded-lg shadow-lg border border-gray-200">
+      <div className="relative">
+        <div className="w-12 h-12 border-4 border-gray-200 border-t-black rounded-full animate-spin"></div>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-6 h-6 bg-white rounded-full"></div>
+        </div>
+      </div>
+      <span className="ml-4 text-lg font-medium text-gray-700">Processing...</span>
+    </div>
+  </div>
+)
 
 function ResultDisplay({ value }: { value: any }) {
   const formatValue = (val: any): string => {
     if (val === null || val === undefined) return '-'
     if (typeof val === 'string') {
-      // Clean up console/log output
       if (val.includes('[') && val.includes('m')) {
-        // This looks like console color codes, extract the actual message
         const cleanMessage = val.replace(/\[\d+m/g, '').replace(/\[0m/g, '')
         return cleanMessage
       }
@@ -76,7 +95,7 @@ function ResultDisplay({ value }: { value: any }) {
         <div className={`p-4 border rounded-md ${value ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
           <span className={`font-medium ${value ? 'text-green-800' : 'text-red-800'}`}>
             {value ? 'Yes' : 'No'}
-        </span>
+          </span>
         </div>
       )
     }
@@ -115,10 +134,10 @@ function ResultDisplay({ value }: { value: any }) {
   )
 }
 
-const BotegaLiquidityPoolInfo: React.FC = () => {
+const BotegaLiquidityPoolInfo: React.FC<{ tokenId?: string }> = ({ tokenId: propTokenId }) => {
   const [processId, setProcessId] = useState("ixjnbCaGfzSJ64IQ9X_B3dQUWyMy2OGSFUP2Yw-NpRM")
   const [quantity, setQuantity] = useState("")
-  const [tokenId, setTokenId] = useState("")
+  const [tokenId, setTokenId] = useState(propTokenId || "xU9zFkq3X2ZQ6olwNVvr1vUWIjc3kXTWr7xKQD6dh10")
   const [result, setResult] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
@@ -132,10 +151,8 @@ const BotegaLiquidityPoolInfo: React.FC = () => {
     if (!clientRef.current) {
       try {
         clientRef.current = new BotegaLiquidityPoolClient(processId)
-        // Set up the client for read-only operations by default
         clientRef.current.setDryRunAsMessage(false)
         
-        // Try to set a default wallet if available to avoid undefined issues
         const wallet = (window as any).arweaveWallet
         if (wallet) {
           clientRef.current.setWallet(wallet)
@@ -152,20 +169,16 @@ const BotegaLiquidityPoolInfo: React.FC = () => {
   const processResult = (result: any) => {
     if (!result) return "No data received"
     
-    // Try to extract the actual response data
     let actualData = result
     
-    // If there's an Output property, use that
     if (result.Output) {
       actualData = result.Output
     }
     
-    // If it's a string with console codes, clean it up
     if (typeof actualData === 'string') {
       actualData = actualData.replace(/\[\d+m/g, '').replace(/\[0m/g, '')
     }
     
-    // If it's an object with Data property, use that
     if (actualData && typeof actualData === 'object' && actualData.Data) {
       actualData = actualData.Data
     }
@@ -175,8 +188,6 @@ const BotegaLiquidityPoolInfo: React.FC = () => {
 
   const processPriceResult = (result: any) => {
     if (!result) return "No data received"
-    
-    // If we got any result, just show success
     return "Success"
   }
 
@@ -244,16 +255,13 @@ const BotegaLiquidityPoolInfo: React.FC = () => {
     try {
       const client = getClient()
       
-      // Ensure parameters are properly formatted
       const quantityNum = parseFloat(quantity)
       if (isNaN(quantityNum)) {
         throw new Error("Quantity must be a valid number")
       }
       
-      // Try using messageResult instead of getPrice to avoid the Tags error
       let result
       try {
-        // Try with JSON data format
         result = await client.messageResult(JSON.stringify({
           action: "getPrice",
           quantity: quantityNum.toString(),
@@ -263,7 +271,6 @@ const BotegaLiquidityPoolInfo: React.FC = () => {
         ])
       } catch (err) {
         console.log("JSON format failed, trying simple format:", err)
-        // Try simple format
         result = await client.messageResult("getPrice", [
           { name: "Action", value: "GetPrice" },
           { name: "Quantity", value: quantityNum.toString() },
@@ -290,13 +297,11 @@ const BotegaLiquidityPoolInfo: React.FC = () => {
     try {
       const client = getClient()
       
-      // Ensure quantity is properly formatted
       const quantityNum = parseFloat(quantity)
       if (isNaN(quantityNum)) {
         throw new Error("Quantity must be a valid number")
       }
       
-      // Try using messageResult instead of getPriceOfTokenAInTokenB
       const result = await client.messageResult("getPriceOfTokenAInTokenB", [
         { name: "Action", value: "GetPriceOfTokenAInTokenB" },
         { name: "Quantity", value: quantityNum.toString() }
@@ -317,13 +322,11 @@ const BotegaLiquidityPoolInfo: React.FC = () => {
     try {
       const client = getClient()
       
-      // Ensure quantity is properly formatted
       const quantityNum = parseFloat(quantity)
       if (isNaN(quantityNum)) {
         throw new Error("Quantity must be a valid number")
       }
       
-      // Try using messageResult instead of getPriceOfTokenBInTokenA
       const result = await client.messageResult("getPriceOfTokenBInTokenA", [
         { name: "Action", value: "GetPriceOfTokenBInTokenA" },
         { name: "Quantity", value: quantityNum.toString() }
@@ -344,7 +347,6 @@ const BotegaLiquidityPoolInfo: React.FC = () => {
     try {
       const client = getClient()
       
-      // Try using messageResult for getTokenA
       const result = await client.messageResult("getTokenA", [
         { name: "Action", value: "GetTokenA" }
       ])
@@ -364,7 +366,6 @@ const BotegaLiquidityPoolInfo: React.FC = () => {
     try {
       const client = getClient()
       
-      // Try using messageResult for getTokenB
       const result = await client.messageResult("getTokenB", [
         { name: "Action", value: "GetTokenB" }
       ])
@@ -401,7 +402,6 @@ const BotegaLiquidityPoolInfo: React.FC = () => {
     try {
       const client = getClient()
       
-      // Try different message formats to see what works
       const testFormats = [
         {
           name: "Simple getPrice",
@@ -455,168 +455,122 @@ const BotegaLiquidityPoolInfo: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4 font-sans">
-      <div className="max-w-4xl mx-auto space-y-6">
+    <div className="min-h-screen w-full bg-gradient-to-r from-cyan-100 via-blue-50 to-pink-100 flex items-center justify-center p-4">
+      <div className="w-full max-w-4xl space-y-6">
         {/* Header */}
-        <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
-          <div className="px-6 py-4 text-center">
-            <h2 className="text-2xl font-bold flex items-center justify-center gap-2 font-sans text-gray-900">
-              <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7c0-2.21-3.582-4-8-4s-8 1.79-8 4z" />
-              </svg>
-              Botega Liquidity Pool Client
-            </h2>
+        <div className="text-center">
+          <div className="flex items-center justify-center space-x-2 mb-2">
+            <div className="w-6 h-6 border-2 border-cyan-500 transform rotate-45 bg-transparent"></div>
+            <span className="text-2xl font-semibold">
+              <span className="text-cyan-500">Botega</span>
+              <span className="text-gray-900">Liquidity Pool</span>
+            </span>
           </div>
+          <p className="text-gray-600">Interact with Botega Liquidity Pools</p>
         </div>
 
-        {/* Connection Setup */}
-        <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h3 className="text-lg font-medium flex items-center gap-2 text-gray-900">
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-              </svg>
-              Connection Setup
-            </h3>
-          </div>
-          <div className="p-6 space-y-4">
-            <div className="flex flex-col sm:flex-row gap-3">
-                <input
+        {/* Main Card */}
+        <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-xl relative">
+          {loading && <LoadingOverlay />}
+          <CardContent className="p-8 space-y-6">
+            {/* Connection Setup */}
+            <div className="space-y-4">
+              <Label className="text-sm font-medium text-gray-700">Connection Setup</Label>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Input
                   type="text"
                   placeholder="Enter Liquidity Pool Process ID"
                   value={processId}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                  setProcessId(e.target.value)
-                  clientRef.current = null
-                }}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-sans"
+                  onChange={(e) => {
+                    setProcessId(e.target.value)
+                    clientRef.current = null
+                  }}
+                  className="flex-1"
                 />
-                <button
+                <Button
                   onClick={handleSetWallet}
-                disabled={!processId}
-                className="sm:w-auto w-full px-4 py-2 bg-gray-900 text-white rounded-md hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-sans"
+                  disabled={!processId}
+                  className="sm:w-auto w-full bg-black hover:bg-gray-800 text-white"
                 >
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
-                Set Wallet
-                </button>
-            </div>
-            {walletSet && (
-              <div className="flex items-center gap-2 text-green-600">
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-                <span className="text-sm font-medium">Wallet Connected!</span>
+                  Connect Wallet
+                </Button>
               </div>
-            )}
-          </div>
-        </div>
-
-        {/* Basic Operations */}
-        <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h3 className="text-lg font-medium flex items-center gap-2 text-gray-900">
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              Basic Operations
-            </h3>
-          </div>
-          <div className="p-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              <button
-                onClick={handleGetLPInfo}
-                disabled={loading || !processId}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-sans text-gray-900"
-              >
-                {loading ? (
-                  <svg className="h-4 w-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                  </svg>
-                ) : (
+              {walletSet && (
+                <div className="flex items-center gap-2 text-green-600">
                   <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7c0-2.21-3.582-4-8-4s-8 1.79-8 4z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
-                )}
-                Get LP Info
-              </button>
-              <button
-                onClick={handleGetProcessId}
-                disabled={loading || !processId}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-sans text-gray-900"
-              >
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                Get Process ID
-              </button>
-              <button
-                onClick={handleGetProcessInfo}
-                disabled={loading || !processId}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-sans text-gray-900"
-              >
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7c0-2.21-3.582-4-8-4s-8 1.79-8 4z" />
-                </svg>
-                Get Process Info
-              </button>
-              <button
-                onClick={handleGetClientStatus}
-                disabled={loading || !processId}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-sans text-gray-900"
-              >
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                Client Status
-              </button>
-              <button
-                onClick={handleTestMessageResult}
-                disabled={loading || !processId}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-sans text-gray-900"
-              >
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
-                Test Message
-              </button>
+                  <span className="text-sm font-medium">Wallet Connected!</span>
+                </div>
+              )}
             </div>
-          </div>
-        </div>
 
-        {/* Price Operations */}
-        <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h3 className="text-lg font-medium flex items-center gap-2 text-gray-900">
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-              </svg>
-              Price Operations
-            </h3>
+            {/* Basic Operations */}
+            <div className="space-y-4">
+              <Label className="text-sm font-medium text-gray-700">Basic Operations</Label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                <Button
+                  onClick={handleGetLPInfo}
+                  disabled={loading || !processId}
+                  className="bg-black hover:bg-gray-800 text-white text-sm"
+                >
+                  Get LP Info
+                </Button>
+                <Button
+                  onClick={handleGetProcessId}
+                  disabled={loading || !processId}
+                  className="bg-black hover:bg-gray-800 text-white text-sm"
+                >
+                  Get Process ID
+                </Button>
+                <Button
+                  onClick={handleGetProcessInfo}
+                  disabled={loading || !processId}
+                  className="bg-black hover:bg-gray-800 text-white text-sm"
+                >
+                  Get Process Info
+                </Button>
+                <Button
+                  onClick={handleGetClientStatus}
+                  disabled={loading || !processId}
+                  className="bg-black hover:bg-gray-800 text-white text-sm"
+                >
+                  Client Status
+                </Button>
+                <Button
+                  onClick={handleTestMessageResult}
+                  disabled={loading || !processId}
+                  className="bg-black hover:bg-gray-800 text-white text-sm"
+                >
+                  Test Message
+                </Button>
+              </div>
             </div>
-          <div className="p-6 space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <input
+
+            {/* Price Operations */}
+            <div className="space-y-4">
+              <Label className="text-sm font-medium text-gray-700">Price Operations</Label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <Input
                   type="text"
                   placeholder="Quantity"
                   value={quantity}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQuantity(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-sans"
+                  onChange={(e) => setQuantity(e.target.value)}
+                  className="w-full"
                 />
-                <input
+                <Input
                   type="text"
                   placeholder="Token ID"
                   value={tokenId}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTokenId(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-sans"
+                  onChange={(e) => setTokenId(e.target.value)}
+                  className="w-full"
                 />
               </div>
               
               {!walletSet && (
                 <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3">
                   <div className="flex items-center gap-2">
-                    <svg className="h-4 w-4 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
                     </svg>
                     <span className="text-yellow-800 text-sm">Note: Wallet must be connected for price operations</span>
@@ -624,71 +578,61 @@ const BotegaLiquidityPoolInfo: React.FC = () => {
                 </div>
               )}
 
-            <div className="border-t border-gray-200 pt-4"></div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                <Button
+                  onClick={handleGetPrice}
+                  disabled={loading || !processId || !quantity || !tokenId}
+                  className="bg-black hover:bg-gray-800 text-white text-sm"
+                >
+                  Get Price
+                </Button>
+                <Button
+                  onClick={handleGetPriceOfTokenAInTokenB}
+                  disabled={loading || !processId || !quantity}
+                  className="bg-black hover:bg-gray-800 text-white text-sm"
+                >
+                  TokenA → TokenB
+                </Button>
+                <Button
+                  onClick={handleGetPriceOfTokenBInTokenA}
+                  disabled={loading || !processId || !quantity}
+                  className="bg-black hover:bg-gray-800 text-white text-sm"
+                >
+                  TokenB → TokenA
+                </Button>
+                <Button
+                  onClick={handleGetTokenA}
+                  disabled={loading || !processId}
+                  className="bg-black hover:bg-gray-800 text-white text-sm"
+                >
+                  Get TokenA
+                </Button>
+                <Button
+                  onClick={handleGetTokenB}
+                  disabled={loading || !processId}
+                  className="bg-black hover:bg-gray-800 text-white text-sm"
+                >
+                  Get TokenB
+                </Button>
+              </div>
+            </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              <button
-                onClick={handleGetPrice}
-                disabled={loading || !processId || !quantity || !tokenId}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 font-sans text-gray-900"
-              >
-                {loading ? (
-                  <svg className="h-4 w-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                  </svg>
-                ) : (
+            {/* Error Display */}
+            {error && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                <div className="flex items-center gap-2">
                   <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                )}
-                Get Price
-              </button>
-              <button
-                onClick={handleGetPriceOfTokenAInTokenB}
-                disabled={loading || !processId || !quantity}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed font-sans text-gray-900"
-              >
-                TokenA → TokenB
-              </button>
-              <button
-                onClick={handleGetPriceOfTokenBInTokenA}
-                disabled={loading || !processId || !quantity}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed font-sans text-gray-900"
-              >
-                TokenB → TokenA
-              </button>
-              <button
-                onClick={handleGetTokenA}
-                disabled={loading || !processId}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed font-sans text-gray-900"
-              >
-                Get TokenA
-              </button>
-              <button
-                onClick={handleGetTokenB}
-                disabled={loading || !processId}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed font-sans text-gray-900"
-              >
-                Get TokenB
-              </button>
-            </div>
-          </div>
-        </div>
+                  <span className="text-red-800">{error}</span>
+                </div>
+              </div>
+            )}
 
-        {/* Error Display */}
-        {error && (
-          <div className="bg-red-50 border border-red-200 rounded-md p-4">
-            <div className="flex items-center gap-2">
-              <svg className="h-4 w-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <span className="text-red-800">{error}</span>
-            </div>
-          </div>
-        )}
-
-        {/* Result Display */}
-        {result && <ResultDisplay value={typeof result === "string" ? { result } : result} />}
+            {/* Result Display */}
+            {result && <ResultDisplay value={typeof result === "string" ? { result } : result} />}
+          </CardContent>
+        </Card>
       </div>
     </div>
   )
