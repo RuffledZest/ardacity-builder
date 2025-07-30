@@ -99,7 +99,9 @@
       "type": "StakingPanel",
       "name": "staking-panel",
       "renderable": true,
-      "props": {},
+      "props": {
+        "processId": "78Nrydz-vMmm16cAMHhLxvNE6Wr_1afaQb_EoS0YxG8"
+      },
       "description": "Retro-style staking interface with real-time message logging. Stake, unstake, and finalize operations with AO process integration and ArConnect wallet support."
     },
     {

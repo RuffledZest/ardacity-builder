@@ -331,7 +331,7 @@ const FetchProfileCard: React.FC = () => {
       </div>
       {/* Fetch Form */}
       <div className="bg-zinc-900 border border-zinc-700 rounded-2xl shadow-lg p-6">
-        <h2 className="text-xl font-bold text-white mb-4">Fetch Profile</h2>
+        <h2 className="text-xl font-bold text-white mb-4">Fetch Permaweb/Bazaar Profile</h2>
         <form
           onSubmit={(e) => {
             e.preventDefault();
