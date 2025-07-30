@@ -359,7 +359,7 @@ const BazaarNftPortfolio: React.FC = () => {
               className="w-24 h-24 rounded-full object-cover border-2 border-gray-200"
               onError={(e) => ((e.target as HTMLImageElement).src = profileFallbackImage)}
             />
-            <div className="absolute -top-1 -right-1 w-4 h-4 bg-lime-400 pixel-corners animate-blink"></div>
+            <div className="absolute -top-1 -right-1 w-4 h-4 bg-lime-400 rounded-full animate-blink"></div>
           </div>
           <div className="text-center md:text-left">
             <h1 className="text-2xl font-bold text-cyan-400 font-mono pixel-text">

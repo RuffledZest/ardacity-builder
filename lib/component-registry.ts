@@ -546,7 +546,9 @@ export const componentRegistry: ComponentDefinition[] = [
     category: "arweave",
     type: "StakingPanel",
     description: "Retro-style staking interface with real-time message logging. Stake, unstake, and finalize operations with AO process integration and ArConnect wallet support.",
-    defaultProps: {},
+    defaultProps: {
+      processId: "78Nrydz-vMmm16cAMHhLxvNE6Wr_1afaQb_EoS0YxG8"
+    },
     dependencies: ["@permaweb/aoconnect"],
     imports: [
       "import StakingPanel from '@/components/arweave/staking-panel'"

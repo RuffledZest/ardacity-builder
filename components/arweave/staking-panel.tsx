@@ -5,6 +5,13 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent } from "@/components/ui/card"
+import { message, result, createDataItemSigner } from '@permaweb/aoconnect'
+
+declare global {
+  interface Window {
+    arweaveWallet: any
+  }
+}
 
 // Loading Overlay Component
 const LoadingOverlay = () => (
@@ -22,12 +29,14 @@ const LoadingOverlay = () => (
 )
 
 const StakingPanel: React.FC = () => {
-  const [processId, setProcessId] = useState("ixjnbCaGfzSJ64IQ9X_B3dQUWyMy2OGSFUP2Yw-NpRM")
-  const [amount, setAmount] = useState("")
+  const [quantity, setQuantity] = useState('')
+  const [delay, setDelay] = useState('10')
   const [messageLog, setMessageLog] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
+  const [actionType, setActionType] = useState<'stake' | 'unstake' | 'finalize'>('stake')
   const [error, setError] = useState<string | null>(null)
   const [walletSet, setWalletSet] = useState(false)
+  const processId = '78Nrydz-vMmm16cAMHhLxvNE6Wr_1afaQb_EoS0YxG8'
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const scrollToBottom = () => {
@@ -55,109 +64,68 @@ const StakingPanel: React.FC = () => {
     }
   }
 
-  const handleStake = async () => {
-    if (!amount || isNaN(parseFloat(amount))) {
-      setError("Please enter a valid amount")
-      addMessage("ERROR: Invalid amount entered")
-      return
-    }
-
+  const sendStakingMessage = async () => {
     setLoading(true)
     setError(null)
-    addMessage(`Starting stake operation for ${amount} tokens...`)
-
+    
     try {
-      // Simulate staking operation
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      
-      addMessage(`Successfully staked ${amount} tokens`)
-      addMessage("Transaction confirmed on blockchain")
-      setAmount("")
-    } catch (err: any) {
-      const errorMsg = err?.message || "Staking operation failed"
-      setError(errorMsg)
-      addMessage(`ERROR: ${errorMsg}`)
-    } finally {
-      setLoading(false)
-    }
-  }
+      if (!window.arweaveWallet) throw new Error("ArConnect not detected")
 
-  const handleUnstake = async () => {
-    if (!amount || isNaN(parseFloat(amount))) {
-      setError("Please enter a valid amount")
-      addMessage("ERROR: Invalid amount entered")
-      return
-    }
+      const signer = createDataItemSigner(window.arweaveWallet)
 
-    setLoading(true)
-    setError(null)
-    addMessage(`Starting unstake operation for ${amount} tokens...`)
+      let tags: { name: string; value: string }[] = []
 
-    try {
-      // Simulate unstaking operation
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      
-      addMessage(`Successfully unstaked ${amount} tokens`)
-      addMessage("Transaction confirmed on blockchain")
-      setAmount("")
-    } catch (err: any) {
-      const errorMsg = err?.message || "Unstaking operation failed"
-      setError(errorMsg)
-      addMessage(`ERROR: ${errorMsg}`)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleClaimRewards = async () => {
-    setLoading(true)
-    setError(null)
-    addMessage("Starting reward claim operation...")
-
-    try {
-      // Simulate reward claiming
-      await new Promise(resolve => setTimeout(resolve, 1500))
-      
-      const rewardAmount = (Math.random() * 10).toFixed(2)
-      addMessage(`Successfully claimed ${rewardAmount} reward tokens`)
-      addMessage("Rewards transferred to wallet")
-    } catch (err: any) {
-      const errorMsg = err?.message || "Reward claim failed"
-      setError(errorMsg)
-      addMessage(`ERROR: ${errorMsg}`)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleGetStakeInfo = async () => {
-    setLoading(true)
-    setError(null)
-    addMessage("Fetching stake information...")
-
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      const stakeInfo = {
-        totalStaked: "1,250.50",
-        rewardsEarned: "45.75",
-        stakingPeriod: "15 days",
-        nextReward: "2.3"
+      if (actionType === 'stake') {
+        tags = [
+          { name: 'Action', value: 'Stake' },
+          { name: 'Quantity', value: quantity },
+          { name: 'UnstakeDelay', value: delay }
+        ]
+        addMessage(`Staking ${quantity} tokens with delay ${delay}...`)
+      } else if (actionType === 'unstake') {
+        tags = [
+          { name: 'Action', value: 'Unstake' },
+          { name: 'Quantity', value: quantity }
+        ]
+        addMessage(`Unstaking ${quantity} tokens...`)
+      } else if (actionType === 'finalize') {
+        tags = [{ name: 'Action', value: 'Finalize' }]
+        addMessage(`Finalizing unstaking...`)
       }
-      
-      addMessage("Stake information retrieved successfully")
-      addMessage(`Total Staked: ${stakeInfo.totalStaked} tokens`)
-      addMessage(`Rewards Earned: ${stakeInfo.rewardsEarned} tokens`)
-      addMessage(`Staking Period: ${stakeInfo.stakingPeriod}`)
-      addMessage(`Next Reward: ${stakeInfo.nextReward} tokens`)
+
+      const sent = await message({
+        process: processId,
+        tags,
+        signer,
+      })
+
+      const res = await result({ process: processId, message: sent })
+      const output = res?.Messages?.[0]?.Data || 'No response'
+      addMessage(`Response: ${output}`)
     } catch (err: any) {
-      const errorMsg = err?.message || "Failed to fetch stake info"
+      const errorMsg = err?.message || "Operation failed"
       setError(errorMsg)
       addMessage(`ERROR: ${errorMsg}`)
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleAction = (type: 'stake' | 'unstake' | 'finalize') => {
+    if (!walletSet) {
+      setError("Please connect wallet first")
+      addMessage("ERROR: Please connect wallet first")
+      return
+    }
+    
+    if (type !== 'finalize' && (!quantity || isNaN(parseFloat(quantity)))) {
+      setError("Please enter a valid amount")
+      addMessage("ERROR: Invalid amount entered")
+      return
+    }
+    
+    setActionType(type)
+    sendStakingMessage()
   }
 
   return (
@@ -204,43 +172,53 @@ const StakingPanel: React.FC = () => {
             <div className="space-y-4">
               <Label className="text-sm font-medium text-gray-700">Staking Operations</Label>
               <div className="space-y-3">
-                <Input
-                  type="number"
-                  placeholder="Enter amount to stake/unstake"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  className="w-full"
-                />
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-gray-700">Amount</Label>
+                  <Input
+                    type="number"
+                    placeholder="Enter amount to stake/unstake"
+                    value={quantity}
+                    onChange={(e) => setQuantity(e.target.value)}
+                    className="w-full"
+                  />
+                </div>
+                
+                {actionType === 'stake' && (
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium text-gray-700">Unstake Delay (in blocks)</Label>
+                    <Input
+                      type="number"
+                      placeholder="Enter delay in blocks"
+                      value={delay}
+                      onChange={(e) => setDelay(e.target.value)}
+                      className="w-full"
+                    />
+                  </div>
+                )}
+                
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <Button
-                    onClick={handleStake}
-                    disabled={loading || !walletSet || !amount}
+                    onClick={() => handleAction('stake')}
+                    disabled={loading || !walletSet || !quantity}
                     className="bg-black hover:bg-gray-800 text-white"
                   >
                     Stake Tokens
                   </Button>
                   <Button
-                    onClick={handleUnstake}
-                    disabled={loading || !walletSet || !amount}
+                    onClick={() => handleAction('unstake')}
+                    disabled={loading || !walletSet || !quantity}
                     className="bg-black hover:bg-gray-800 text-white"
                   >
                     Unstake Tokens
                   </Button>
                   <Button
-                    onClick={handleClaimRewards}
+                    onClick={() => handleAction('finalize')}
                     disabled={loading || !walletSet}
                     className="bg-black hover:bg-gray-800 text-white"
                   >
-                    Claim Rewards
+                    Finalize
                   </Button>
                 </div>
-                <Button
-                  onClick={handleGetStakeInfo}
-                  disabled={loading || !walletSet}
-                  className="w-full bg-black hover:bg-gray-800 text-white"
-                >
-                  Get Stake Info
-                </Button>
               </div>
             </div>
 
