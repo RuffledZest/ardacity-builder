@@ -4,8 +4,7 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { MessageCircle, Users, Zap, Sparkles, Shield, Rocket, Globe, Heart } from "lucide-react"
+import { MessageCircle, Sparkles } from "lucide-react"
 import { ChatRoom } from "./chatroom-on-chain"
 
 interface ChatRoomHolderProps {

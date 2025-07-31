@@ -8,14 +8,9 @@ interface NftThemeHeroProps {
   title?: string
   description?: string 
   backgroundImage?: string
-  gradientFrom?: string
-  gradientVia?: string
-  gradientTo?: string
   showButtons?: boolean
   primaryBtnText?: string
-  // primaryBtnAction?: () => void
   secondaryBtnText?: string
-  // secondaryBtnAction?: () => void
   secondaryBtnVariant?: "outline" | "ghost" | "default"
   animate?: boolean
   customClassName?: string
@@ -26,14 +21,9 @@ export function NftThemeHero({
   title = "NFT Collection",
   description = "Discover unique digital assets",
   backgroundImage = "https://images.unsplash.com/photo-1593173930865-2edee2550a40?q=80&w=1338&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D?height=1080&width=1920",
-  gradientFrom = "purple-900",
-  gradientVia = "blue-900",
-  gradientTo = "indigo-900",
   showButtons = true,
   primaryBtnText = "Explore Collection",
-  // primaryBtnAction,
   secondaryBtnText = "Create NFT",
-  // secondaryBtnAction,
   secondaryBtnVariant = "outline",
   animate = true,
   customClassName = "",
@@ -43,7 +33,7 @@ export function NftThemeHero({
 
   return (
     <div
-      className={`relative min-h-screen bg-gradient-to-br from-${gradientFrom} via-${gradientVia} to-${gradientTo} flex items-center justify-center overflow-hidden ${customClassName}`}
+      className={`relative min-h-screen flex items-center justify-center overflow-hidden ${customClassName}`}
     >
       {/* Animated Background Elements */}
       <div className="absolute inset-0">

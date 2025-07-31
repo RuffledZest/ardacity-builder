@@ -23,10 +23,9 @@ export const componentRegistry: ComponentDefinition[] = [
       nav1: "Docs",
       nav2: "Features",
       nav3: "Demo",
-      variant: "default",
       position: "sticky",
     },
-    dependencies: ["@ar-dacity/ardacity-wallet-btn", "next-themes"],
+    dependencies: ["@ar-dacity/ardacity-wallet-btn", "next-themes", "lucide-react"],
     imports: [
       "import { ArDacityClassicNavbar } from '@/components/navigation/ardacity-classic-navbar'",
     ],
@@ -223,9 +222,6 @@ export const componentRegistry: ComponentDefinition[] = [
       description: "Dive into exclusive collections of digital art",
       backgroundImage:
         "https://images.unsplash.com/photo-1593173930865-2edee2550a40?q=80&w=1338&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      gradientFrom: "indigo-900",
-      gradientVia: "purple-800",
-      gradientTo: "pink-900",
       primaryBtnText: "Start Exploring",
       secondaryBtnText: "Mint Your NFT",
       animate: true,
@@ -256,7 +252,7 @@ export const componentRegistry: ComponentDefinition[] = [
       showArweaveInfo: true,
       customClassName: "",
     },
-    dependencies: ["framer-motion", "next/image"],
+    dependencies: ["framer-motion"],
     imports: [
       "import  {BazaarHeader}  from '@/components/headers/bazaar-header'",
     ],
@@ -461,7 +457,7 @@ export const componentRegistry: ComponentDefinition[] = [
     defaultProps:{},
     dependencies: ["react-icons"],
     imports: [
-      "import  ProfileManager from '@/components/arweave/create-permaweb-profile'",
+      "import  ProfileManager from '@/components/arweave/create-bazaar-profile'",
     ],
     tags: ["arweave", "profile", "permaweb"],
   },
@@ -512,13 +508,7 @@ export const componentRegistry: ComponentDefinition[] = [
     category: "arweave",
     type: "ArweaveNFT",
     description: "NFT display and transfer interface with Lua IDE",
-    defaultProps: {
-      title: "Arweave NFT",
-      description: "View and interact with your Arweave NFT",
-      imageUrl: "/ArweaveNFT.png",
-      tokenId: "your-token-id",
-      owner: "your-wallet-address",
-    },
+    defaultProps: {},
     dependencies: ["@permaweb/aoconnect"],
     imports: [
       "import { ArweaveNFT } from '@/components/arweave/arweave-nft'",
@@ -567,7 +557,7 @@ export const componentRegistry: ComponentDefinition[] = [
     },
     dependencies: ["socket.io-client", "lucide-react"],
     imports: [
-      "import  ChatRoomHolder  from '@/components/arweave/chatroom-on-chain'",
+      "import  ChatRoomHolder  from '@/components/arweave/chatroom-holder'",
     ],
     tags: [
       "arweave",
