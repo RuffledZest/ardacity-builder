@@ -370,8 +370,7 @@ export const componentRegistry: ComponentDefinition[] = [
     defaultProps: {
       title: "Stay updated with our latest news",
       description: "Get product updates, company news, and more.",
-      // onSubscribe is left undefined for builder compatibility
-      socialIcons: ["Twitter", "Instagram", "Github"], // Builder can map icon keys to ReactNodes if needed
+      socialIcons: ["Twitter", "Instagram", "Github"],
       legalLinks: [
         { label: "Privacy", href: "/privacy" },
         { label: "Terms", href: "/terms" },
@@ -400,7 +399,7 @@ export const componentRegistry: ComponentDefinition[] = [
       "Modern SaaS-style footer with logo, description, social icons, quick links, legal links, and newsletter subscription.",
     defaultProps: {
       logoUrl: "/ArDacitypfp.png",
-      description: "Modern SaaS for your business.",
+      description: "Modern SaaS footer for your business.",
       socialIconKeys: ["github", "twitter", "linkedin"],
       quickLinks: [
         { label: "Features", href: "/features" },
