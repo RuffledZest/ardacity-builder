@@ -127,7 +127,7 @@ const ProfileManager: React.FC= () => {
   };
 
   return (
-    <div className="bg-zinc-950 py-10 px-2">
+    <div className="bg-gradient-to-br from-zinc-800 via-zinc-950  to-zinc-950 py-10 px-2">
       <div className="max-w-md mx-auto flex flex-col gap-8">
         <div className="bg-zinc-900 border border-zinc-700 rounded-2xl shadow-lg relative overflow-visible">
           <div className="absolute left-1/2 -translate-x-1/2 -top-6 flex items-center gap-2 z-20">
