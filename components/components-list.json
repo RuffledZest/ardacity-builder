@@ -5,39 +5,83 @@
       "name": "arweave-search",
       "renderable": true,
       "props": {
-        "initialTags": [
-          {
-            "name": "",
-            "value": ""
-          }
-        ],
+        "initialTags": [],
         "limit": 10
       },
       "description": "A search bar and results for querying Arweave transactions by tags."
     },
     {
+      "type": "FetchProfileCard",
+      "name": "fetch-bazaar-profile",
+      "renderable": true,
+      "props": {},
+      "description": "Fetch your Permaweb/Bazaar profile with a click"
+    },
+    {
+      "type": "ARNSRecordLookup",
+      "name": "arns-record-lookup",
+      "renderable": true,
+      "props": {},
+      "description": "Minecraft-themed ARNS record lookup interface with wallet integration and JSON viewer. Lookup ARNS names and interact with AO processes."
+    },
+    {
+      "type": "BotegaLiquidityPoolInfo",
+      "name": "botega-liquidity-pool-info",
+      "renderable": true,
+      "props": {
+        "processId": "ixjnbCaGfzSJ64IQ9X_B3dQUWyMy2OGSFUP2Yw-NpRM",
+        "tokenId": "xU9zFkq3X2ZQ6olwNVvr1vUWIjc3kXTWr7xKQD6dh10"
+      },
+      "description": "Comprehensive liquidity pool interface with price operations, token management, and real-time data display. Connect to Botega liquidity pools and manage trading operations."
+    },
+    {
+      "type": "StakingPanel",
+      "name": "staking-panel",
+      "renderable": true,
+      "props": {
+        "processId": "78Nrydz-vMmm16cAMHhLxvNE6Wr_1afaQb_EoS0YxG8"
+      },
+      "description": "Retro-style staking interface with real-time message logging. Stake, unstake, and finalize operations with AO process integration and ArConnect wallet support."
+    },
+    {
+      "type": "BazaarNftPortfolio",
+      "name": "bazaar-nft-portfolio",
+      "renderable": true,
+      "props": {},
+      "description": "Comprehensive NFT portfolio explorer with 3D carousel, profile management, and asset discovery. Search by wallet address or profile ID with retro pixel art styling."
+    },
+    {
+      "type": "BazaarHeader",
+      "name": "bazaar-header",
+      "renderable": true,
+      "props": {
+        "title": "Arweave Bazaar",
+        "subtitle": "Decentralized Profile & Asset Management",
+        "description": "Create, update, and manage your decentralized identity on the Arweave permaweb. Build your profile, showcase assets, and connect with the decentralized community.",
+        "stats": {
+          "totalProfiles": 12500,
+          "totalAssets": 45800,
+          "networkUptime": "99.9%"
+        },
+        "ctaText": "Get Started",
+        "showArweaveInfo": true,
+        "customClassName": ""
+      },
+      "description": "Header with Bazaar theme, featuring animated elements and a modern design."
+    },
+    {
       "type": "ArweaveNFT",
       "name": "arweave-nft",
       "renderable": true,
-      "props": {
-        "title": "",
-        "description": "",
-        "imageUrl": "",
-        "tokenId": "",
-        "owner": "",
-        "initialLuaCode": "",
-        "onTransfer": null,
-        "className": "",
-        "style": {}
-      },
-      "description": "Displays an Arweave NFT with transfer and Lua scripting support."
+      "props": {},
+      "description": "NFT display and transfer interface with Lua IDE"
     },
     {
       "type": "AOChatBot",
       "name": "ao-chatbot",
       "renderable": true,
       "props": {
-        "processId": "",
+        "processId": "lf9KuIzsIogdOPXc5hdBZNbZ3_CaeM0IrX9maSteWcY",
         "theme": "dark",
         "title": ""
       },
@@ -58,7 +102,16 @@
       "description": "A message signing component for AO/Arweave wallets."
     },
     {
-      "type": "ChatRoom",
+      "type": "AOTokenDemo",
+      "name": "ao-token-demo",
+      "renderable": true,
+      "props": {
+        "processId": "78Nrydz-vMmm16cAMHhLxvNE6r_1afaQb_EoS0YxG8"
+      },
+      "description": "Comprehensive AO Token management interface with transfer, grant, mint operations, balance checking, and real-time activity logging. Connect to AO token processes and manage token operations with ArConnect wallet support."
+    },
+    {
+      "type": "ChatRoomHolder",
       "name": "chatroom-on-chain",
       "renderable": true,
       "props": {
@@ -120,7 +173,6 @@
       },
       "description": "Comprehensive AO Token management interface with transfer, mint, grant operations, balance checking, and process health monitoring. Full integration with ao-js-sdk for token operations."
     }
-
   ],
   "footers": [
     {
@@ -160,7 +212,7 @@
       "props": {
         "title": "Stay updated with our latest news",
         "description": "Get product updates, company news, and more.",
-        "socialIcons": [],
+        "socialIcons": ["Twitter", "Instagram", "Github"],
         "legalLinks": [
           {
             "label": "Privacy",
@@ -180,7 +232,7 @@
       "renderable": true,
       "props": {
         "logoUrl": "/ArDacitypfp.png",
-        "description": "Modern SaaS for your business.",
+        "description": "Modern SaaS footer for your business.",
         "socialIconKeys": [
           "github",
           "twitter",
@@ -336,11 +388,10 @@
       "name": "ardacity-classic-navbar",
       "renderable": true,
       "props": {
-        "brand": "",
-        "nav1": "",
-        "nav2": "",
-        "nav3": "",
-        "variant": "default",
+        "brand": "ArDacity",
+        "nav1": "Docs",
+        "nav2": "Features",
+        "nav3": "Demo",
         "position": "sticky"
       },
       "description": "A classic navigation bar for the top of the page."
@@ -350,7 +401,7 @@
       "name": "floating-navbar",
       "renderable": true,
       "props": {
-        "brand": "",
+        "brand": "ArDacity",
         "links": [
           "Home",
           "About",
@@ -394,9 +445,9 @@
       "name": "ardacity-classic-hero",
       "renderable": true,
       "props": {
-        "badge": "",
-        "title1": "",
-        "title2": ""
+        "badge": "Ardacity UI",
+        "title1": "ArDacity",
+        "title2": "Find Your Design"
       },
       "description": "A classic hero section with two main titles and a badge."
     },
@@ -407,10 +458,7 @@
       "props": {
         "title": "Explore Metaverse Art",
         "description": "Dive into exclusive collections of digital art",
-        "backgroundImage": "/ArDacitypfp.png",
-        "gradientFrom": "indigo-900",
-        "gradientVia": "purple-800",
-        "gradientTo": "pink-900",
+        "backgroundImage": "https://images.unsplash.com/photo-1593173930865-2edee2550a40?q=80&w=1338&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
         "primaryBtnText": "Start Exploring",
         "secondaryBtnText": "Mint Your NFT",
         "animate": true
@@ -425,9 +473,7 @@
         "title": "Experience Creative Precision",
         "subtitle": "Visual harmony driven by real geometry and motion.",
         "ctaText": "Request Demo",
-        "onCtaClick": "() => alert('Clicked!')",
-        "imageSrc": "/ArDacitypfp.png",
-        "showImage": true,
+        "imageSrc": "https://images.unsplash.com/photo-1526628953301-3e589a6a8b74?q=80&w=1106&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
         "customClassName": ""
       },
       "description": "Animated dark theme header with geometric background, hero text, CTA button, and image. Highly customizable."

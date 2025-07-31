@@ -23,10 +23,9 @@ export const componentRegistry: ComponentDefinition[] = [
       nav1: "Docs",
       nav2: "Features",
       nav3: "Demo",
-      variant: "default",
       position: "sticky",
     },
-    dependencies: ["@ar-dacity/ardacity-wallet-btn", "next-themes"],
+    dependencies: ["@ar-dacity/ardacity-wallet-btn", "next-themes", "lucide-react"],
     imports: [
       "import { ArDacityClassicNavbar } from '@/components/navigation/ardacity-classic-navbar'",
     ],
@@ -109,12 +108,42 @@ export const componentRegistry: ComponentDefinition[] = [
       "Responsive masonry grid with GSAP animations and hover effects.",
     defaultProps: {
       items: [
-        { id: "1", img: "/placeholder.jpg", url: "#", height: 300 },
-        { id: "2", img: "/placeholder.jpg", url: "#", height: 400 },
-        { id: "3", img: "/placeholder.jpg", url: "#", height: 250 },
-        { id: "4", img: "/placeholder.jpg", url: "#", height: 350 },
-        { id: "5", img: "/placeholder.jpg", url: "#", height: 280 },
-        { id: "6", img: "/placeholder.jpg", url: "#", height: 320 },
+        {
+          id: "1",
+          img: "https://images.unsplash.com/photo-1751795195789-8dab6693475d?q=80&w=1169&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+          url: "#",
+          height: 300,
+        },
+        {
+          id: "2",
+          img: "https://images.unsplash.com/photo-1752805936214-bbdd8c94a576?q=80&w=685&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+          url: "#",
+          height: 400,
+        },
+        {
+          id: "3",
+          img: "https://images.unsplash.com/photo-1749947393466-cb5e81bc943d?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+          url: "#",
+          height: 250,
+        },
+        {
+          id: "4",
+          img: "https://plus.unsplash.com/premium_photo-1746417461105-51b89a61907f?q=80&w=706&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+          url: "#",
+          height: 350,
+        },
+        {
+          id: "5",
+          img: "https://images.unsplash.com/photo-1704094516867-d8ff1d9b71cc?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+          url: "#",
+          height: 280,
+        },
+        {
+          id: "6",
+          img: "https://images.unsplash.com/photo-1752867823419-e56031e9d737?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+          url: "#",
+          height: 320,
+        },
       ],
       ease: "power3.out",
       duration: 0.6,
@@ -135,11 +164,13 @@ export const componentRegistry: ComponentDefinition[] = [
     name: "Smooth Scroll Hero",
     category: "header",
     type: "SmoothScrollHero",
-    description: "Parallax hero section with smooth scrolling effects. Accepts 'images' (array) and 'centerImageUrl' (string) props to customize the parallax and center images.",
+    description:
+      "Parallax hero section with smooth scrolling effects. Accepts 'images' (array) and 'centerImageUrl' (string) props to customize the parallax and center images.",
     defaultProps: {
       title: "ArDacity NFT",
       subtitle: "Browse NFTs",
-      centerImageUrl: "https://images.unsplash.com/photo-1460186136353-977e9d6085a1?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      centerImageUrl:
+        "https://images.unsplash.com/photo-1460186136353-977e9d6085a1?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       images: [
         {
           src: "https://images.unsplash.com/photo-1484600899469-230e8d1d59c0?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
@@ -189,10 +220,8 @@ export const componentRegistry: ComponentDefinition[] = [
     defaultProps: {
       title: "Explore Metaverse Art",
       description: "Dive into exclusive collections of digital art",
-      backgroundImage: "/ArDacitypfp.png",
-      gradientFrom: "indigo-900",
-      gradientVia: "purple-800",
-      gradientTo: "pink-900",
+      backgroundImage:
+        "https://images.unsplash.com/photo-1593173930865-2edee2550a40?q=80&w=1338&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       primaryBtnText: "Start Exploring",
       secondaryBtnText: "Mint Your NFT",
       animate: true,
@@ -202,6 +231,32 @@ export const componentRegistry: ComponentDefinition[] = [
       "import { NftThemeHero } from '@/components/headers/nft-theme-hero'",
     ],
     tags: ["hero", "nft", "gradient"],
+  },
+  {
+    id: "bazaar-header",
+    name: "Bazaar Header",
+    category: "header",
+    type: "BazaarHeader",
+    description:
+      "Header with Bazaar theme, featuring animated elements and a modern design.",
+    defaultProps: {
+      title: "Arweave Bazaar",
+      subtitle: "Decentralized Profile & Asset Management",
+      description: "Create, update, and manage your decentralized identity on the Arweave permaweb. Build your profile, showcase assets, and connect with the decentralized community.",
+      stats: {
+        totalProfiles: 12500,
+        totalAssets: 45800,
+        networkUptime: "99.9%",
+      },
+      ctaText: "Get Started",
+      showArweaveInfo: true,
+      customClassName: "",
+    },
+    dependencies: ["framer-motion"],
+    imports: [
+      "import  {BazaarHeader}  from '@/components/headers/bazaar-header'",
+    ],
+    tags: ["header", "bazaar", "animated", "modern"],
   },
   {
     id: "fancy-column-footer",
@@ -315,8 +370,7 @@ export const componentRegistry: ComponentDefinition[] = [
     defaultProps: {
       title: "Stay updated with our latest news",
       description: "Get product updates, company news, and more.",
-      // onSubscribe is left undefined for builder compatibility
-      socialIcons: [], // Builder can map icon keys to ReactNodes if needed
+      socialIcons: ["Twitter", "Instagram", "Github"],
       legalLinks: [
         { label: "Privacy", href: "/privacy" },
         { label: "Terms", href: "/terms" },
@@ -345,7 +399,7 @@ export const componentRegistry: ComponentDefinition[] = [
       "Modern SaaS-style footer with logo, description, social icons, quick links, legal links, and newsletter subscription.",
     defaultProps: {
       logoUrl: "/ArDacitypfp.png",
-      description: "Modern SaaS for your business.",
+      description: "Modern SaaS footer for your business.",
       socialIconKeys: ["github", "twitter", "linkedin"],
       quickLinks: [
         { label: "Features", href: "/features" },
@@ -402,7 +456,7 @@ export const componentRegistry: ComponentDefinition[] = [
     defaultProps:{},
     dependencies: ["react-icons"],
     imports: [
-      "import  ProfileManager from '@/components/arweave/create-permaweb-profile'",
+      "import  ProfileManager from '@/components/arweave/create-bazaar-profile'",
     ],
     tags: ["arweave", "profile", "permaweb"],
   },
@@ -412,7 +466,7 @@ export const componentRegistry: ComponentDefinition[] = [
     category: "arweave",
     type: "AtomicAssetsManager",
     description: "Create atomic assets on Arweave Permaweb",
-    defaultProps:{},
+    defaultProps: {},
     dependencies: ["react-icons"],
     imports: [
       "import AtomicAssetsManager from '@/components/arweave/atomic-asset'",
@@ -453,13 +507,7 @@ export const componentRegistry: ComponentDefinition[] = [
     category: "arweave",
     type: "ArweaveNFT",
     description: "NFT display and transfer interface with Lua IDE",
-    defaultProps: {
-      title: "Arweave NFT",
-      description: "View and interact with your Arweave NFT",
-      imageUrl: "/ArweaveNFT.png",
-      tokenId: "your-token-id",
-      owner: "your-wallet-address",
-    },
+    defaultProps: {},
     dependencies: ["@permaweb/aoconnect"],
     imports: [
       "import { ArweaveNFT } from '@/components/arweave/arweave-nft'",
@@ -487,8 +535,9 @@ export const componentRegistry: ComponentDefinition[] = [
     id: "chatroom-on-chain",
     name: "Chatroom On-Chain",
     category: "arweave",
-    type: "ChatRoom",
-    description: "Real-time on-chain chatroom with emoji picker and quick messages, powered by Socket.IO. Builder-friendly and fully self-contained.",
+    type: "ChatRoomHolder",
+    description:
+      "Real-time on-chain chatroom with emoji picker and quick messages, powered by Socket.IO. Builder-friendly and fully self-contained.",
     defaultProps: {
       serverUrl: "https://ardacity-backrooms.onrender.com",
       className: "",
@@ -502,25 +551,34 @@ export const componentRegistry: ComponentDefinition[] = [
         "ez",
         "clutch",
         "noob",
-        "pro"
-      ]
+        "pro",
+      ],
     },
     dependencies: ["socket.io-client", "lucide-react"],
     imports: [
-      "import { ChatRoom } from '@/components/arweave/chatroom-on-chain'"
+      "import  ChatRoomHolder  from '@/components/arweave/chatroom-holder'",
     ],
-    tags: ["arweave", "chat", "realtime", "socket.io", "emoji", "quick-messages", "builder-friendly"],
+    tags: [
+      "arweave",
+      "chat",
+      "realtime",
+      "socket.io",
+      "emoji",
+      "quick-messages",
+      "builder-friendly",
+    ],
   },
   {
     id: "arns-record-lookup",
     name: "ARNS Record Lookup",
     category: "arweave",
     type: "ARNSRecordLookup",
-    description: "Minecraft-themed ARNS record lookup interface with wallet integration and JSON viewer. Lookup ARNS names and interact with AO processes.",
+    description:
+      "Minecraft-themed ARNS record lookup interface with wallet integration and JSON viewer. Lookup ARNS names and interact with AO processes.",
     defaultProps: {},
     dependencies: ["ao-js-sdk"],
     imports: [
-      "import ARNSRecordLookup from '@/components/arweave/arns-record-lookup'"
+      "import ARNSRecordLookup from '@/components/arweave/arns-record-lookup'",
     ],
     tags: ["arweave", "arns", "wallet", "minecraft", "json", "lookup", "ao"],
   },
@@ -529,30 +587,39 @@ export const componentRegistry: ComponentDefinition[] = [
     name: "Botega Liquidity Pool Info",
     category: "arweave",
     type: "BotegaLiquidityPoolInfo",
-    description: "Comprehensive liquidity pool interface with price operations, token management, and real-time data display. Connect to Botega liquidity pools and manage trading operations.",
+    description:
+      "Comprehensive liquidity pool interface with price operations, token management, and real-time data display. Connect to Botega liquidity pools and manage trading operations.",
     defaultProps: {
       processId: "ixjnbCaGfzSJ64IQ9X_B3dQUWyMy2OGSFUP2Yw-NpRM",
       tokenId: "xU9zFkq3X2ZQ6olwNVvr1vUWIjc3kXTWr7xKQD6dh10"
     },
     dependencies: ["ao-js-sdk"],
     imports: [
-      "import BotegaLiquidityPoolInfo from '@/components/arweave/botega-liquidity-pool-info'"
+      "import BotegaLiquidityPoolInfo from '@/components/arweave/botega-liquidity-pool-info'",
     ],
-    tags: ["arweave", "liquidity", "pool", "trading", "price", "tokens", "botega", "defi"],
+    tags: [
+      "arweave",
+      "liquidity",
+      "pool",
+      "trading",
+      "price",
+      "tokens",
+      "botega",
+      "defi",
+    ],
   },
   {
     id: "staking-panel",
     name: "Staking Panel",
     category: "arweave",
     type: "StakingPanel",
+
     description: "Retro-style staking interface with real-time message logging. Stake, unstake, and finalize operations with AO process integration and ArConnect wallet support.",
     defaultProps: {
       processId: "78Nrydz-vMmm16cAMHhLxvNE6Wr_1afaQb_EoS0YxG8"
     },
     dependencies: ["@permaweb/aoconnect"],
-    imports: [
-      "import StakingPanel from '@/components/arweave/staking-panel'"
-    ],
+    imports: ["import StakingPanel from '@/components/arweave/staking-panel'"],
     tags: ["arweave", "staking", "retro", "logging", "ao", "defi", "wallet"],
   },
   {
@@ -560,13 +627,24 @@ export const componentRegistry: ComponentDefinition[] = [
     name: "Bazaar NFT Portfolio",
     category: "arweave",
     type: "BazaarNftPortfolio",
-    description: "Comprehensive NFT portfolio explorer with 3D carousel, profile management, and asset discovery. Search by wallet address or profile ID with retro pixel art styling.",
+    description:
+      "Comprehensive NFT portfolio explorer with 3D carousel, profile management, and asset discovery. Search by wallet address or profile ID with retro pixel art styling.",
     defaultProps: {},
     dependencies: ["@permaweb/libs", "@permaweb/aoconnect", "arweave"],
     imports: [
-      "import BazaarNftPortfolio from '@/components/arweave/bazaar-nft-portfolio'"
+      "import BazaarNftPortfolio from '@/components/arweave/bazaar-nft-portfolio'",
     ],
-    tags: ["arweave", "nft", "portfolio", "carousel", "3d", "profile", "assets", "bazaar", "pixel-art"],
+    tags: [
+      "arweave",
+      "nft",
+      "portfolio",
+      "carousel",
+      "3d",
+      "profile",
+      "assets",
+      "bazaar",
+      "pixel-art",
+    ],
   },
   {
     id: "ao-token-demo",
@@ -589,20 +667,30 @@ export const componentRegistry: ComponentDefinition[] = [
     name: "Dark Theme Header",
     category: "header",
     type: "DarkHeader",
-    description: "Animated dark theme header with geometric background, hero text, CTA button, and image. Builder-friendly and highly customizable.",
+    description:
+      "Animated dark theme header with geometric background, hero text, CTA button, and image. Builder-friendly and highly customizable.",
     defaultProps: {
       title: "Experience Creative Precision",
       subtitle: "Visual harmony driven by real geometry and motion.",
       ctaText: "Request Demo",
-      imageSrc: "/ArDacitypfp.png",
-      showImage: true,
+      imageSrc:
+        "https://images.unsplash.com/photo-1526628953301-3e589a6a8b74?q=80&w=1106&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       customClassName: "",
     },
     dependencies: ["framer-motion", "react"],
     imports: [
-      "import { DarkHeader } from '@/components/headers/dark-theme-header'"
+      "import { DarkHeader } from '@/components/headers/dark-theme-header'",
     ],
-    tags: ["header", "dark", "animated", "hero", "cta", "image", "geometric", "builder-friendly"],
+    tags: [
+      "header",
+      "dark",
+      "animated",
+      "hero",
+      "cta",
+      "image",
+      "geometric",
+      "builder-friendly",
+    ],
   },
   {
     id: "card",
@@ -915,20 +1003,24 @@ export const componentRegistry: ComponentDefinition[] = [
     name: "Product Landing Page",
     category: "landing",
     type: "ProductLandingPage",
-    description: "Modern, animated product landing page with hero, about, features, testimonials, and pricing sections.",
+    description:
+      "Modern, animated product landing page with hero, about, features, testimonials, and pricing sections.",
     defaultProps: {
       contained: true,
       // companyName: "ModernApp",
       heroTitle: "Build Something Amazing",
-      heroSubtitle: "Transform your ideas into reality with our cutting-edge platform designed for creators and innovators.",
+      heroSubtitle:
+        "Transform your ideas into reality with our cutting-edge platform designed for creators and innovators.",
       ctaText: "Start Free Trial",
       aboutTitle: "About Our Vision",
-      aboutDescription: "We're on a mission to democratize technology and make powerful tools accessible to everyone. Our platform combines cutting-edge technology with intuitive design to help you achieve more.",
+      aboutDescription:
+        "We're on a mission to democratize technology and make powerful tools accessible to everyone. Our platform combines cutting-edge technology with intuitive design to help you achieve more.",
       features: [
         {
           icon: "zap",
           title: "Lightning Fast",
-          description: "Experience blazing fast performance with our optimized infrastructure",
+          description:
+            "Experience blazing fast performance with our optimized infrastructure",
           color: "from-yellow-400 to-orange-500",
         },
         {
@@ -985,21 +1077,24 @@ export const componentRegistry: ComponentDefinition[] = [
         {
           name: "Sarah Johnson",
           role: "CEO, TechCorp",
-          content: "This platform completely transformed how we work. The results speak for themselves.",
+          content:
+            "This platform completely transformed how we work. The results speak for themselves.",
           rating: 5,
           avatar: "/ArDacitypfp.png",
         },
         {
           name: "Mike Chen",
           role: "CTO, StartupXYZ",
-          content: "Incredible performance and ease of use. Our team productivity increased by 300%.",
+          content:
+            "Incredible performance and ease of use. Our team productivity increased by 300%.",
           rating: 5,
           avatar: "/ArDacitypfp.png",
         },
         {
           name: "Emily Rodriguez",
           role: "Product Manager, InnovateCo",
-          content: "The best investment we've made for our development workflow.",
+          content:
+            "The best investment we've made for our development workflow.",
           rating: 5,
           avatar: "/ArDacitypfp.png",
         },
@@ -1012,7 +1107,9 @@ export const componentRegistry: ComponentDefinition[] = [
       ],
     },
     dependencies: ["lucide-react"],
-    imports: ["import ProductLandingPage from '@/components/landing/product-landing-page'"],
+    imports: [
+      "import ProductLandingPage from '@/components/landing/product-landing-page'",
+    ],
     tags: ["landing", "product", "modern", "ui", "animated"],
   },
 ];
@@ -1020,7 +1117,6 @@ export const componentRegistry: ComponentDefinition[] = [
 export function getComponentByType(
   type: string
 ): ComponentDefinition | undefined {
-
   // First try to find by type (PascalCase)
   let component = componentRegistry.find((comp) => comp.type === type);
   if (component) {

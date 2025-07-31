@@ -37,6 +37,8 @@ import BotegaLiquidityPoolInfo from "../arweave/botega-liquidity-pool-info"
 import StakingPanel from "../arweave/staking-panel"
 import BazaarNftPortfolio from "../arweave/bazaar-nft-portfolio"
 import AOTokenDemo from "../arweave/ao-token-demo"
+import { BazaarHeader } from "../headers/bazaar-header"
+import ChatRoomHolder from "../arweave/chatroom-holder"
 
 interface ComponentRendererProps {
   component: ComponentInstance
@@ -95,9 +97,11 @@ export function ComponentRenderer({ component, isRoot = false, index = 0, totalS
       'newsletter-footer':'NewsletterFooter',
       'product-footer':'ProductFooter',
       'nft-theme-hero': 'NftThemeHero',
+      'bazaar-header': 'BazaarHeader',
       'ao-message-signer': 'AOMessageSigner',
       'ao-chatbot': 'AOChatBot',
-      'chatroom-on-chain': 'ChatRoom',
+      // 'chatroom-on-chain': 'ChatRoom',
+      'chatroom-on-chain': 'ChatRoomHolder',
       'arweave-nft': 'ArweaveNFT',
       'arweave-search': 'ArweaveSearch',
       'clip-path-links': 'ClipPathLinks',
@@ -153,12 +157,17 @@ export function ComponentRenderer({ component, isRoot = false, index = 0, totalS
         return <ArDacityClassicHero {...component.props} />
       case "NftThemeHero":
         return <NftThemeHero {...component.props} />
+      case "BazaarHeader":
+        return <BazaarHeader {...component.props} />
       case "AOMessageSigner":
         return <AOMessageSigner {...component.props} />
       case "AOChatBot":
         return <AOChatBot {...component.props} />
-      case "ChatRoom":
-        return <ChatRoom {...component.props} />
+      // case "ChatRoom":
+      //   return <ChatRoom {...component.props} />
+      case "ChatRoomHolder":
+        return <ChatRoomHolder {...component.props} />
+
       case "ArweaveNFT":
         return <ArweaveNFT {...component.props} />
       case "ArweaveSearch":

@@ -327,7 +327,7 @@ function generateGlobalStyles(): string {
 @tailwind utilities;
 
 @layer base {
-  :root {
+  .dark {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
@@ -350,7 +350,7 @@ function generateGlobalStyles(): string {
     --radius: 0.5rem;
   }
 
-  .dark {
+  :root {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
     --card: 222.2 84% 4.9%;
@@ -465,6 +465,9 @@ function generateComponentFiles(components: ComponentInstance[], files: Record<s
   if (usedComponents.has("DarkHeader")) {
     files["components/headers/dark-theme-header.tsx"] = generateDarkHeader()
   }
+  if (usedComponents.has("BazaarHeader")) {
+    files["components/headers/bazaar-header.tsx"] = generateBazaarHeader()
+  }
 
   if (usedComponents.has("ArDacityClassicHero")) {
     files["components/headers/ardacity-classic-hero.tsx"] = generateArDacityClassicHero()
@@ -506,7 +509,8 @@ function generateComponentFiles(components: ComponentInstance[], files: Record<s
   if (usedComponents.has("AOChatBot")) {
     files["components/arweave/ao-chatbot.tsx"] = generateAOChatBot()
   }
-  if (usedComponents.has("ChatRoom")) {
+  if (usedComponents.has("ChatRoomHolder")) {
+    files["components/arweave/chatroom-holder.tsx"] = generateArweaveChatroomHolder()
     files["components/arweave/chatroom-on-chain.tsx"] = generateArweaveChatroom()
   }
 
@@ -530,6 +534,19 @@ function generateComponentFiles(components: ComponentInstance[], files: Record<s
   if (usedComponents.has("AtomicAssetsManager")) {
     files["components/arweave/atomic-asset.tsx"] = generateAtomicAssetsManager()
     files["lib/getWalletAddress.ts"] = generateGetWalletAddrLib()
+  }
+  if (usedComponents.has("ARNSRecordLookup")) {
+    files["components/arweave/arns-record-lookup.tsx"] = generateARNSLookup()
+  }
+  if (usedComponents.has("BotegaLiquidityPoolInfo")) {
+    files["components/arweave/botega-liquidity-pool-info.tsx"] = generateBotegaPool()
+  }
+  if (usedComponents.has("StakingPanel")) {
+    files["components/arweave/staking-panel.tsx"] = generateStackingPanel()
+  }
+  if (usedComponents.has("BazaarNftPortfolio")) {
+    files["components/arweave/bazaar-nft-portfolio.tsx"] = generateBazaarPortfolio()
+    files["components/arweave/asset-caraousel-3d.tsx"] = generateCarousel3D()
   }
 
   // Generate UI components
@@ -2341,7 +2358,8 @@ export default function Web3LandingPage(props: Web3LandingPageProps & { containe
 }
 
 function generateArDacityClassicNavbar(): string {
-  return `"use client"
+  return `
+"use client"
 
 import { Button } from "@/components/ui/button"
 import { Menu, Moon, Sun, Wallet } from "lucide-react"
@@ -2355,7 +2373,6 @@ interface ArDacityClassicNavbarProps {
   nav1?: string
   nav2?: string
   nav3?: string
-  variant?: "default" | "outline" | "floating"
   position?: "sticky" | "fixed" | "relative"
 }
 
@@ -2364,7 +2381,6 @@ export function ArDacityClassicNavbar({
   nav1 = "Docs",
   nav2 = "Features",
   nav3 = "Demo",
-  variant = "default",
   position = "sticky",
 }: ArDacityClassicNavbarProps) {
   const { theme, setTheme } = useTheme()
@@ -2393,56 +2409,78 @@ export function ArDacityClassicNavbar({
 
   return (
     <header
-      className={\`border-b border-zinc-800 bg-black  backdrop-blur  z-50 \${positionClass}\`}
+      className={\`border-b border-white/10 bg-white/5 backdrop-blur-xl z-50 \${positionClass}\`}
     >
-      <div className="flex h-14 items-center px-4 lg:px-8">
-        <Button variant="ghost" size="icon" className="md:hidden">
+      <div className="flex h-16 items-center px-4 lg:px-8">
+        <Button variant="ghost" size="icon" className="md:hidden text-white hover:bg-white/10">
           <Menu className="h-5 w-5" />
         </Button>
 
         <div className="flex items-center justify-between w-full">
           <div className="flex items-center space-x-4">
             <div className="hidden md:flex items-center space-x-2">
-              <div className="text-xl text-white font-bold ">{brand}</div>
+              <div className="text-xl font-black text-white bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">
+                {brand}
+              </div>
             </div>
           </div>
 
-          <nav className="hidden translate-x-12 md:flex items-center space-x-6">
-            <Link href="/docs" className="text-sm text-white font-medium transition-colors hover:text-cyan-500">
+          <nav className="hidden translate-x-12 md:flex items-center space-x-8">
+            <Link 
+              href="/docs" 
+              className="relative text-sm font-medium text-white/90 transition-all duration-300 hover:text-white group"
+            >
               {nav1}
+              <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-white transition-all duration-300 group-hover:w-full" />
             </Link>
             <button
               onClick={() => scrollToSection("features")}
-              className="text-sm font-medium transition-colors text-white hover:text-cyan-500"
+              className="relative text-sm font-medium text-white/90 transition-all duration-300 hover:text-white group"
             >
               {nav2}
+              <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-white transition-all duration-300 group-hover:w-full" />
             </button>
             <button
               onClick={() => scrollToSection("demo")}
-              className="text-sm font-medium transition-colors text-white hover:text-cyan-500"
+              className="relative text-sm font-medium text-white/90 transition-all duration-300 hover:text-white group"
             >
               {nav3}
+              <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-white transition-all duration-300 group-hover:w-full" />
             </button>
           </nav>
 
-          <div className="flex items-center space-x-2">
-            <Button variant="outline" size="sm" className="hidden md:flex items-center gap-2 bg-black text-white">
-              <Wallet className="h-4 w-4 " />
+          <div className="flex items-center space-x-3">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="hidden md:flex items-center gap-2 bg-white/10 border-white/20 text-white hover:bg-white/20 hover:border-white/30 backdrop-blur-sm transition-all duration-300 hover:scale-105"
+            >
+              <Wallet className="h-4 w-4" />
               Connect Wallet
             </Button>
 
-            <Button variant="ghost" size="icon" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className="text-white hover:bg-white/10 transition-all duration-300 hover:scale-105"
+            >
               {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </Button>
 
-            <Button variant="ghost" size="icon" asChild>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              asChild
+              className="text-white hover:bg-white/10 transition-all duration-300 hover:scale-105"
+            >
               <a href="https://x.com/ArDacityUI" target="_blank" rel="noopener noreferrer">
                 <Image
                   src="https://upload.wikimedia.org/wikipedia/commons/c/ce/X_logo_2023.svg"
                   alt="X Logo"
                   width={12}
                   height={12}
-                  className="h-3 w-3 text-black dark:text-white invert "
+                  className="h-3 w-3 invert brightness-0 contrast-100"
                 />
               </a>
             </Button>
@@ -3275,7 +3313,7 @@ export function FloatingNavbar({
 // Add other component generators as needed...
 function generateDarkHeader(): string {
   return `
-  "use client"
+"use client"
 
 import { motion } from "framer-motion"
 import Image from "next/image"
@@ -3286,7 +3324,6 @@ interface DarkHeaderProps {
   subtitle?: string
   ctaText?: string
   imageSrc?: string
-  showImage?: boolean
   customClassName?: string
 }
 
@@ -3295,40 +3332,49 @@ export const DarkHeader: React.FC<DarkHeaderProps> = ({
   subtitle = "A balance of structure and creativity, brought to life.",
   ctaText = "Start Building",
   imageSrc = "/header-image.png",
-  showImage = true,
   customClassName = "",
 }) => {
   return (
     <header
-      className={\`relative overflow-hidden bg-zinc-950 text-white py-24 px-6 md:px-12 lg:px-20 flex flex-col lg:flex-row items-center justify-between gap-12 \${customClassName}\`}
+      className={\`relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white min-h-screen flex items-center \${customClassName}\`}
     >
-      {/* ✨ Geometric Background Pattern */}
+      {/* Professional Grid Background */}
+      <div className="absolute inset-0 opacity-30">
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(148,163,184,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(148,163,184,0.03)_1px,transparent_1px)] bg-[size:50px_50px]" />
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(148,163,184,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(148,163,184,0.02)_1px,transparent_1px)] bg-[size:10px_10px]" />
+      </div>
+
+      {/* Floating Geometric Elements */}
       <div className="absolute inset-0 -z-10 pointer-events-none">
         <div className="w-full h-full relative">
-          {[...Array(40)].map((_, i) => {
+          {[...Array(25)].map((_, i) => {
             const x = Math.random() * 100
             const y = Math.random() * 100
-            const delay = Math.random() * 5
-            const size = Math.random() * 20 + 10
+            const delay = Math.random() * 8
+            const size = Math.random() * 60 + 20
+            const shapes = ['rounded-full', 'rounded-lg', 'rounded-none']
+            const shape = shapes[Math.floor(Math.random() * shapes.length)]
+            
             return (
               <motion.div
                 key={i}
-                className="absolute border border-fuchsia-700/30 bg-fuchsia-500/5 rotate-45"
+                className={\`absolute border border-slate-500/20 bg-gradient-to-br from-slate-600/10 to-slate-700/5 \${shape}\`}
                 style={{
                   top: \`\${y}%\`,
                   left: \`\${x}%\`,
                   width: \`\${size}px\`,
                   height: \`\${size}px\`,
                 }}
-                initial={{ opacity: 0, scale: 0.6 }}
+                initial={{ opacity: 0, scale: 0.3, rotate: 0 }}
                 animate={{
-                  opacity: 0.4,
-                  y: [0, -10, 0],
-                  x: [0, 5, 0],
-                  scale: [0.6, 1, 0.6],
+                  opacity: [0.1, 0.3, 0.1],
+                  y: [0, -20, 0],
+                  x: [0, 10, 0],
+                  scale: [0.3, 0.7, 0.3],
+                  rotate: [0, 180, 360],
                 }}
                 transition={{
-                  duration: 6 + Math.random() * 4,
+                  duration: 15 + Math.random() * 10,
                   delay,
                   repeat: Infinity,
                   repeatType: "mirror",
@@ -3340,43 +3386,135 @@ export const DarkHeader: React.FC<DarkHeaderProps> = ({
         </div>
       </div>
 
-      {/* 🚀 Left Content */}
-      <motion.div
-        initial={{ x: -50, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        transition={{ duration: 0.8 }}
-        className="z-10 max-w-xl"
-      >
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight text-white">
-          {title}
-        </h1>
-        <p className="mt-6 text-lg sm:text-xl text-neutral-400 max-w-lg">{subtitle}</p>
+      {/* Glowing Accent Lines */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-1/4 left-0 w-full h-px bg-gradient-to-r from-transparent via-slate-400/30 to-transparent" />
+        <div className="absolute top-3/4 left-0 w-full h-px bg-gradient-to-r from-transparent via-slate-400/20 to-transparent" />
+        <div className="absolute left-1/4 top-0 h-full w-px bg-gradient-to-b from-transparent via-slate-400/20 to-transparent" />
+      </div>
 
-        {ctaText && (
-          <button
-            className="mt-8 inline-block px-6 py-3 text-base sm:text-lg font-semibold rounded-lg bg-gradient-to-r from-pink-600 to-orange-500 hover:from-pink-700 hover:to-orange-600 transition-all duration-300 shadow-lg"
+      <div className="container mx-auto px-6 md:px-12 lg:px-20 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center min-h-[80vh]">
+          
+          {/* Left Content - Enhanced Layout */}
+          <motion.div
+            initial={{ x: -80, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ duration: 1, ease: "easeOut" }}
+            className="space-y-8"
           >
-            {ctaText}
-          </button>
-        )}
-      </motion.div>
+            {/* Status Badge */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="inline-flex items-center px-4 py-2 rounded-full bg-slate-800/50 border border-slate-600/30 backdrop-blur-sm"
+            >
+              <div className="w-2 h-2 bg-emerald-400 rounded-full mr-3 animate-pulse" />
+              <span className="text-sm text-slate-300 font-medium">Enterprise Ready</span>
+            </motion.div>
 
-      {/* 🎨 Right Image */}
-      {showImage && (
-        <motion.div
-          initial={{ x: 50, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="relative w-full max-w-lg aspect-[4/3] z-10"
-        >
-          <Image
-            src={imageSrc}
-            alt="Hero Visual"
-            fill
-            className="object-contain drop-shadow-xl pointer-events-none"
-          />
-        </motion.div>
-      )}
+            {/* Main Title with Professional Typography */}
+            <div className="space-y-4">
+              <motion.h1
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.3 }}
+                className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-[0.9]"
+              >
+                <span className="bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
+                  {title}
+                </span>
+              </motion.h1>
+              
+              {/* Subtitle with enhanced styling */}
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.5 }}
+                className="text-xl sm:text-2xl text-slate-400 max-w-2xl leading-relaxed font-light"
+              >
+                {subtitle}
+              </motion.p>
+            </div>
+
+            {/* Enhanced CTA Section */}
+            {ctaText && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.7 }}
+                className="flex flex-col sm:flex-row gap-4 pt-4"
+              >
+                <button className="group relative px-8 py-4 bg-gradient-to-r from-slate-700 to-slate-600 hover:from-slate-600 hover:to-slate-500 rounded-xl font-semibold text-white transition-all duration-300 shadow-xl hover:shadow-2xl hover:shadow-slate-500/25 transform hover:-translate-y-1">
+                  <span className="relative z-10">{ctaText}</span>
+                  <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                </button>
+                
+                <button className="px-8 py-4 border border-slate-600 hover:border-slate-500 rounded-xl font-semibold text-slate-300 hover:text-white transition-all duration-300 hover:bg-slate-800/30 backdrop-blur-sm">
+                  Watch Demo
+                </button>
+              </motion.div>
+            )}
+
+            {/* Trust Indicators */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.9 }}
+              className="flex items-center gap-6 pt-8 border-t border-slate-700/50"
+            >
+              <div className="text-sm text-slate-400">Trusted by</div>
+              <div className="flex items-center gap-4">
+                {[...Array(4)].map((_, i) => (
+                  <div key={i} className="w-8 h-8 bg-slate-700/50 rounded border border-slate-600/30" />
+                ))}
+              </div>
+            </motion.div>
+          </motion.div>
+
+          {/* Right Image - Enhanced Container */}
+          
+            <motion.div
+              initial={{ x: 80, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ duration: 1, ease: "easeOut", delay: 0.4 }}
+              className="relative"
+            >
+              {/* Glass Container */}
+              <div className="relative bg-gradient-to-br from-slate-800/30 to-slate-900/30 backdrop-blur-sm border border-slate-600/30 rounded-2xl p-8 shadow-2xl">
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/5 to-transparent" />
+                
+                {/* Image Container */}
+                <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-slate-700/20">
+                  <Image
+                    src={imageSrc}
+                    alt="SaaS Platform Preview"
+                    fill
+                    className="object-contain drop-shadow-2xl pointer-events-none"
+                  />
+                  
+                  {/* Image Overlay Effects */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/20 to-transparent" />
+                </div>
+
+                {/* Floating Stats/Metrics */}
+                <div className="absolute -top-4 -right-4 bg-slate-800/80 backdrop-blur-sm border border-slate-600/30 rounded-xl p-4 shadow-xl">
+                  <div className="text-2xl font-bold text-white">99.9%</div>
+                  <div className="text-xs text-slate-400">Uptime</div>
+                </div>
+                
+                <div className="absolute -bottom-4 -left-4 bg-slate-800/80 backdrop-blur-sm border border-slate-600/30 rounded-xl p-4 shadow-xl">
+                  <div className="text-2xl font-bold text-emerald-400">24/7</div>
+                  <div className="text-xs text-slate-400">Support</div>
+                </div>
+              </div>
+
+              {/* Background Glow */}
+              <div className="absolute inset-0 bg-gradient-to-br from-slate-600/20 to-slate-800/20 rounded-2xl blur-3xl scale-110 -z-10" />
+            </motion.div>
+        </div>
+      </div>
     </header>
   )
 }
@@ -4451,13 +4589,13 @@ export const FancyColumnFooter: React.FC<FancyColumnFooterProps> = ({
 
 function generateProductFooter(): string {
   return `
-  import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { FaGithub, FaTwitter, FaLinkedin, FaFacebook } from 'react-icons/fa';
 
 // Icon registry for builder-friendly string keys
 const logoRegistry: Record<string, React.ReactNode> = {
-    default: <img src="/logo.svg" alt="Brand Logo" className="h-9 w-auto" />,
-    saas: <img src="/saas-logo.svg" alt="SaaS Logo" className="h-9 w-auto" />,
+    default: <img src="/logo.svg" alt="Brand Logo" className="h-10 w-auto" />,
+    saas: <img src="/saas-logo.svg" alt="SaaS Logo" className="h-10 w-auto" />,
 };
 const socialIconRegistry: Record<string, React.ReactNode> = {
     github: <FaGithub />,
@@ -4496,8 +4634,8 @@ export const ProductFooter: React.FC<ProductFooterProps> = ({
     quickLinks = [],
     legalLinks = [],
     onSubscribe,
-    newsletterTitle = 'Subscribe to our newsletter',
-    newsletterDescription = 'Get product updates, company news, and more.',
+    newsletterTitle = 'Stay Updated',
+    newsletterDescription = 'Get the latest product updates and company news.',
     copyright,
     className,
 }) => {
@@ -4508,7 +4646,7 @@ export const ProductFooter: React.FC<ProductFooterProps> = ({
 
     // Logo resolution: logoUrl > logoKey > logo > default
     const resolvedLogo = logoUrl
-        ? <img src={logoUrl} alt="Brand Logo" className="h-9 w-auto" />
+        ? <img src={logoUrl} alt="Brand Logo" className="h-10 w-auto" />
         : logoKey
             ? logoRegistry[logoKey] || logoRegistry['default']
             : logo || logoRegistry['default'];
@@ -4540,94 +4678,137 @@ export const ProductFooter: React.FC<ProductFooterProps> = ({
     };
 
     return (
-        <footer className={\`w-full bg-neutral-950 text-muted-foreground border-t border-neutral-800 shadow-lg pt-10 pb-4 px-6 md:px-10 \${className || ''}\`}>
-            {/* Main grid */}
-            <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-6 items-start">
-                {/* Left: Logo, description, social */}
-                <div className="flex flex-col gap-4 items-start">
-                    <div className="flex items-center gap-3">{resolvedLogo}</div>
-                    {description && <div className="text-sm text-white/80 max-w-xs">{description}</div>}
-                    <div className="flex gap-3 mt-2">
-                        {resolvedSocialIcons.map((icon, idx) => (
-                            <span
-                                key={idx}
-                                className="text-xl transition-all text-muted-foreground hover:text-white ease-in-out duration-500 cursor-pointer rounded-lg bg-gradient-to-br from-[#39113D] to-white/10 shadow p-2 hover:scale-110 active:scale-95 focus:outline-none focus:text-white ease-in duration-100 focus:ring-2 focus:ring-fuchsia-500"
-                                tabIndex={0}
-                                style={{
-                                    backdropFilter: 'blur(8px)',
-                                    WebkitBackdropFilter: 'blur(8px)',
-                                    transition: 'transform 0.18s cubic-bezier(.4,2,.6,1)',
-                                }}
-                            >
-                                {icon}
-                            </span>
-                        ))}
-                    </div>
-                </div>
-                {/* Center: Quick links */}
-                <div className="flex flex-col gap-2 items-start md:items-center">
-                    <div>
-                        <div className="font-semibold text-white mb-2">Quick Links</div>
-                        <div className="flex flex-col gap-1 md:gap-2">
-                            {quickLinks.map(link => (
-                                <a
-                                    key={link.href}
-                                    href={link.href}
-                                    className="hover:text-white text-white/70 transition-colors text-sm"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
+        <footer className={\`relative w-full bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-300 border-t border-slate-800/50 \${className || ''}\`}>
+            <div className="absolute inset-0 opacity-20">
+                <div className="absolute inset-0 bg-[linear-gradient(rgba(148,163,184,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(148,163,184,0.02)_1px,transparent_1px)] bg-[size:50px_50px]" />
+            </div>
+
+            <div className="absolute inset-0 pointer-events-none">
+                <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-slate-600/30 to-transparent" />
+            </div>
+
+            <div className="relative">
+                {/* Main Footer Content */}
+                <div className="max-w-7xl mx-auto px-6 md:px-12 py-16">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-4">
+                        
+                        <div className="lg:col-span-1 space-y-6">
+                            <div className="flex items-center gap-3">
+                                {resolvedLogo}
+                            </div>
+                            
+                            {description && (
+                                <p className="text-slate-400 max-w-md leading-relaxed text-sm">
+                                    {description}
+                                </p>
+                            )}
+
+                            <div className="flex gap-4">
+                                {resolvedSocialIcons.map((icon, idx) => (
+                                    <button
+                                        key={idx}
+                                        className="group relative p-3 bg-slate-800/30 hover:bg-slate-700/50 border border-slate-700/50 hover:border-slate-600/50 rounded-xl transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-slate-500/50"
+                                    >
+                                        <span className="relative z-10 text-slate-400 group-hover:text-white transition-colors duration-300 text-lg">
+                                            {icon}
+                                        </span>
+                                        <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                    </button>
+                                ))}
+                            </div>
+
+                            <div className="inline-flex items-center px-4 py-2 bg-slate-800/30 border border-slate-700/50 rounded-lg">
+                                <div className="w-2 h-2 bg-emerald-400 rounded-full mr-3 animate-pulse" />
+                                <span className="text-xs text-slate-400 font-medium">SOC 2 Compliant</span>
+                            </div>
+                        </div>
+
+                        <div className="space-y-6">
+                            <h3 className="text-white font-semibold text-lg">Quick Links</h3>
+                            <div className="space-y-3">
+                                {quickLinks.map(link => (
+                                    <a
+                                        key={link.href}
+                                        href={link.href}
+                                        className="block text-slate-400 hover:text-white transition-all duration-200 text-sm hover:translate-x-1 transform"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        {link.label}
+                                    </a>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="space-y-6">
+                            <div className="space-y-2">
+                                <h3 className="text-white font-semibold text-lg">{newsletterTitle}</h3>
+                                <p className="text-slate-400 text-sm">{newsletterDescription}</p>
+                            </div>
+                            
+                            <div className="space-y-3">
+                                <div className="relative">
+                                    <input
+                                        type="email"
+                                        value={email}
+                                        onChange={e => setEmail(e.target.value)}
+                                        onKeyDown={handleKeyDown}
+                                        placeholder="Enter your email"
+                                        className="w-full bg-slate-800/30 border border-slate-700/50 focus:border-slate-600/50 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-slate-500/50 transition-all duration-300 placeholder:text-slate-500"
+                                        disabled={loading}
+                                        aria-label="Email address"
+                                    />
+                                </div>
+                                
+                                <button
+                                    type="button"
+                                    onClick={handleSubscribe}
+                                    disabled={loading}
+                                    className="w-full bg-gradient-to-r from-slate-700 to-slate-600 hover:from-slate-600 hover:to-slate-500 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-slate-500/50 hover:scale-[1.02] transform"
                                 >
-                                    {link.label}
-                                </a>
-                            ))}
+                                    {loading ? 'Subscribing...' : 'Subscribe'}
+                                </button>
+                            </div>
+
+                            {error && (
+                                <div className="text-red-400 text-xs bg-red-500/10 border border-red-500/20 rounded-lg p-2">
+                                    {error}
+                                </div>
+                            )}
+                            {success && (
+                                <div className="text-emerald-400 text-xs bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-2">
+                                    Subscribed! Check your inbox.
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
-                {/* Right: Newsletter */}
-                <div className="flex flex-col gap-2 items-start md:items-end w-full">
-                    <div className="font-semibold text-white mb-2">{newsletterTitle}</div>
-                    <div className="text-xs text-white/60 mb-2">{newsletterDescription}</div>
-                    <div className="flex flex-col sm:flex-row gap-2 w-fit max-w-xs">
-                        <input
-                            type="email"
-                            value={email}
-                            onChange={e => setEmail(e.target.value)}
-                            onKeyDown={handleKeyDown}
-                            placeholder="Enter your email"
-                            className="flex-1 bg-neutral-900 border border-neutral-700 text-sm text-white rounded-md px-4 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-500 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950 shadow-sm transition placeholder:text-neutral-500"
-                            disabled={loading}
-                            aria-label="Email address"
-                        />
-                        <button
-                            type="button"
-                            onClick={handleSubscribe}
-                            disabled={loading}
-                            className="h-10 px-5 rounded-md bg-fuchsia-600 hover:bg-fuchsia-700 text-white text-sm font-medium shadow-sm transition-colors disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950"
-                            style={{ minWidth: 110 }}
-                        >
-                            {loading ? 'Subscribing...' : 'Subscribe'}
-                        </button>
+
+                <div className="border-t border-slate-800/50 bg-slate-950/50">
+                    <div className="max-w-7xl mx-auto px-6 md:px-12 py-6">
+                        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                            
+                            {/* Legal Links */}
+                            <div className="flex flex-wrap gap-6 text-xs text-slate-500">
+                                {legalLinks.map(link => (
+                                    <a
+                                        key={link.href}
+                                        href={link.href}
+                                        className="hover:text-slate-300 transition-colors duration-200"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        {link.label}
+                                    </a>
+                                ))}
+                            </div>
+
+                            <div className="flex items-center gap-4 text-xs text-slate-500">
+                                <span>{copyright || \`© \${new Date().getFullYear()} All rights reserved.\`}</span>
+                            </div>
+                        </div>
                     </div>
-                    {error && <div className="text-xs text-red-500 mt-1">{error}</div>}
-                    {success && <div className="text-xs text-green-500 mt-1">Subscribed! Check your inbox.\`\&quot;\`</div>}
                 </div>
-            </div>
-            {/* Bottom row: Legal links and copyright */}
-            <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-2 border-t border-neutral-800 mt-8 pt-4 text-xs text-white/60">
-                <div className="flex gap-4 flex-wrap mb-1 md:mb-0">
-                    {legalLinks.map(link => (
-                        <a
-                            key={link.href}
-                            href={link.href}
-                            className="hover:text-white/90 transition-all ease-in"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            {link.label}
-                        </a>
-                    ))}
-                </div>
-                <div className="text-xs">{copyright || \`© \${new Date().getFullYear()} All rights reserved.\`}</div>
             </div>
         </footer>
     );
@@ -4637,14 +4818,40 @@ export const ProductFooter: React.FC<ProductFooterProps> = ({
 
 function generateNewsletterFooter(): string {
   return `
-  import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
+import { 
+  FaInstagram, 
+  FaFacebook, 
+  FaLinkedin, 
+  FaYoutube, 
+  FaGithub, 
+  FaDiscord, 
+  FaTiktok, 
+  FaReddit, 
+  FaPinterest 
+} from 'react-icons/fa';
+import { FaXTwitter } from "react-icons/fa6";
+
+// Social Media Icons mapping using React Icons
+const SocialIcons = {
+  twitter: <FaXTwitter className="w-5 h-5" />,
+  instagram: <FaInstagram className="w-5 h-5" />,
+  facebook: <FaFacebook className="w-5 h-5" />,
+  linkedin: <FaLinkedin className="w-5 h-5" />,
+  youtube: <FaYoutube className="w-5 h-5" />,
+  github: <FaGithub className="w-5 h-5" />,
+  discord: <FaDiscord className="w-5 h-5" />,
+  tiktok: <FaTiktok className="w-5 h-5" />,
+  reddit: <FaReddit className="w-5 h-5" />,
+  pinterest: <FaPinterest className="w-5 h-5" />,
+}
 
 export interface NewsletterFooterProps {
   onSubscribe?: (email: string) => void;
   title?: string;
   description?: string;
-  socialIcons?: React.ReactNode[];
+  socialIcons?: string[];
   legalLinks?: { label: string; href: string }[];
   className?: string;
 }
@@ -4677,20 +4884,21 @@ const MotionSocialIcon: React.FC<{ children: React.ReactNode }> = ({ children })
 
   return (
     <motion.span
-      className="inline-flex items-center justify-center text-gray-300 hover:text-white transition-colors cursor-pointer text-3xl shadow-lg bg-gradient-to-br from-white/5 to-black/10 rounded-xl"
+      className="inline-flex items-center justify-center text-white/70 hover:text-white transition-all duration-300 cursor-pointer text-2xl shadow-xl bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 p-3"
       style={{
         perspective: 400,
-        boxShadow: isHover
-          ? '0 8px 32px 0 rgba(0,0,0,0.25), 0 2px 8px 0 rgba(0,0,0,0.15)'
-          : '0 2px 8px 0 rgba(0,0,0,0.10)',
         transformStyle: 'preserve-3d',
       }}
-      animate={isHover ? { scale: 1.13 } : { scale: 1 }}
+      animate={isHover ? { scale: 1.1 } : { scale: 1 }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       initial={{ scale: 1 }}
       whileTap={{ scale: 0.95 }}
       transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+      whileHover={{ 
+        boxShadow: '0 8px 32px 0 rgba(255,255,255,0.15), 0 2px 8px 0 rgba(255,255,255,0.1)',
+        borderColor: 'rgba(255,255,255,0.3)'
+      }}
     >
       <motion.span
         style={{
@@ -4745,70 +4953,139 @@ export const NewsletterFooter: React.FC<NewsletterFooterProps> = ({
 
   return (
     <footer
-      className={\`w-full bg-neutral-900 text-muted-foreground py-10 px-6 ring-offset-background \${className || ''}\`}
+      className={\`w-full bg-gradient-to-t from-black/60 via-black/40 to-transparent backdrop-blur-xl border-t border-white/10 text-white py-16 px-6 \${className || ''}\`}
     >
-      <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-        {/* Left: Call to action */}
-        <div>
-          <h2 className="text-lg font-semibold text-white mb-2">{title}</h2>
-          {description && <p className="text-sm text-white text-muted-foreground mb-2">{description}</p>}
-        </div>
-        {/* Right: Input + Button */}
-        <div>
-          <div className="flex flex-col sm:flex-row gap-2 w-full">
-            <input
-              type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Enter your email"
-              className="flex-1 bg-neutral-950 border border-neutral-800 text-sm text-white rounded-md px-4 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900 shadow-sm transition placeholder:text-neutral-500"
-              disabled={loading}
-              aria-label="Email address"
-            />
-            <motion.button
-              type="button"
-              onClick={handleSubscribe}
-              disabled={loading}
-              className="h-10 px-5 rounded-md bg-primary border-1 border-white/20 hover:border-white text-white text-sm font-medium shadow-sm transition-colors disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900 hover:bg-primary/90"
-              style={{ minWidth: 110 }}
-              whileHover={!loading ? { scale: 1.07, boxShadow: '0 4px 24px 0 rgba(0,0,0,0.18)' } : {}}
-              whileTap={!loading ? { scale: 0.97 } : {}}
-              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+      <div className="max-w-4xl mx-auto">
+        {/* Main content with glassmorphic container */}
+        <motion.div 
+          className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-8 mb-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            {/* Left: Call to action */}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
             >
-              {loading ? 'Subscribing...' : 'Subscribe'}
-            </motion.button>
-          </div>
-          {error && <div className="text-xs text-red-500 mt-1">{error}</div>}
-          {success && <div className="text-xs text-green-500 mt-1">Subscribed! Check your inbox.\`\&quot;\`</div>}
-        </div>
-      </div>
-      {(!!socialIcons.length || !!legalLinks.length) && (
-        <div className="mt-8 flex flex-col items-center gap-4 border-t border-neutral-800 pt-6">
-          {socialIcons.length > 0 && (
-            <div className="flex gap-6 justify-center">
-              {socialIcons.map((icon, idx) => (
-                <MotionSocialIcon key={idx}>{icon}</MotionSocialIcon>
-              ))}
-            </div>
-          )}
-          {legalLinks.length > 0 && (
-            <div className="flex gap-4 flex-wrap text-xs text-white text-muted-foreground justify-center">
-              {legalLinks.map(link => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  className="hover:underline hover:text-white transition-colors"
-                  target="_blank"
-                  rel="noopener noreferrer"
+              <h2 className="text-2xl font-black text-white mb-3 bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">
+                {title}
+              </h2>
+              {description && (
+                <p className="text-white/80 leading-relaxed">
+                  {description}
+                </p>
+              )}
+            </motion.div>
+            
+            {/* Right: Input + Button */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+            >
+              <div className="flex flex-col sm:flex-row gap-3 w-full">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder="Enter your email"
+                  className="flex-1 bg-white/10 backdrop-blur-sm border border-white/20 text-white rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-white/40 transition-all duration-300 placeholder:text-white/50"
+                  disabled={loading}
+                  aria-label="Email address"
+                />
+                <motion.button
+                  type="button"
+                  onClick={handleSubscribe}
+                  disabled={loading}
+                  className="px-6 py-3 rounded-xl bg-white text-gray-900 font-semibold hover:bg-white/90 transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed shadow-2xl hover:shadow-white/25"
+                  style={{ minWidth: 120 }}
+                  whileHover={!loading ? { scale: 1.05 } : {}}
+                  whileTap={!loading ? { scale: 0.98 } : {}}
+                  transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                 >
-                  {link.label}
-                </a>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
+                  {loading ? 'Subscribing...' : 'Subscribe'}
+                </motion.button>
+              </div>
+              {error && (
+                <motion.div 
+                  className="text-sm text-red-400 mt-2"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {error}
+                </motion.div>
+              )}
+              {success && (
+                <motion.div 
+                  className="text-sm text-green-400 mt-2"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  Subscribed! Check your inbox.
+                </motion.div>
+              )}
+            </motion.div>
+          </div>
+        </motion.div>
+
+        {/* Bottom section: Social icons and legal links */}
+        {(!!socialIcons.length || !!legalLinks.length) && (
+          <motion.div 
+            className="flex flex-col items-center gap-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
+            {socialIcons.length > 0 && (
+              <div className="flex gap-4 justify-center">
+                {socialIcons.map((iconName, idx) => {
+                  // Make the lookup case-insensitive
+                  const normalizedIconName = iconName.toLowerCase();
+                  const IconComponent = SocialIcons[normalizedIconName as keyof typeof SocialIcons];
+                  if (!IconComponent) return null;
+                  
+                  return (
+                    <motion.div
+                      key={idx}
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.4, delay: 0.5 + idx * 0.1 }}
+                    >
+                      <MotionSocialIcon>
+                        {IconComponent}
+                      </MotionSocialIcon>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            )}
+            {legalLinks.length > 0 && (
+              <div className="flex gap-6 flex-wrap text-sm text-white/70 justify-center">
+                {legalLinks.map((link, idx) => (
+                  <motion.a
+                    key={link.href}
+                    href={link.href}
+                    className="hover:text-white transition-all duration-300 hover:scale-105"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 0.6 + idx * 0.1 }}
+                  >
+                    {link.label}
+                  </motion.a>
+                ))}
+              </div>
+            )}
+          </motion.div>
+        )}
+      </div>
     </footer>
   );
 };
@@ -5277,7 +5554,240 @@ export function LiquidGlassNavbar({ brand, links, cta, className, scrollTargetId
 `
 }
 
-function generateArDacityClassicHero(): string {
+function generateBazaarHeader(): string {
+  return `
+"use client"
+
+import { motion } from "framer-motion"
+import React from "react"
+
+interface BazaarHeaderProps {
+  title?: string
+  subtitle?: string
+  description?: string
+  stats?: {
+    totalProfiles?: number
+    totalAssets?: number
+    networkUptime?: string
+  }
+  ctaText?: string
+  showArweaveInfo?: boolean
+  customClassName?: string
+}
+
+export const BazaarHeader: React.FC<BazaarHeaderProps> = ({
+  title = "Arweave Bazaar",
+  subtitle = "Decentralized Profile & Asset Management",
+  description = "Create, update, and manage your decentralized identity on the Arweave permaweb. Build your profile, showcase assets, and connect with the decentralized community.",
+  stats = {
+    totalProfiles: 12500,
+    totalAssets: 45800,
+    networkUptime: "99.9%"
+  },
+  ctaText = "Get Started",
+  showArweaveInfo = true,
+  customClassName = "",
+}) => {
+  return (
+    <header
+      className={\`relative overflow-hidden bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 text-white py-20 \${customClassName}\`}
+    >
+      {/* Professional Grid Background */}
+      <div className="absolute inset-0 opacity-20">
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(161,161,170,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(161,161,170,0.03)_1px,transparent_1px)] bg-[size:50px_50px]" />
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(161,161,170,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(161,161,170,0.02)_1px,transparent_1px)] bg-[size:10px_10px]" />
+      </div>
+
+      {/* Floating Geometric Elements */}
+      <div className="absolute inset-0 -z-10 pointer-events-none">
+        <div className="w-full h-full relative">
+          {[...Array(20)].map((_, i) => {
+            const x = Math.random() * 100
+            const y = Math.random() * 100
+            const delay = Math.random() * 8
+            const size = Math.random() * 40 + 15
+            const shapes = ['rounded-full', 'rounded-lg', 'rounded-none']
+            const shape = shapes[Math.floor(Math.random() * shapes.length)]
+            
+            return (
+              <motion.div
+                key={i}
+                className={\`absolute border border-zinc-500/20 bg-gradient-to-br from-zinc-600/10 to-zinc-700/5 \${shape}\`}
+                style={{
+                  top: \`\${y}%\`,
+                  left: \`\${x}%\`,
+                  width: \`\${size}px\`,
+                  height: \`\${size}px\`,
+                }}
+                initial={{ opacity: 0, scale: 0.3, rotate: 0 }}
+                animate={{
+                  opacity: [0.1, 0.3, 0.1],
+                  y: [0, -15, 0],
+                  x: [0, 8, 0],
+                  scale: [0.3, 0.6, 0.3],
+                  rotate: [0, 180, 360],
+                }}
+                transition={{
+                  duration: 12 + Math.random() * 8,
+                  delay,
+                  repeat: Infinity,
+                  repeatType: "mirror",
+                  ease: "easeInOut",
+                }}
+              />
+            )
+          })}
+        </div>
+      </div>
+
+      {/* Accent Lines */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-1/3 left-0 w-full h-px bg-gradient-to-r from-transparent via-zinc-400/20 to-transparent" />
+        <div className="absolute bottom-1/3 left-0 w-full h-px bg-gradient-to-r from-transparent via-zinc-400/15 to-transparent" />
+      </div>
+
+      <div className="container mx-auto px-6 md:px-12 lg:px-20 relative z-10">
+        <div className="max-w-4xl mx-auto text-center space-y-8">
+          
+          {/* Status Badge */}
+          {showArweaveInfo && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="inline-flex items-center px-6 py-3 rounded-full bg-zinc-800/40 border border-zinc-600/30 backdrop-blur-sm"
+            >
+              <div className="w-3 h-3 bg-emerald-400 rounded-full mr-4 animate-pulse" />
+              <span className="text-sm text-zinc-300 font-medium mr-4">Powered by Arweave</span>
+              <div className="h-4 w-px bg-zinc-600 mx-2" />
+              <span className="text-xs text-zinc-400">Permanent Storage</span>
+            </motion.div>
+          )}
+
+          {/* Main Title */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="space-y-4"
+          >
+            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-[0.9]">
+              <span className="bg-gradient-to-r from-white via-zinc-200 to-zinc-400 bg-clip-text text-transparent">
+                {title}
+              </span>
+            </h1>
+            
+            <h2 className="text-xl sm:text-2xl text-zinc-400 font-light tracking-wide">
+              {subtitle}
+            </h2>
+          </motion.div>
+
+          {/* Description */}
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.5 }}
+            className="text-lg text-zinc-400 max-w-3xl mx-auto leading-relaxed"
+          >
+            {description}
+          </motion.p>
+
+          {/* Statistics Section */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.7 }}
+              className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-8"
+            >
+              <div className="bg-zinc-800/30 backdrop-blur-sm border border-zinc-700/50 rounded-xl p-6 text-center">
+                <div className="text-3xl font-bold text-white mb-2">
+                  {stats.totalProfiles?.toLocaleString()}+
+                </div>
+                <div className="text-sm text-zinc-400">Active Profiles</div>
+              </div>
+              
+              <div className="bg-zinc-800/30 backdrop-blur-sm border border-zinc-700/50 rounded-xl p-6 text-center">
+                <div className="text-3xl font-bold text-white mb-2">
+                  {stats.totalAssets?.toLocaleString()}+
+                </div>
+                <div className="text-sm text-zinc-400">Total Assets</div>
+              </div>
+              
+              <div className="bg-zinc-800/30 backdrop-blur-sm border border-zinc-700/50 rounded-xl p-6 text-center">
+                <div className="text-3xl font-bold text-emerald-400 mb-2">
+                  {stats.networkUptime}
+                </div>
+                <div className="text-sm text-zinc-400">Network Uptime</div>
+              </div>
+            </motion.div>
+
+          {/* CTA Section */}
+          {ctaText && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.9 }}
+              className="flex flex-col sm:flex-row gap-4 justify-center pt-8"
+            >
+              <button
+                className="group relative px-8 py-4 bg-gradient-to-r from-zinc-700 to-zinc-600 hover:from-zinc-600 hover:to-zinc-500 rounded-xl font-semibold text-white transition-all duration-300 shadow-xl hover:shadow-2xl hover:shadow-zinc-500/25 transform hover:-translate-y-1"
+              >
+                <span className="relative z-10">{ctaText}</span>
+                <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              </button>
+              
+              <button className="px-8 py-4 border border-zinc-600 hover:border-zinc-500 rounded-xl font-semibold text-zinc-300 hover:text-white transition-all duration-300 hover:bg-zinc-800/30 backdrop-blur-sm">
+                Learn More
+              </button>
+            </motion.div>
+          )}
+
+          {/* Feature Highlights */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 1.1 }}
+            className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-12 border-t border-zinc-700/50"
+          >
+            <div className="text-center space-y-3">
+              <div className="w-12 h-12 bg-zinc-800/50 rounded-xl flex items-center justify-center mx-auto border border-zinc-700/50">
+                <svg className="w-6 h-6 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+              </div>
+              <h3 className="text-white font-semibold">Create Profile</h3>
+              <p className="text-sm text-zinc-400">Build your decentralized identity with custom profiles</p>
+            </div>
+
+            <div className="text-center space-y-3">
+              <div className="w-12 h-12 bg-zinc-800/50 rounded-xl flex items-center justify-center mx-auto border border-zinc-700/50">
+                <svg className="w-6 h-6 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+              </div>
+              <h3 className="text-white font-semibold">Manage Assets</h3>
+              <p className="text-sm text-zinc-400">Organize and showcase your digital assets</p>
+            </div>
+
+            <div className="text-center space-y-3">
+              <div className="w-12 h-12 bg-zinc-800/50 rounded-xl flex items-center justify-center mx-auto border border-zinc-700/50">
+                <svg className="w-6 h-6 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9" />
+                </svg>
+              </div>
+              <h3 className="text-white font-semibold">Permanent Storage</h3>
+              <p className="text-sm text-zinc-400">Data stored permanently on Arweave blockchain</p>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    </header>
+  )
+}
+  `
+}
+
+  function generateArDacityClassicHero(): string {
   return `"use client"
 
 import { motion } from "framer-motion"
@@ -5361,7 +5871,7 @@ export function ArDacityClassicHero({
 
 function generateNftThemeHero(): string {
   return `
-  "use client"
+"use client"
 
 import { Button } from "@/components/ui/button"
 import { motion } from "framer-motion"
@@ -5369,16 +5879,11 @@ import React from "react"
 
 interface NftThemeHeroProps {
   title?: string
-  description?: string
+  description?: string 
   backgroundImage?: string
-  gradientFrom?: string
-  gradientVia?: string
-  gradientTo?: string
   showButtons?: boolean
   primaryBtnText?: string
-  // primaryBtnAction?: () => void
   secondaryBtnText?: string
-  // secondaryBtnAction?: () => void
   secondaryBtnVariant?: "outline" | "ghost" | "default"
   animate?: boolean
   customClassName?: string
@@ -5388,15 +5893,10 @@ interface NftThemeHeroProps {
 export function NftThemeHero({
   title = "NFT Collection",
   description = "Discover unique digital assets",
-  backgroundImage = "/placeholder.svg?height=1080&width=1920",
-  gradientFrom = "purple-900",
-  gradientVia = "blue-900",
-  gradientTo = "indigo-900",
+  backgroundImage = "https://images.unsplash.com/photo-1593173930865-2edee2550a40?q=80&w=1338&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D?height=1080&width=1920",
   showButtons = true,
   primaryBtnText = "Explore Collection",
-  // primaryBtnAction,
   secondaryBtnText = "Create NFT",
-  // secondaryBtnAction,
   secondaryBtnVariant = "outline",
   animate = true,
   customClassName = "",
@@ -5406,14 +5906,91 @@ export function NftThemeHero({
 
   return (
     <div
-      className={\`relative min-h-screen bg-gradient-to-br from-\${gradientFrom} via-\${gradientVia} to-\${gradientTo} flex items-center justify-center overflow-hidden \${customClassName}\`}
+      className={\`relative min-h-screen flex items-center justify-center overflow-hidden \${customClassName}\`}
     >
-      <div
-        className="absolute inset-0 bg-cover bg-center opacity-10"
-        style={{ backgroundImage: \`url(\${backgroundImage})\` }}
-      />
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0">
+        {/* Main background image */}
+        <div
+          className="absolute inset-0 bg-cover bg-center opacity-5"
+          style={{ backgroundImage: \`url(\${backgroundImage})\` }}
+        />
+        
+        {/* Floating geometric shapes */}
+        <div className="absolute top-1/4 left-1/4 w-32 h-32 border border-white/10 rounded-full animate-pulse" />
+        <div className="absolute top-1/3 right-1/4 w-24 h-24 border border-white/10 rounded-lg rotate-45 animate-spin" style={{ animationDuration: '20s' }} />
+        <div className="absolute bottom-1/4 left-1/3 w-40 h-40 border border-white/10 rounded-full animate-bounce" style={{ animationDuration: '3s' }} />
+        
+        {/* Grid pattern overlay */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="h-full w-full" style={{
+            backgroundImage: \`
+              linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)
+            \`,
+            backgroundSize: '50px 50px'
+          }} />
+        </div>
+        
+        {/* Radial glow effects */}
+        <div className="absolute top-0 left-0 w-96 h-96 bg-white/5 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
+      </div>
 
-      <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
+      {/* Floating NFT Cards */}
+      <div className="absolute inset-0 pointer-events-none">
+        <motion.div
+          className="absolute top-20 left-10 w-24 h-32 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 shadow-2xl overflow-hidden"
+          animate={{ 
+            y: [0, -20, 0],
+            rotate: 12
+          }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+          style={{ rotate: 12 }}
+        >
+          <img 
+            src="https://7ptgafldwjjywnnog6tz2etox4fvot6piuov5t77beqxshk4lgxa.arweave.net/--ZgFWOyU4s1rjennRJuvwtXT89FHV7P_wkheR1cWa4"
+            alt="NFT Art"
+            className="w-full h-full object-cover"
+          />
+          
+        </motion.div>
+        
+        <motion.div
+          className="absolute top-32 right-16 w-20 h-28 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 shadow-2xl overflow-hidden"
+          animate={{ 
+            y: [0, 15, 0],
+            rotate: -6
+          }}
+          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+          style={{ rotate: -6 }}
+        >
+          <img 
+            src="https://2a22g5st4gt5qbaqighxe63c5qof7bychdat75aqeujebq7wke2a.arweave.net/0DWjdlPhp9gEEEGPcnti7BxfhwI4wT_0ECUSQMP2UTQ"
+            alt="Digital Art NFT"
+            className="w-full h-full object-cover"
+          />
+        </motion.div>
+        
+        <motion.div
+          className="absolute bottom-40 left-20 w-28 h-36 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20 shadow-2xl overflow-hidden"
+          animate={{ 
+            y: [0, -25, 0],
+            rotate: -18
+          }}
+          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+          style={{ rotate: -18 }}
+        >
+          <img 
+            src="https://leodnpha4oqlyeruhatk3adl7dw62lsp5c5jyn5tujbn2qmjvtia.arweave.net/WRw2vODjoLwSNDgmrYBr-O3tLk_oupw3s6JC3UGJrNA"
+            alt="Abstract NFT"
+            className="w-full h-full object-cover"
+          />
+        </motion.div>
+      </div>
+
+      {/* Main Content */}
+      <div className="relative z-10 text-center px-4 max-w-6xl mx-auto">
         <Wrapper
           {...(animate && {
             initial: { opacity: 0, y: 50 },
@@ -5421,40 +5998,135 @@ export function NftThemeHero({
             transition: { duration: 0.8 },
           })}
         >
-          <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-400">
-            {title}
-          </h1>
-          <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-2xl mx-auto">{description}</p>
+          {/* Premium badge */}
+          <motion.div
+            className="inline-flex items-center px-4 py-2 mb-6 bg-white/10 backdrop-blur-md rounded-full border border-white/20 text-white/90 text-sm font-medium"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <div className="w-2 h-2 bg-white rounded-full mr-2 animate-pulse" />
+            Premium NFT Collection
+          </motion.div>
 
+          {/* Main title with enhanced styling */}
+          <motion.h1
+            className="text-6xl md:text-8xl lg:text-9xl font-black text-white mb-8 leading-tight"
+            style={{
+              background: 'linear-gradient(135deg, #ffffff 0%, #e0e0e0 50%, #ffffff 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              textShadow: '0 0 60px rgba(255,255,255,0.3)'
+            }}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+          >
+            {title}
+          </motion.h1>
+
+          {/* Description with glassmorphic background */}
+          <motion.div
+            className="relative max-w-3xl mx-auto mb-12"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+          >
+            <div className="absolute inset-0 bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10" />
+            <p className="relative text-lg md:text-xl text-white/90 px-8 py-6 leading-relaxed">
+              {description}
+            </p>
+          </motion.div>
+
+          {/* Enhanced buttons */}
           {showButtons && (
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <motion.div
+              className="flex flex-col sm:flex-row gap-6 justify-center items-center"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.5 }}
+            >
               <Button
                 size="lg"
                 // onClick={primaryBtnAction}
-                className="bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600"
+                className="relative px-8 py-4 text-lg font-semibold bg-white text-gray-900 hover:bg-white/90 transition-all duration-300 shadow-2xl hover:shadow-white/25 hover:scale-105 rounded-xl border-2 border-white/20"
               >
-                {primaryBtnText}
+                <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent rounded-xl opacity-0 hover:opacity-100 transition-opacity duration-300" />
+                <span className="relative z-10">{primaryBtnText}</span>
               </Button>
+              
               <Button
                 size="lg"
                 variant={secondaryBtnVariant}
                 // onClick={secondaryBtnAction}
-                className={
-                  secondaryBtnVariant === "outline"
-                    ? "border-white text-black hover:bg-white hover:text-black"
-                    : ""
-                }
+                className="relative px-8 py-4 text-lg font-semibold bg-transparent border-2 border-white/30 text-white hover:bg-white/10 hover:border-white/50 transition-all duration-300 shadow-xl hover:shadow-white/20 hover:scale-105 rounded-xl backdrop-blur-sm hover:text-white/50"
               >
-                {secondaryBtnText}
+                <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent rounded-xl opacity-0 hover:opacity-100 transition-opacity duration-300" />
+                <span className="relative z-10">{secondaryBtnText}</span>
               </Button>
-            </div>
+            </motion.div>
           )}
 
-          {children && <div className="mt-8">{children}</div>}
+          {/* Stats or additional content */}
+          <motion.div
+            className="mt-16 grid grid-cols-3 gap-8 max-w-2xl mx-auto"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+          >
+            <div className="text-center">
+              <div className="text-2xl md:text-3xl font-bold text-white mb-2">10K+</div>
+              <div className="text-white/70 text-sm">Unique NFTs</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl md:text-3xl font-bold text-white mb-2">5.2K</div>
+              <div className="text-white/70 text-sm">Collectors</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl md:text-3xl font-bold text-white mb-2">∞</div>
+              <div className="text-white/70 text-sm">Possibilities</div>
+            </div>
+          </motion.div>
+
+          {children && (
+            <motion.div
+              className="mt-12"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.7 }}
+            >
+              {children}
+            </motion.div>
+          )}
         </Wrapper>
       </div>
 
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black/50 to-transparent" />
+      {/* Enhanced bottom gradient */}
+      <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+      
+      {/* Subtle particles effect */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {[...Array(20)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-1 h-1 bg-white/30 rounded-full"
+            style={{
+              left: \`\${Math.random() * 100}%\`,
+              top: \`\${Math.random() * 100}%\`,
+            }}
+            animate={{
+              y: [0, -100],
+              opacity: [0, 1, 0],
+            }}
+            transition={{
+              duration: Math.random() * 3 + 2,
+              repeat: Infinity,
+              delay: Math.random() * 2,
+            }}
+          />
+        ))}
+      </div>
     </div>
   )
 }
@@ -5595,7 +6267,227 @@ function generateAOMessageSigner(): string {
 `
 }
 
-function generateArweaveChatroom(): string {
+function generateArweaveChatroomHolder(): string {
+  return `
+  "use client"
+  
+  import type React from "react"
+  import { useState, useEffect } from "react"
+  import { Button } from "@/components/ui/button"
+  import { Card } from "@/components/ui/card"
+  import { MessageCircle, Sparkles } from "lucide-react"
+  import { ChatRoom } from "./chatroom-on-chain"
+  
+  interface ChatRoomHolderProps {
+    serverUrl?: string
+    className?: string
+    quickMessages?: string[]
+  }
+  
+  // Launch Button Component with mesmerizing animations
+  function LaunchButton({ onClick }: { onClick: () => void }) {
+    const [isHovered, setIsHovered] = useState(false)
+    
+    return (
+      <div className="flex items-center justify-center h-full relative">
+        {/* Floating particles background */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {[...Array(6)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute w-2 h-2 bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full opacity-30 animate-pulse"
+              style={{
+                left: \`\${Math.random() * 100}%\`,
+                top: \`\${Math.random() * 100}%\`,
+                animationDelay: \`\${i * 0.5}s\`,
+                animationDuration: \`\${2 + Math.random() * 2}s\`,
+              }}
+            />
+          ))}
+        </div>
+        
+        <Button
+          onClick={onClick}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          size="lg"
+          className="relative overflow-hidden bg-black border-4 border-white/50 hover:border-white/80 text-white px-12 py-8 rounded-2xl transition-all duration-500 hover:scale-110 group shadow-2xl hover:shadow-white/20"
+        >
+          {/* Neon glow effect */}
+          <div 
+            className="absolute inset-0 rounded-2xl transition-opacity duration-500"
+            style={{
+              background: "linear-gradient(135deg, #00ffe7 0%, #ff00e0 100%)",
+              opacity: isHovered ? 0.2 : 0.1,
+              filter: "blur(8px)",
+            }}
+          />
+          
+          {/* Main content */}
+          <div className="relative flex items-center gap-4 z-10">
+            <div className="relative">
+              <MessageCircle className="w-8 h-8 transition-transform duration-300 group-hover:rotate-12" />
+              {isHovered && (
+                <div className="absolute inset-0 animate-ping">
+                  <MessageCircle className="w-8 h-8 opacity-30" />
+                </div>
+              )}
+            </div>
+            <div className="text-center">
+              <div className="text-xl font-bold mb-1">Launch Chat</div>
+            </div>
+            <Sparkles className="w-6 h-6 opacity-70 animate-pulse" />
+          </div>
+          
+          {/* Animated border shine */}
+          <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+            <div 
+              className="absolute inset-0 rounded-2xl animate-pulse"
+              style={{
+                background: "linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.3) 50%, transparent 70%)",
+                animation: "shine 2s infinite",
+              }}
+            />
+          </div>
+        </Button>
+        
+        <style jsx>{\`
+          @keyframes shine {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(200%) rotate(45deg); }
+          }
+        \`}</style>
+      </div>
+    )
+  }
+  
+  export default function ChatRoomHolder({
+    serverUrl = "https://ardacity-backrooms.onrender.com",
+    className = "",
+    quickMessages = ["ggs", "nice play", "let's play again", "good luck", "well played"],
+  }: ChatRoomHolderProps) {
+    const [showChatroom, setShowChatroom] = useState(false)
+    const [animateIn, setAnimateIn] = useState(false)
+  
+    useEffect(() => {
+      setAnimateIn(true)
+    }, [])
+  
+    return (
+      <div className={\`w-full max-w-7xl mx-auto relative \${className}\`}>
+        {/* Background ambient glow */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div 
+            className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full opacity-10 blur-3xl animate-pulse"
+            style={{
+              background: "linear-gradient(135deg, #00ffe7 0%, #ff00e0 100%)",
+              animationDuration: "4s",
+            }}
+          />
+          <div 
+            className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full opacity-5 blur-3xl animate-pulse"
+            style={{
+              background: "linear-gradient(225deg, #ff00e0 0%, #00ffe7 100%)",
+              animationDelay: "2s",
+              animationDuration: "6s",
+            }}
+          />
+        </div>
+  
+        {/* Simple Title */}
+        <div className={\`text-center mb-12 transform transition-all duration-1000 \${animateIn ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}\`}>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-white via-cyan-300 to-purple-400 bg-clip-text text-transparent mb-4">
+            ArDacity Chat
+          </h1>
+          <p className="text-lg text-slate-400 max-w-2xl mx-auto">
+            Connect with the community in real-time
+          </p>
+        </div>
+  
+        <div className={\`grid grid-cols-1 lg:grid-cols-2 gap-12 min-h-[600px] transform transition-all duration-1000 delay-300 \${animateIn ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}\`}>
+          {/* Left Column - Info Panel */}
+          <div className="space-y-8">
+            {/* Chat Info Card */}
+            <Card className="p-8 bg-black border-4 border-white/20 hover:border-white/40 transition-all duration-500 relative overflow-hidden group">
+              {/* Neon border effect matching chatroom */}
+              <div
+                className="absolute inset-0 pointer-events-none opacity-20 group-hover:opacity-40 transition-opacity duration-500"
+                style={{
+                  padding: 4,
+                  background: "linear-gradient(135deg, #00ffe7 0%, #ff00e0 100%)",
+                  WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+                  WebkitMaskComposite: "xor",
+                  maskComposite: "exclude",
+                }}
+              />
+              
+              <div className="relative z-10">
+                <h2 className="text-2xl font-bold text-white mb-6">Real-Time Communication</h2>
+                <p className="text-slate-300 text-lg leading-relaxed">
+                  Experience instant messaging using the ArDacity component. 
+                  Connect with members worldwide through the secure chat platform.
+                </p>
+              </div>
+            </Card>
+            
+            {/* Guidelines Card */}
+            <Card className="p-6 bg-black border-2 border-white/20 hover:border-white/30 transition-all duration-500 relative overflow-hidden">
+              <div className="relative z-10">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-emerald-500/10 to-cyan-500/10 border border-emerald-500/20 text-slate-300">
+                    Be respectful to all community members
+                  </div>
+                  <div className="flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-emerald-500/10 to-cyan-500/10 border border-emerald-500/20 text-slate-300">
+                    Keep discussions relevant and constructive
+                  </div>
+                  <div className="flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-emerald-500/10 to-cyan-500/10 border border-emerald-500/20 text-slate-300">
+                    No spam or promotional content
+                  </div>
+                  <div className="flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-emerald-500/10 to-cyan-500/10 border border-emerald-500/20 text-slate-300">
+                    Use appropriate language
+                  </div>
+                </div>
+              </div>
+            </Card>
+          </div>
+  
+          {/* Right Column - Interactive Area */}
+          <div className="flex flex-col">
+            {!showChatroom ? (
+              <Card className="flex-1 bg-black border-4 border-white/20 hover:border-white/40 transition-all duration-500 p-8 relative overflow-hidden">
+                {/* Animated background */}
+                <div className="absolute inset-0 opacity-5">
+                  <div className="absolute inset-0 bg-gradient-to-br from-cyan-500 via-purple-500 to-pink-500 animate-pulse" style={{ animationDuration: "8s" }} />
+                </div>
+                
+                <LaunchButton onClick={() => setShowChatroom(true)} />
+                
+                {/* Decorative elements */}
+                <div className="absolute top-4 right-4 opacity-30">
+                  <div className="flex space-x-2">
+                    <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse" />
+                    <div className="w-3 h-3 bg-yellow-400 rounded-full animate-pulse" style={{ animationDelay: "0.5s" }} />
+                    <div className="w-3 h-3 bg-red-400 rounded-full animate-pulse" style={{ animationDelay: "1s" }} />
+                  </div>
+                </div>
+              </Card>
+            ) : (
+              <div className="flex-1 transform transition-all duration-700 animate-in slide-in-from-right">
+                <ChatRoom
+                  serverUrl={serverUrl}
+                  className="h-full"
+                  quickMessages={quickMessages}
+                />
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    )
+  }
+  `
+}
+  function generateArweaveChatroom(): string {
   return `
    "use client"
    
@@ -6235,6 +7127,2183 @@ function generateGetWalletAddrLib(): string {
   };
   `
 }
+function generateARNSLookup(): string {
+  return `
+"use client"
+
+import type React from "react"
+import { useState, useRef } from "react"
+import { ARNSClient } from "ao-js-sdk"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Card, CardContent } from "@/components/ui/card"
+
+// Loading Overlay Component
+const LoadingOverlay = () => (
+  <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50 rounded-lg">
+    <div className="flex items-center justify-center p-6 bg-white rounded-lg shadow-lg border border-gray-200">
+      <div className="relative">
+        <div className="w-12 h-12 border-4 border-gray-200 border-t-black rounded-full animate-spin"></div>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-6 h-6 bg-white rounded-full"></div>
+        </div>
+      </div>
+      <span className="ml-4 text-lg font-medium text-gray-700">Processing...</span>
+    </div>
+  </div>
+)
+
+function JsonViewer({ value }: { value: any }) {
+  const formatValue = (val: any): string => {
+    if (val === null || val === undefined) return '-'
+    if (typeof val === 'string') {
+      if (val.includes('[') && val.includes('m')) {
+        const cleanMessage = val.replace(/\\[\\d+m/g, '').replace(/\\[0m/g, '')
+        return cleanMessage
+      }
+      return val
+    }
+    if (typeof val === 'number') return val.toLocaleString()
+    if (typeof val === 'boolean') return val ? 'Yes' : 'No'
+    if (Array.isArray(val)) return \`\${val.length} items\`
+    if (typeof val === 'object') return 'Object'
+    return String(val)
+  }
+
+  const renderObject = (obj: any) => {
+    const entries = Object.entries(obj)
+    return (
+      <div className="space-y-3">
+        {entries.map(([key, value]) => (
+          <div key={key} className="flex flex-col sm:flex-row gap-2 p-3 bg-gray-50 rounded-md">
+            <div className="sm:w-1/3 min-w-0">
+              <span className="font-medium text-gray-700 capitalize">
+                {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+              </span>
+            </div>
+            <div className="sm:w-2/3 min-w-0">
+              <span className="text-gray-900 font-mono text-sm break-all">
+                {formatValue(value)}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  const renderArray = (arr: any[]) => {
+    return (
+      <div className="space-y-2">
+        {arr.map((item, index) => (
+          <div key={index} className="p-3 bg-gray-50 rounded-md">
+            {typeof item === 'object' && item !== null ? renderObject(item) : formatValue(item)}
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  const renderContent = () => {
+    if (typeof value === 'string') {
+      return (
+        <div className="p-4 bg-green-50 border border-green-200 rounded-md">
+          <span className="text-green-800 font-medium">{value}</span>
+        </div>
+      )
+    }
+
+    if (typeof value === 'number') {
+      return (
+        <div className="p-4 bg-blue-50 border border-blue-200 rounded-md">
+          <span className="text-blue-800 font-bold text-lg">{value.toLocaleString()}</span>
+        </div>
+      )
+    }
+
+    if (typeof value === 'boolean') {
+      return (
+        <div className={\`p-4 border rounded-md \${value ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}\`}>
+          <span className={\`font-medium \${value ? 'text-green-800' : 'text-red-800'}\`}>
+            {value ? 'Yes' : 'No'}
+          </span>
+        </div>
+      )
+    }
+
+    if (Array.isArray(value)) {
+      return renderArray(value)
+    }
+
+    if (typeof value === 'object' && value !== null) {
+      return renderObject(value)
+    }
+
+    return (
+      <div className="p-4 bg-gray-50 border border-gray-200 rounded-md">
+        <span className="text-gray-700">{String(value)}</span>
+      </div>
+    )
+  }
+
+  return (
+    <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+      <div className="px-6 py-4 border-b border-gray-200">
+        <h3 className="text-lg font-medium flex items-center gap-2">
+          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7c0-2.21-3.582-4-8-4s-8 1.79-8 4z" />
+          </svg>
+          Result
+        </h3>
+      </div>
+      <div className="p-6">
+        <div className="overflow-auto max-h-96">
+          {renderContent()}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const ARNSRecordLookup: React.FC = () => {
+  const [name, setName] = useState("")
+  const [record, setRecord] = useState<any>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [result, setResult] = useState<any>(null)
+  const [walletSet, setWalletSet] = useState(false)
+  const clientRef = useRef<ARNSClient | null>(null)
+
+  // Always use the same client instance for all actions
+  const getClient = () => {
+    if (!clientRef.current) {
+      clientRef.current = ARNSClient.autoConfiguration();
+    }
+    return clientRef.current;
+  }
+
+  // Set wallet if available
+  const handleSetWallet = () => {
+    const wallet = (window as any).arweaveWallet;
+    if (wallet) {
+      // Always create a new client and set the wallet
+      clientRef.current = ARNSClient.autoConfiguration();
+      clientRef.current.setWallet(wallet);
+      setWalletSet(true);
+      setResult("Wallet set!");
+    } else {
+      setError("No Arweave wallet found.");
+    }
+  }
+
+  // getRecord
+  const handleLookup = async () => {
+    setLoading(true)
+    setError(null)
+    setRecord(null)
+    setResult(null)
+    try {
+      const client = getClient()
+      const result = await client.getRecord(name)
+      if (result) {
+        setRecord(result)
+      } else {
+        setError("No ARNS record found for this name.")
+      }
+    } catch (err: any) {
+      setError(err?.message || "Error fetching ARNS record.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // getProcessId
+  const handleGetProcessId = () => {
+    setError(null)
+    setResult(getClient().getProcessId())
+  }
+
+  // getProcessInfo
+  const handleGetProcessInfo = async () => {
+    setLoading(true)
+    setError(null)
+    setResult(null)
+    try {
+      const info = await getClient().getProcessInfo()
+      setResult(info)
+    } catch (err: any) {
+      setError(err?.message || "Error getting process info.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="min-h-screen w-full bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-2xl space-y-6">
+        {/* Header */}
+        <div className="text-center">
+          <div className="flex items-center justify-center space-x-2 mb-2">
+            <div className="w-6 h-6 border-2 border-blue-500 transform rotate-45 bg-transparent"></div>
+            <span className="text-2xl font-semibold">
+              <span className="text-blue-500">ARNS</span>
+              <span className="text-gray-900">Record Lookup</span>
+            </span>
+          </div>
+          <p className="text-gray-600">Search and manage ARNS records</p>
+        </div>
+
+        {/* Main Card */}
+        <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-xl relative">
+          {loading && <LoadingOverlay />}
+          <CardContent className="p-8 space-y-6">
+            {/* Wallet Section */}
+            <div className="space-y-4">
+              <Label className="text-sm font-medium text-gray-700">Wallet Connection</Label>
+              <div className="flex items-center gap-4">
+                <Button
+                  onClick={handleSetWallet}
+                  className="bg-black hover:bg-gray-800 text-white"
+                >
+                  Connect Wallet
+                </Button>
+                {walletSet && (
+                  <div className="flex items-center gap-2 text-green-600">
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-sm font-medium">Wallet Connected!</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Lookup Section */}
+            <div className="space-y-4">
+              <Label className="text-sm font-medium text-gray-700">Record Lookup</Label>
+              <div className="space-y-3">
+                <Input
+                  type="text"
+                  placeholder="Enter ARNS name..."
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full"
+                />
+                <Button
+                  onClick={handleLookup}
+                  disabled={loading || !name}
+                  className="w-full bg-black hover:bg-gray-800 text-white"
+                >
+                  Lookup Record
+                </Button>
+              </div>
+            </div>
+
+            {/* Methods Section */}
+            <div className="space-y-4">
+              <Label className="text-sm font-medium text-gray-700">Client Methods</Label>
+              <div className="grid grid-cols-2 gap-3">
+                <Button
+                  onClick={handleGetProcessId}
+                  disabled={loading}
+                  className="bg-black hover:bg-gray-800 text-white text-sm"
+                >
+                  Process ID
+                </Button>
+                <Button
+                  onClick={handleGetProcessInfo}
+                  disabled={loading}
+                  className="bg-black hover:bg-gray-800 text-white text-sm"
+                >
+                  Process Info
+                </Button>
+              </div>
+            </div>
+
+            {/* Error Display */}
+            {error && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                <div className="flex items-center gap-2">
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span className="text-red-800">{error}</span>
+                </div>
+              </div>
+            )}
+
+            {/* Record Display */}
+            {record && (
+              <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+                <div className="px-6 py-4 border-b border-gray-200">
+                  <h3 className="text-lg font-medium flex items-center gap-2">
+                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    ARNS Record
+                  </h3>
+                </div>
+                <div className="p-6">
+                  <div className="overflow-auto max-h-96">
+                    <pre className="text-sm text-gray-800 whitespace-pre-wrap">{JSON.stringify(record, null, 2)}</pre>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Result Display */}
+            {result && <JsonViewer value={typeof result === 'string' ? { result } : result} />}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  )
+}
+
+export default ARNSRecordLookup 
+  `
+}
+
+function generateCarousel3D(): string {
+  return `
+  "use client"
+  
+  import type React from "react"
+  import { useState, useEffect, useRef } from "react"
+  
+  interface Asset {
+    id: string
+    name: string
+    description: string
+    contentType: string
+    data?: string
+    thumbnail?: string
+    banner?: string
+    creator: string
+    dateCreated: number
+    assetType?: string
+    [key: string]: any
+  }
+  
+  interface AssetCarousel3DProps {
+    assets: Asset[]
+    onAssetClick?: (asset: Asset) => void
+    useMockData?: boolean
+  }
+  
+  export default function AssetCarousel3D({ assets, onAssetClick, useMockData = false }: AssetCarousel3DProps) {
+    const [progress, setProgress] = useState(50)
+    const [active, setActive] = useState(0)
+    const [isDown, setIsDown] = useState(false)
+    const [startX, setStartX] = useState(0)
+    const [cursorPos, setCursorPos] = useState({ x: 0, y: 0 })
+    const containerRef = useRef<HTMLDivElement>(null)
+  
+    const speedWheel = 0.02
+    const speedDrag = -0.1
+  
+    const assetFallbackImage =
+      "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI2VlZSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOTk5IiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCI+Tm8gSW1hZ2U8L3RleHQ+PC9zdmc+"
+  
+    const getZindex = (array: Asset[], index: number) =>
+      array.map((_, i) => (index === i ? array.length : array.length - Math.abs(index - i)))
+  
+    const animate = () => {
+      if (assets.length === 0) return
+      const clampedProgress = Math.max(0, Math.min(progress, 100))
+      const newActive = Math.floor((clampedProgress / 100) * (assets.length - 1))
+      setActive(newActive)
+    }
+  
+    useEffect(() => {
+      animate()
+    }, [progress, assets.length])
+  
+    const handleWheel = (e: React.WheelEvent) => {
+      const wheelProgress = e.deltaY * speedWheel
+      setProgress((prev) => prev + wheelProgress)
+    }
+  
+    const handleMouseMove = (e: React.MouseEvent | React.TouchEvent) => {
+      if ("clientX" in e) {
+        setCursorPos({ x: e.clientX, y: e.clientY })
+      }
+  
+      if (!isDown) return
+  
+      const clientX = "clientX" in e ? e.clientX : e.touches[0]?.clientX || 0
+      const mouseProgress = (clientX - startX) * speedDrag
+      setProgress((prev) => prev + mouseProgress)
+      setStartX(clientX)
+    }
+  
+    const handleMouseDown = (e: React.MouseEvent | React.TouchEvent) => {
+      setIsDown(true)
+      const clientX = "clientX" in e ? e.clientX : e.touches[0]?.clientX || 0
+      setStartX(clientX)
+    }
+  
+    const handleMouseUp = () => {
+      setIsDown(false)
+    }
+  
+    const handleItemClick = (index: number, asset: Asset) => {
+      setProgress((index / assets.length) * 100 + 10)
+      onAssetClick?.(asset)
+    }
+  
+    const getAssetImage = (asset: Asset) => {
+      if (useMockData) {
+        // Use placeholder images for mock data
+        return \`https://picsum.photos/300/200?random=\${asset.id}\`
+      } else {
+        // Use real Arweave URLs for actual data
+        return \`https://7ptgafldwjjywnnog6tz2etox4fvot6piuov5t77beqxshk4lgxa.arweave.net/\${asset.id}\`
+      }
+    }
+  
+    const truncateText = (text: string | undefined | null, maxLength: number): string => {
+      if (!text || typeof text !== "string") return "No information available"
+      return text.length > maxLength ? text.substring(0, maxLength) + "..." : text
+    }
+  
+    const safeGetProperty = (obj: any, property: string, fallback = "Unknown"): string => {
+      return obj && obj[property] ? String(obj[property]) : fallback
+    }
+  
+    if (!assets || assets.length === 0) {
+      return (
+        <div className="h-[60vh] flex items-center justify-center text-gray-500 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 rounded-xl">
+          <p className="text-white">No assets to display</p>
+        </div>
+      )
+    }
+  
+    return (
+      <div className="relative h-[80vh] overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 rounded-xl">
+        {/* Custom Cursors */}
+        <div
+          className="fixed w-10 h-10 border border-white/20 rounded-full pointer-events-none z-10 transition-transform duration-[850ms] ease-[cubic-bezier(0,0.02,0,1)] hidden md:block"
+          style={{
+            transform: \`translate(\${cursorPos.x - 20}px, \${cursorPos.y - 20}px)\`,
+          }}
+        />
+        <div
+          className="fixed w-0.5 h-0.5 bg-white rounded-full pointer-events-none z-10 transition-transform duration-700 ease-[cubic-bezier(0,0.02,0,1)] hidden md:block"
+          style={{
+            transform: \`translate(\${cursorPos.x - 1}px, \${cursorPos.y - 1}px)\`,
+          }}
+        />
+  
+        {/* Carousel */}
+        <div
+          ref={containerRef}
+          className="relative z-[1] h-full overflow-hidden pointer-events-none"
+          onWheel={handleWheel}
+          onMouseMove={handleMouseMove}
+          onMouseDown={handleMouseDown}
+          onMouseUp={handleMouseUp}
+          onTouchStart={handleMouseDown}
+          onTouchMove={handleMouseMove}
+          onTouchEnd={handleMouseUp}
+        >
+          {assets.map((asset, index) => {
+            if (!asset || !asset.id) return null
+  
+            const zIndex = getZindex(assets, active)[index]
+            const activeOffset = (index - active) / assets.length
+            const opacity = (zIndex / assets.length) * 3 - 2
+  
+            return (
+              <div
+                key={asset.id}
+                className="absolute overflow-hidden rounded-[10px] top-1/2 left-1/2 select-none pointer-events-auto cursor-pointer shadow-[0_10px_50px_10px_rgba(0,0,0,0.5)] bg-white transition-transform duration-800 ease-[cubic-bezier(0,0.02,0,1)]"
+                style={
+                  {
+                    "--items": assets.length,
+                    "--width": "clamp(200px, 35vw, 350px)",
+                    "--height": "clamp(280px, 45vw, 450px)",
+                    "--x": \`\${activeOffset * 800}%\`,
+                    "--y": \`\${activeOffset * 200}%\`,
+                    "--rot": \`\${activeOffset * 120}deg\`,
+                    "--opacity": opacity,
+                    zIndex,
+                    width: "clamp(200px, 35vw, 350px)",
+                    height: "clamp(280px, 45vw, 450px)",
+                    marginTop: "calc(clamp(280px, 45vw, 450px) * -0.5)",
+                    marginLeft: "calc(clamp(200px, 35vw, 350px) * -0.5)",
+                    transformOrigin: "0% 100%",
+                    transform: \`translate(var(--x), var(--y)) rotate(var(--rot))\`,
+                  } as React.CSSProperties
+                }
+                onClick={() => handleItemClick(index, asset)}
+              >
+                <div
+                  className="absolute z-[1] top-0 left-0 w-full h-full transition-opacity duration-800 ease-[cubic-bezier(0,0.02,0,1)] bg-white rounded-[10px] overflow-hidden"
+                  style={{ opacity }}
+                >
+                  {/* Asset Image */}
+                  <div className="relative h-3/5 overflow-hidden">
+                    <img
+                      src={getAssetImage(asset) || "/placeholder.svg"}
+                      alt={safeGetProperty(asset, "name", "Asset")}
+                      className="w-full h-full object-cover"
+                      onError={(e) => ((e.target as HTMLImageElement).src = assetFallbackImage)}
+                    />
+                    {asset.assetType === "nft" && (
+                      <div className="absolute top-3 right-3 bg-purple-600 text-white text-xs px-2 py-1 rounded-full font-medium">
+                        NFT
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+                  </div>
+  
+                  {/* Asset Info */}
+                  <div className="p-4 h-2/5 flex flex-col justify-between">
+                    <div>
+                      <h3 className="font-bold text-lg text-gray-900 mb-1 leading-tight">
+                        {truncateText(safeGetProperty(asset, "name"), 25)}
+                      </h3>
+                      <p className="text-gray-600 text-sm mb-2 leading-relaxed">
+                        {truncateText(safeGetProperty(asset, "description", "No description available"), 60)}
+                      </p>
+                    </div>
+  
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center text-xs text-gray-500">
+                        <span>Created</span>
+                        <span>
+                          {asset.dateCreated ? new Date(asset.dateCreated).toLocaleDateString() : "Unknown date"}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs text-gray-400 font-mono">
+                          {asset.id ? \`\${asset.id.substring(0, 8)}...\` : "No ID"}
+                        </span>
+                        <a
+                          href={\`https://arweave.net/\${asset.id}\`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          View →
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+  
+        {/* Navigation Info */}
+        <div className="absolute bottom-6 left-6 text-white/70 text-sm">
+          <p>
+            Asset {active + 1} of {assets.length}
+          </p>
+          <p className="text-xs mt-1">Scroll or drag to navigate</p>
+        </div>
+  
+        {/* Current Asset Title */}
+        {assets[active] && (
+          <div className="absolute top-6 left-6 text-white">
+            <h2 className="text-2xl font-bold mb-1">{safeGetProperty(assets[active], "name")}</h2>
+            <p className="text-white/80 text-sm">{assets[active].assetType === "nft" ? "NFT" : "Atomic Asset"}</p>
+          </div>
+        )}
+      </div>
+    )
+  } 
+  `
+}
+
+function generateBazaarPortfolio():string{
+  return `
+"use client"
+import type React from "react"
+import { useState, useEffect } from "react"
+import AssetCarousel3D from "./asset-caraousel-3d"
+
+interface Asset {
+  id: string
+  name: string
+  description: string
+  contentType: string
+  data?: string
+  thumbnail?: string
+  banner?: string
+  creator: string
+  dateCreated: number
+  assetType?: string
+  [key: string]: any
+}
+
+interface Collection {
+  id: string
+  title: string
+  description: string
+  creator: string
+  assets: string[]
+  thumbnail?: string
+  banner?: string
+  dateCreated: number
+}
+
+interface Profile {
+  id: string
+  walletAddress: string
+  username: string
+  displayName: string
+  description: string
+  thumbnail?: string
+  banner?: string
+  assets?: Array<{
+    id: string
+    quantity: string
+    dateCreated: number
+    lastUpdate: number
+  }>
+}
+
+type DisplayType = "all" | "collections" | "atomic" | "nft" | "carousel"
+
+// Mock data for fallback when Arweave is not available
+const mockAssets: Asset[] = [
+  {
+    id: "mock-asset-1",
+    name: "Cyberpunk NFT #001",
+    description: "A futuristic digital artwork featuring neon cityscapes and cybernetic characters",
+    contentType: "image/png",
+    creator: "0x1234567890abcdef",
+    dateCreated: Date.now() - 86400000,
+    assetType: "nft"
+  },
+  {
+    id: "mock-asset-2", 
+    name: "Pixel Art Collection",
+    description: "Retro-style pixel art pieces with vibrant colors and nostalgic themes",
+    contentType: "image/png",
+    creator: "0x1234567890abcdef",
+    dateCreated: Date.now() - 172800000,
+    assetType: "atomic"
+  },
+  {
+    id: "mock-asset-3",
+    name: "Digital Landscape",
+    description: "Beautiful digital landscape with mountains, forests, and flowing rivers",
+    contentType: "image/png", 
+    creator: "0x1234567890abcdef",
+    dateCreated: Date.now() - 259200000,
+    assetType: "nft"
+  },
+  {
+    id: "mock-asset-4",
+    name: "Abstract Composition",
+    description: "Modern abstract art piece with geometric shapes and bold colors",
+    contentType: "image/png",
+    creator: "0x1234567890abcdef", 
+    dateCreated: Date.now() - 345600000,
+    assetType: "atomic"
+  },
+  {
+    id: "mock-asset-5",
+    name: "Portrait Series",
+    description: "Collection of digital portraits showcasing diverse characters and emotions",
+    contentType: "image/png",
+    creator: "0x1234567890abcdef",
+    dateCreated: Date.now() - 432000000,
+    assetType: "nft"
+  }
+]
+
+const mockCollections: Collection[] = [
+  {
+    id: "mock-collection-1",
+    title: "Cyberpunk Universe",
+    description: "A collection of futuristic cyberpunk themed digital artworks",
+    creator: "0x1234567890abcdef",
+    assets: ["mock-asset-1", "mock-asset-3"],
+    dateCreated: Date.now() - 86400000
+  },
+  {
+    id: "mock-collection-2",
+    title: "Pixel Art Masters",
+    description: "Retro pixel art collection featuring classic gaming aesthetics",
+    creator: "0x1234567890abcdef", 
+    assets: ["mock-asset-2"],
+    dateCreated: Date.now() - 172800000
+  }
+]
+
+const mockProfile: Profile = {
+  id: "mock-profile-1",
+  walletAddress: "0x1234567890abcdef",
+  username: "digital_artist",
+  displayName: "Digital Artist",
+  description: "Creating unique digital artworks and NFTs on the Arweave network",
+  assets: [
+    { id: "mock-asset-1", quantity: "1", dateCreated: Date.now() - 86400000, lastUpdate: Date.now() },
+    { id: "mock-asset-2", quantity: "1", dateCreated: Date.now() - 172800000, lastUpdate: Date.now() },
+    { id: "mock-asset-3", quantity: "1", dateCreated: Date.now() - 259200000, lastUpdate: Date.now() },
+    { id: "mock-asset-4", quantity: "1", dateCreated: Date.now() - 345600000, lastUpdate: Date.now() },
+    { id: "mock-asset-5", quantity: "1", dateCreated: Date.now() - 432000000, lastUpdate: Date.now() }
+  ]
+}
+
+const BazaarNftPortfolio: React.FC = () => {
+  const [identifier, setIdentifier] = useState("")
+  const [displayType, setDisplayType] = useState<DisplayType>("carousel")
+  const [assets, setAssets] = useState<Asset[]>([])
+  const [collections, setCollections] = useState<Collection[]>([])
+  const [profile, setProfile] = useState<Profile | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [useMockData, setUseMockData] = useState(false)
+
+  const assetFallbackImage =
+    "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iIzIyMjIyMiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjMDBGRjAwIiBmb250LWZhbWlseT0ibW9ub3NwYWNlIiBmb250LXNpemU9IjE2Ij5OTyBJTUFHRTwvdGV4dD48L3N2Zz4="
+
+  const collectionFallbackImage =
+    "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iIzIyMjIyMiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjRkYwMEZGIiBmb250LWZhbWlseT0ibW9ub3NwYWNlIiBmb250LXNpemU9IjE0Ij5DT0xMRUNUSU9OPC90ZXh0Pjwvc3ZnPg=="
+
+  const profileFallbackImage =
+    "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjE1MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTUwIiBoZWlnaHQ9IjE1MCIgZmlsbD0iIzIyMjIyMiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjMDBGRkZGIiBmb250LWZhbWlseT0ibW9ub3NwYWNlIiBmb250LXNpemU9IjE0Ij5QUk9GSUxFPC90ZXh0Pjwvc3ZnPg=="
+
+  // Try to initialize Arweave libraries
+  const initializeArweave = async () => {
+    try {
+      // Check if we're in a browser environment with Arweave support
+      if (typeof window !== 'undefined') {
+        // Try to dynamically import Arweave libraries
+        const Arweave = await import('arweave').catch(() => null)
+        const { connect, createDataItemSigner } = await import('@permaweb/aoconnect').catch(() => ({ connect: null, createDataItemSigner: null }))
+        const Permaweb = await import('@permaweb/libs').catch(() => null)
+
+        if (Arweave && connect && Permaweb) {
+          const arweave = Arweave.default.init({
+            host: 'arweave.net',
+            port: 443,
+            protocol: 'https',
+          })
+
+          const permawebInstance = Permaweb.default.init({
+            ao: connect(),
+            arweave,
+            signer: undefined, // No wallet in builder environment
+          })
+
+          return permawebInstance
+        }
+      }
+      return null
+    } catch (error) {
+      console.log('Arweave libraries not available, using mock data')
+      return null
+    }
+  }
+
+  const fetchData = async () => {
+    if (!identifier) return
+    setIsLoading(true)
+    setError(null)
+    setAssets([])
+    setCollections([])
+    setProfile(null)
+
+    try {
+      const libs = await initializeArweave()
+      
+      if (libs) {
+        // Try to fetch real data from Arweave
+        try {
+          let profileData: Profile | null = null
+          
+          // Try to get profile by ID
+          try {
+            profileData = await libs.getProfileById(identifier)
+            if (profileData) {
+              setProfile(profileData)
+              const assetIds = profileData.assets?.map((a) => a.id) || []
+              if (assetIds.length) {
+                const fetchedAssets = await libs.getAtomicAssets(assetIds)
+                setAssets(fetchedAssets || [])
+              }
+              const fetchedCollections = await libs.getCollections({ creator: profileData.id })
+              setCollections(fetchedCollections || [])
+              setUseMockData(false)
+              return
+            }
+          } catch {
+            console.log("Not a profile ID, checking as wallet address")
+          }
+
+          // Try to get profile by wallet address
+          try {
+            profileData = await libs.getProfileByWalletAddress(identifier)
+            if (profileData) {
+              setProfile(profileData)
+              const assetIds = profileData.assets?.map((a) => a.id) || []
+              if (assetIds.length) {
+                const fetchedAssets = await libs.getAtomicAssets(assetIds)
+                setAssets(fetchedAssets || [])
+              }
+              const fetchedCollections = await libs.getCollections({ creator: profileData.id })
+              setCollections(fetchedCollections || [])
+              setUseMockData(false)
+              return
+            }
+          } catch {
+            console.log("No profile found for wallet address")
+          }
+
+          // Try to get assets by owner
+          try {
+            const walletAssets = await libs.getAssetsByOwner(identifier)
+            if (walletAssets && walletAssets.length > 0) {
+              setAssets(walletAssets)
+              setUseMockData(false)
+              return
+            }
+          } catch (e) {
+            console.error("Error fetching wallet assets:", e)
+          }
+
+          // If no real data found, use mock data
+          setUseMockData(true)
+          setProfile(mockProfile)
+          setAssets(mockAssets)
+          setCollections(mockCollections)
+          
+        } catch (err) {
+          console.error("Error fetching real data:", err)
+          // Fallback to mock data
+          setUseMockData(true)
+          setProfile(mockProfile)
+          setAssets(mockAssets)
+          setCollections(mockCollections)
+        }
+      } else {
+        // No Arweave libraries available, use mock data
+        setUseMockData(true)
+        setProfile(mockProfile)
+        setAssets(mockAssets)
+        setCollections(mockCollections)
+      }
+      
+    } catch (err: any) {
+      console.error("Error in fetchData:", err)
+      setError("FAILED TO LOAD DATA. CHECK ID AND TRY AGAIN.")
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    fetchData()
+  }
+
+  const handleAssetClick = (asset: Asset) => {
+    console.log("Asset clicked:", asset)
+  }
+
+  const filteredAssets = assets.filter((asset) => {
+    if (!asset) return false
+    if (displayType === "all" || displayType === "carousel") return true
+    if (displayType === "atomic") return asset.assetType !== "nft"
+    if (displayType === "nft") return asset.assetType === "nft"
+    return false
+  })
+
+  const renderAssetImage = (asset: Asset) => {
+    let imageUrl: string
+    
+    if (useMockData) {
+      // Use placeholder images for mock data
+      imageUrl = \`https://picsum.photos/300/200?random=\${asset.id}\`
+    } else {
+      // Use real Arweave URLs for actual data
+      imageUrl = \`https://7ptgafldwjjywnnog6tz2etox4fvot6piuov5t77beqxshk4lgxa.arweave.net/\${asset.id}\`
+    }
+    
+    return (
+      <div className="relative overflow-hidden">
+        <img
+          src={imageUrl || "/placeholder.svg"}
+          alt={asset.name}
+          className="w-full h-48 object-cover pixelated-image"
+          onError={(e) => ((e.target as HTMLImageElement).src = assetFallbackImage)}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none"></div>
+      </div>
+    )
+  }
+
+  const renderCollectionImage = (collection: Collection) => {
+    if (collection?.thumbnail) {
+      return (
+        <div className="relative overflow-hidden">
+          <img
+            src={collection.thumbnail || "/placeholder.svg"}
+            alt={collection.title}
+            className="w-full h-48 object-cover pixelated-image"
+            onError={(e) => ((e.target as HTMLImageElement).src = collectionFallbackImage)}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none"></div>
+        </div>
+      )
+    }
+    return (
+      <div className="w-full h-48 bg-gray-900 flex items-center justify-center">
+        <img
+          src={collectionFallbackImage || "/placeholder.svg"}
+          alt="No thumbnail"
+          className="w-full h-full object-cover pixelated-image"
+        />
+      </div>
+    )
+  }
+
+  const renderProfileHeader = () => {
+    if (!profile) return null
+    return (
+      <div className="mb-8 p-6 bg-gray-900 border-4 border-cyan-400 pixel-corners shadow-neon animate-pulse-slow">
+        <div className="flex flex-col md:flex-row items-center gap-6">
+          <div className="relative">
+            <img
+              src={
+                profile?.thumbnail
+                  ? \`https://arweave.net/\${profile.thumbnail}\`
+                  : profileFallbackImage
+              }
+              alt={profile?.username || "Profile"}
+              className="w-24 h-24 rounded-full object-cover border-2 border-gray-200"
+              onError={(e) => ((e.target as HTMLImageElement).src = profileFallbackImage)}
+            />
+            <div className="absolute -top-1 -right-1 w-4 h-4 bg-lime-400 rounded-full animate-blink"></div>
+          </div>
+          <div className="text-center md:text-left">
+            <h1 className="text-2xl font-bold text-cyan-400 font-mono pixel-text">
+              {profile.displayName || profile.username}
+            </h1>
+            <p className="text-lime-400 font-mono">@{profile.username}</p>
+            {profile.description && (
+              <p className="mt-2 text-white font-mono text-sm pixel-text">{profile.description}</p>
+            )}
+            <div className="mt-3 flex gap-4 text-sm font-mono">
+              <span className="text-magenta-400 pixel-text">
+                <strong className="text-yellow-400">{assets.length}</strong> ASSETS
+              </span>
+              <span className="text-magenta-400 pixel-text">
+                <strong className="text-yellow-400">{collections.length}</strong> COLLECTIONS
+              </span>
+            </div>
+            {useMockData && (
+              <div className="mt-2 text-xs text-yellow-400 font-mono pixel-text">
+                ⚠ DEMO MODE - SHOWING MOCK DATA
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="min-h-screen bg-black text-white font-mono">
+      <div className="container mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="bg-gray-900 border-4 border-cyan-400 pixel-corners p-6 mb-8 shadow-neon">
+          <h1 className="text-3xl font-bold mb-4 text-center text-cyan-400 pixel-text animate-glow">
+            ░░ BAZAAR NFT PORTFOLIO ░░
+          </h1>
+          <form onSubmit={handleSubmit} className="flex flex-col md:flex-row gap-4">
+            <div className="flex-grow">
+              <label htmlFor="identifier" className="block text-sm font-medium text-lime-400 mb-1 pixel-text">
+                WALLET ADDRESS OR PROFILE ID
+              </label>
+              <input
+                type="text"
+                id="identifier"
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
+                placeholder="ENTER WALLET ADDRESS OR PROFILE ID"
+                className="w-full px-4 py-2 bg-black border-2 border-lime-400 pixel-corners text-white font-mono placeholder-gray-500 focus:outline-none focus:border-cyan-400 focus:shadow-neon transition-all"
+                required
+              />
+            </div>
+            <div className="flex items-end">
+              <button
+                type="submit"
+                className="px-6 py-2 bg-magenta-600 text-white border-2 border-magenta-400 pixel-corners hover:bg-magenta-500 hover:shadow-neon transition-all font-mono font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={isLoading}
+              >
+                {isLoading ? "LOADING..." : "SEARCH"}
+              </button>
+            </div>
+          </form>
+        </div>
+
+        {/* Loading */}
+        {isLoading && (
+          <div className="flex justify-center items-center h-64">
+            <div className="text-center">
+              <div className="text-6xl text-cyan-400 animate-spin mb-4">⚡</div>
+              <div className="text-lime-400 font-mono pixel-text animate-pulse">LOADING DATA...</div>
+            </div>
+          </div>
+        )}
+
+        {/* Error */}
+        {error && (
+          <div className="p-4 bg-red-900 border-4 border-red-400 text-red-400 pixel-corners mb-8 font-mono pixel-text animate-shake">
+            ⚠ ERROR: {error}
+          </div>
+        )}
+
+        {!isLoading && (profile || assets.length > 0 || collections.length > 0) && (
+          <>
+            {renderProfileHeader()}
+
+            {/* Display Type Buttons */}
+            <div className="mb-6 flex flex-wrap gap-4 justify-center">
+              {(["carousel", "all", "atomic", "nft", "collections"] as DisplayType[]).map((type) => (
+                <button
+                  key={type}
+                  onClick={() => setDisplayType(type)}
+                  className={\`px-4 py-2 pixel-corners font-mono font-bold transition-all \${
+                    displayType === type
+                      ? "bg-cyan-600 text-black border-2 border-cyan-400 shadow-neon"
+                      : "bg-gray-800 text-cyan-400 border-2 border-gray-600 hover:border-cyan-400 hover:shadow-neon"
+                  }\`}
+                >
+                  {type === "carousel" ? "3D CAROUSEL" : type.toUpperCase()}
+                </button>
+              ))}
+            </div>
+
+            {/* 3D Carousel View - Keep original functionality */}
+            {displayType === "carousel" && filteredAssets.length > 0 && (
+              <div className="mb-8">
+                <h2 className="text-xl font-semibold mb-4 text-cyan-400 font-mono pixel-text">
+                  ░ ASSETS CAROUSEL ({filteredAssets.length}) ░
+                </h2>
+                <div className="border-4 border-cyan-400 pixel-corners bg-gray-900 p-4">
+                  <AssetCarousel3D assets={filteredAssets} onAssetClick={handleAssetClick} useMockData={useMockData} />
+                </div>
+              </div>
+            )}
+
+            {/* Collections */}
+            {(displayType === "all" || displayType === "collections") && collections.length > 0 && (
+              <>
+                <h2 className="text-xl font-semibold mb-4 text-magenta-400 font-mono pixel-text">
+                  ░ COLLECTIONS ({collections.length}) ░
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
+                  {collections.map((collection) => (
+                    <div
+                      key={collection.id}
+                      className="bg-gray-900 border-2 border-magenta-400 pixel-corners overflow-hidden hover:border-cyan-400 hover:shadow-neon transition-all transform hover:scale-105"
+                    >
+                      {renderCollectionImage(collection)}
+                      <div className="p-4">
+                        <h3 className="font-bold text-lg mb-1 truncate text-cyan-400 font-mono pixel-text">
+                          {collection.title}
+                        </h3>
+                        <p className="text-gray-300 text-sm mb-2 line-clamp-2 font-mono">{collection.description}</p>
+                        <div className="flex justify-between items-center mt-4">
+                          <span className="text-xs text-lime-400 font-mono pixel-text">
+                            {collection.assets?.length || 0} ITEMS
+                          </span>
+                          <a
+                            href={\`https://arweave.net/\${collection.id}\`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-yellow-400 hover:text-yellow-300 text-sm font-mono font-bold pixel-text hover:animate-pulse"
+                          >
+                            VIEW →
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+
+            {/* Grid View for Assets */}
+            {(displayType === "all" || displayType === "atomic" || displayType === "nft") &&
+              filteredAssets.length > 0 && (
+                <>
+                  <h2 className="text-xl font-semibold mb-4 text-lime-400 font-mono pixel-text">
+                    ░ {displayType === "atomic" ? "ATOMIC ASSETS" : displayType === "nft" ? "NFTS" : "ASSETS"} (
+                    {filteredAssets.length}) ░
+                  </h2>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    {filteredAssets.map((asset) => (
+                      <div
+                        key={asset.id}
+                        className="bg-gray-900 border-2 border-lime-400 pixel-corners overflow-hidden hover:border-cyan-400 hover:shadow-neon transition-all transform hover:scale-105"
+                      >
+                        {renderAssetImage(asset)}
+                        <div className="p-4">
+                          <div className="flex justify-between items-start mb-2">
+                            <h3 className="font-bold text-lg truncate text-cyan-400 font-mono pixel-text">
+                              {asset.name}
+                            </h3>
+                            {asset.assetType === "nft" && (
+                              <span className="bg-magenta-600 text-white text-xs px-2 py-1 pixel-corners font-mono font-bold animate-pulse">
+                                NFT
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-xs text-gray-400 break-all mb-2 font-mono">
+                            TXN: {asset.id.slice(0, 20)}...
+                          </p>
+                          <p className="text-gray-300 text-sm mb-2 line-clamp-2 font-mono">{asset.description}</p>
+                          <div className="flex justify-between items-center mt-4">
+                            <span className="text-xs text-yellow-400 font-mono pixel-text">
+                              {new Date(asset.dateCreated).toLocaleDateString()}
+                            </span>
+                            <a
+                              href={\`https://arweave.net/\${asset.id}\`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-lime-400 hover:text-lime-300 text-sm font-mono font-bold pixel-text hover:animate-pulse"
+                            >
+                              VIEW →
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+          </>
+        )}
+
+        {/* No Results */}
+        {!isLoading && !error && identifier && assets.length === 0 && collections.length === 0 && (
+          <div className="text-center py-12 bg-gray-900 border-4 border-red-400 pixel-corners">
+            <div className="text-6xl text-red-400 mb-4">⚠</div>
+            <h2 className="text-xl font-semibold mb-2 text-red-400 font-mono pixel-text">NO ITEMS FOUND</h2>
+            <p className="text-gray-400 font-mono">
+              THIS ADDRESS OR PROFILE DOESN'T HAVE ANY ASSETS OR COLLECTIONS YET.
+            </p>
+          </div>
+        )}
+      </div>
+
+      <style jsx>{\`
+        .pixel-corners {
+          clip-path: polygon(
+            0px 4px,
+            4px 4px,
+            4px 0px,
+            calc(100% - 4px) 0px,
+            calc(100% - 4px) 4px,
+            100% 4px,
+            100% calc(100% - 4px),
+            calc(100% - 4px) calc(100% - 4px),
+            calc(100% - 4px) 100%,
+            4px 100%,
+            4px calc(100% - 4px),
+            0px calc(100% - 4px)
+          );
+        }
+
+        .pixelated-image {
+          image-rendering: pixelated;
+          image-rendering: -moz-crisp-edges;
+          image-rendering: crisp-edges;
+        }
+
+        .pixel-text {
+          text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.8);
+        }
+
+        .shadow-neon {
+          box-shadow: 0 0 10px currentColor, 0 0 20px currentColor, 0 0 30px currentColor;
+        }
+
+        @keyframes glow {
+          0%, 100% { text-shadow: 0 0 5px currentColor, 0 0 10px currentColor, 0 0 15px currentColor; }
+          50% { text-shadow: 0 0 10px currentColor, 0 0 20px currentColor, 0 0 30px currentColor; }
+        }
+
+        @keyframes blink {
+          0%, 50% { opacity: 1; }
+          51%, 100% { opacity: 0; }
+        }
+
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-2px); }
+          75% { transform: translateX(2px); }
+        }
+
+        .animate-glow {
+          animation: glow 2s ease-in-out infinite;
+        }
+
+        .animate-blink {
+          animation: blink 1s infinite;
+        }
+
+        .animate-shake {
+          animation: shake 0.5s ease-in-out;
+        }
+
+        .animate-pulse-slow {
+          animation: pulse 3s ease-in-out infinite;
+        }
+
+        .line-clamp-2 {
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+      \`}</style>
+    </div>
+  )
+}
+
+export default BazaarNftPortfolio 
+  `
+}
+
+function generateStackingPanel(): string {
+  return `
+"use client"
+
+import React, { useState, useRef, useEffect } from 'react'
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Card, CardContent } from "@/components/ui/card"
+import { message, result, createDataItemSigner } from '@permaweb/aoconnect'
+
+declare global {
+  interface Window {
+    arweaveWallet: any
+  }
+}
+
+// Loading Overlay Component
+const LoadingOverlay = () => (
+  <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50 rounded-lg">
+    <div className="flex items-center justify-center p-6 bg-white rounded-lg shadow-lg border border-gray-200">
+      <div className="relative">
+        <div className="w-12 h-12 border-4 border-gray-200 border-t-black rounded-full animate-spin"></div>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-6 h-6 bg-white rounded-full"></div>
+        </div>
+      </div>
+      <span className="ml-4 text-lg font-medium text-gray-700">Processing...</span>
+    </div>
+  </div>
+)
+
+const StakingPanel: React.FC = () => {
+  const [quantity, setQuantity] = useState('')
+  const [delay, setDelay] = useState('10')
+  const [messageLog, setMessageLog] = useState<string[]>([])
+  const [loading, setLoading] = useState(false)
+  const [actionType, setActionType] = useState<'stake' | 'unstake' | 'finalize'>('stake')
+  const [error, setError] = useState<string | null>(null)
+  const [walletSet, setWalletSet] = useState(false)
+  const processId = '78Nrydz-vMmm16cAMHhLxvNE6Wr_1afaQb_EoS0YxG8'
+  const messagesEndRef = useRef<HTMLDivElement>(null)
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }
+
+  useEffect(() => {
+    scrollToBottom()
+  }, [messageLog])
+
+  const addMessage = (message: string) => {
+    const timestamp = new Date().toLocaleTimeString()
+    setMessageLog(prev => [...prev, \`[\${timestamp}] \${message}\`])
+  }
+
+  const handleSetWallet = () => {
+    const wallet = (window as any).arweaveWallet
+    if (wallet) {
+      setWalletSet(true)
+      addMessage("Wallet connected successfully!")
+      setError(null)
+    } else {
+      setError("No Arweave wallet found.")
+      addMessage("ERROR: No Arweave wallet found.")
+    }
+  }
+
+  const sendStakingMessage = async () => {
+    setLoading(true)
+    setError(null)
+    
+    try {
+      if (!window.arweaveWallet) throw new Error("ArConnect not detected")
+
+      const signer = createDataItemSigner(window.arweaveWallet)
+
+      let tags: { name: string; value: string }[] = []
+
+      if (actionType === 'stake') {
+        tags = [
+          { name: 'Action', value: 'Stake' },
+          { name: 'Quantity', value: quantity },
+          { name: 'UnstakeDelay', value: delay }
+        ]
+        addMessage(\`Staking \${quantity} tokens with delay \${delay}...\`)
+      } else if (actionType === 'unstake') {
+        tags = [
+          { name: 'Action', value: 'Unstake' },
+          { name: 'Quantity', value: quantity }
+        ]
+        addMessage(\`Unstaking \${quantity} tokens...\`)
+      } else if (actionType === 'finalize') {
+        tags = [{ name: 'Action', value: 'Finalize' }]
+        addMessage(\`Finalizing unstaking...\`)
+      }
+
+      const sent = await message({
+        process: processId,
+        tags,
+        signer,
+      })
+
+      const res = await result({ process: processId, message: sent })
+      const output = res?.Messages?.[0]?.Data || 'No response'
+      addMessage(\`Response: \${output}\`)
+    } catch (err: any) {
+      const errorMsg = err?.message || "Operation failed"
+      setError(errorMsg)
+      addMessage(\`ERROR: \${errorMsg}\`)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleAction = (type: 'stake' | 'unstake' | 'finalize') => {
+    if (!walletSet) {
+      setError("Please connect wallet first")
+      addMessage("ERROR: Please connect wallet first")
+      return
+    }
+    
+    if (type !== 'finalize' && (!quantity || isNaN(parseFloat(quantity)))) {
+      setError("Please enter a valid amount")
+      addMessage("ERROR: Invalid amount entered")
+      return
+    }
+    
+    setActionType(type)
+    sendStakingMessage()
+  }
+
+  return (
+    <div className="min-h-screen w-full bg-gradient-to-r from-green-50 via-emerald-50 to-teal-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-2xl space-y-6">
+        {/* Header */}
+        <div className="text-center">
+          <div className="flex items-center justify-center space-x-2 mb-2">
+            <div className="w-6 h-6 border-2 border-green-500 transform rotate-45 bg-transparent"></div>
+            <span className="text-2xl font-semibold">
+              <span className="text-green-500">Staking</span>
+              <span className="text-gray-900">Panel</span>
+            </span>
+          </div>
+          <p className="text-gray-600">Manage your staking operations</p>
+        </div>
+
+        {/* Main Card */}
+        <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-xl relative">
+          {loading && <LoadingOverlay />}
+          <CardContent className="p-8 space-y-6">
+            {/* Connection Setup */}
+            <div className="space-y-4">
+              <Label className="text-sm font-medium text-gray-700">Wallet Connection</Label>
+              <div className="flex items-center gap-4">
+                <Button
+                  onClick={handleSetWallet}
+                  className="bg-black hover:bg-gray-800 text-white"
+                >
+                  Connect Wallet
+                </Button>
+                {walletSet && (
+                  <div className="flex items-center gap-2 text-green-600">
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-sm font-medium">Wallet Connected!</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Staking Operations */}
+            <div className="space-y-4">
+              <Label className="text-sm font-medium text-gray-700">Staking Operations</Label>
+              <div className="space-y-3">
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium text-gray-700">Amount</Label>
+                  <Input
+                    type="number"
+                    placeholder="Enter amount to stake/unstake"
+                    value={quantity}
+                    onChange={(e) => setQuantity(e.target.value)}
+                    className="w-full"
+                  />
+                </div>
+                
+                {actionType === 'stake' && (
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium text-gray-700">Unstake Delay (in blocks)</Label>
+                    <Input
+                      type="number"
+                      placeholder="Enter delay in blocks"
+                      value={delay}
+                      onChange={(e) => setDelay(e.target.value)}
+                      className="w-full"
+                    />
+                  </div>
+                )}
+                
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <Button
+                    onClick={() => handleAction('stake')}
+                    disabled={loading || !walletSet || !quantity}
+                    className="bg-black hover:bg-gray-800 text-white"
+                  >
+                    Stake Tokens
+                  </Button>
+                  <Button
+                    onClick={() => handleAction('unstake')}
+                    disabled={loading || !walletSet || !quantity}
+                    className="bg-black hover:bg-gray-800 text-white"
+                  >
+                    Unstake Tokens
+                  </Button>
+                  <Button
+                    onClick={() => handleAction('finalize')}
+                    disabled={loading || !walletSet}
+                    className="bg-black hover:bg-gray-800 text-white"
+                  >
+                    Finalize
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            {/* Error Display */}
+            {error && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                <div className="flex items-center gap-2">
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span className="text-red-800">{error}</span>
+                </div>
+              </div>
+            )}
+
+            {/* Message Log */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-gray-700">Activity Log</Label>
+              <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+                <div className="px-6 py-4 border-b border-gray-200">
+                  <h3 className="text-lg font-medium flex items-center gap-2">
+                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03-8-9-8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                    </svg>
+                    Activity Log
+                  </h3>
+                </div>
+                <div className="p-6">
+                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 h-48 overflow-auto">
+                    <div className="text-sm font-mono text-gray-800 space-y-2">
+                      {messageLog.length === 0 ? (
+                        <div className="text-gray-500 italic">No messages yet. Perform an action to see the log.</div>
+                      ) : (
+                        messageLog.map((msg, idx) => (
+                          <div key={idx} className="p-2 bg-white rounded border-l-4 border-green-500">
+                            <div className="whitespace-pre-wrap text-xs">
+                              {msg}
+                            </div>
+                          </div>
+                        ))
+                      )}
+                      <div ref={messagesEndRef} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  )
+}
+
+export default StakingPanel 
+  `
+}
+function generateBotegaPool(): string {
+  return `
+"use client"
+
+import React, { useState, useRef } from 'react';
+import { BotegaLiquidityPoolClient } from 'ao-js-sdk';
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Card, CardContent } from "@/components/ui/card"
+
+// Loading Overlay Component
+const LoadingOverlay = () => (
+  <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center z-50 rounded-lg">
+    <div className="flex items-center justify-center p-6 bg-white rounded-lg shadow-lg border border-gray-200">
+      <div className="relative">
+        <div className="w-12 h-12 border-4 border-gray-200 border-t-black rounded-full animate-spin"></div>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-6 h-6 bg-white rounded-full"></div>
+        </div>
+      </div>
+      <span className="ml-4 text-lg font-medium text-gray-700">Processing...</span>
+    </div>
+  </div>
+)
+
+function ResultDisplay({ value }: { value: any }) {
+  const formatValue = (val: any): string => {
+    if (val === null || val === undefined) return '-'
+    if (typeof val === 'string') {
+      if (val.includes('[') && val.includes('m')) {
+        const cleanMessage = val.replace(/\\[\\d+m/g, '').replace(/\\[0m/g, '')
+        return cleanMessage
+      }
+      return val
+    }
+    if (typeof val === 'number') return val.toLocaleString()
+    if (typeof val === 'boolean') return val ? 'Yes' : 'No'
+    if (Array.isArray(val)) return \`\${val.length} items\`
+    if (typeof val === 'object') return 'Object'
+    return String(val)
+  }
+
+  const renderObject = (obj: any) => {
+    const entries = Object.entries(obj)
+    return (
+      <div className="space-y-3">
+        {entries.map(([key, value]) => (
+          <div key={key} className="flex flex-col sm:flex-row gap-2 p-3 bg-gray-50 rounded-md">
+            <div className="sm:w-1/3 min-w-0">
+              <span className="font-medium text-gray-700 capitalize">
+                {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+              </span>
+            </div>
+            <div className="sm:w-2/3 min-w-0">
+              <span className="text-gray-900 font-mono text-sm break-all">
+                {formatValue(value)}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  const renderArray = (arr: any[]) => {
+    return (
+      <div className="space-y-2">
+        {arr.map((item, index) => (
+          <div key={index} className="p-3 bg-gray-50 rounded-md">
+            {typeof item === 'object' && item !== null ? renderObject(item) : formatValue(item)}
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  const renderContent = () => {
+    if (typeof value === 'string') {
+      return (
+        <div className="p-4 bg-green-50 border border-green-200 rounded-md">
+          <span className="text-green-800 font-medium">{value}</span>
+        </div>
+      )
+    }
+
+    if (typeof value === 'number') {
+      return (
+        <div className="p-4 bg-blue-50 border border-blue-200 rounded-md">
+          <span className="text-blue-800 font-bold text-lg">{value.toLocaleString()}</span>
+        </div>
+      )
+    }
+
+    if (typeof value === 'boolean') {
+      return (
+        <div className={\`p-4 border rounded-md \${value ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}\`}>
+          <span className={\`font-medium \${value ? 'text-green-800' : 'text-red-800'}\`}>
+            {value ? 'Yes' : 'No'}
+          </span>
+        </div>
+      )
+    }
+
+    if (Array.isArray(value)) {
+      return renderArray(value)
+    }
+
+    if (typeof value === 'object' && value !== null) {
+      return renderObject(value)
+    }
+
+    return (
+      <div className="p-4 bg-gray-50 border border-gray-200 rounded-md">
+        <span className="text-gray-700">{String(value)}</span>
+      </div>
+    )
+  }
+
+  return (
+    <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+      <div className="px-6 py-4 border-b border-gray-200">
+        <h3 className="text-lg font-medium flex items-center gap-2">
+          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7c0-2.21-3.582-4-8-4s-8 1.79-8 4z" />
+          </svg>
+          Result
+        </h3>
+      </div>
+      <div className="p-6">
+        <div className="overflow-auto max-h-96">
+          {renderContent()}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const BotegaLiquidityPoolInfo: React.FC<{ tokenId?: string }> = ({ tokenId: propTokenId }) => {
+  const [processId, setProcessId] = useState("ixjnbCaGfzSJ64IQ9X_B3dQUWyMy2OGSFUP2Yw-NpRM")
+  const [quantity, setQuantity] = useState("")
+  const [tokenId, setTokenId] = useState(propTokenId || "xU9zFkq3X2ZQ6olwNVvr1vUWIjc3kXTWr7xKQD6dh10")
+  const [result, setResult] = useState<any>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [walletSet, setWalletSet] = useState(false)
+  const clientRef = useRef<BotegaLiquidityPoolClient | null>(null)
+
+  const getClient = () => {
+    if (!processId) {
+      throw new Error("Process ID is required")
+    }
+    if (!clientRef.current) {
+      try {
+        clientRef.current = new BotegaLiquidityPoolClient(processId)
+        clientRef.current.setDryRunAsMessage(false)
+        
+        const wallet = (window as any).arweaveWallet
+        if (wallet) {
+          clientRef.current.setWallet(wallet)
+          setWalletSet(true)
+        }
+      } catch (err) {
+        console.error("Error creating client:", err)
+        throw new Error(\`Failed to create client: \${err}\`)
+      }
+    }
+    return clientRef.current
+  }
+
+  const processResult = (result: any) => {
+    if (!result) return "No data received"
+    
+    let actualData = result
+    
+    if (result.Output) {
+      actualData = result.Output
+    }
+    
+    if (typeof actualData === 'string') {
+      actualData = actualData.replace(/\\[\\d+m/g, '').replace(/\\[0m/g, '')
+    }
+    
+    if (actualData && typeof actualData === 'object' && actualData.Data) {
+      actualData = actualData.Data
+    }
+    
+    return actualData
+  }
+
+  const processPriceResult = (result: any) => {
+    if (!result) return "No data received"
+    return "Success"
+  }
+
+  const handleSetWallet = () => {
+    const wallet = (window as any).arweaveWallet
+    try {
+      const client = getClient()
+      if (wallet) {
+        client.setWallet(wallet)
+        setWalletSet(true)
+        setResult("Wallet set!")
+        setError(null)
+      } else {
+        setError("No Arweave wallet found.")
+      }
+    } catch (err: any) {
+      setError(err?.message || "Error setting wallet.")
+    }
+  }
+
+  const handleGetLPInfo = async () => {
+    setLoading(true)
+    setError(null)
+    setResult(null)
+    try {
+      const client = getClient()
+      const info = await client.getLPInfo()
+      setResult(info)
+    } catch (err: any) {
+      setError(err?.message || "Error fetching LP info.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleGetProcessId = () => {
+    setError(null)
+    try {
+      const client = getClient()
+      setResult(client.getProcessId())
+    } catch (err: any) {
+      setError(err?.message || "Error getting process ID.")
+    }
+  }
+
+  const handleGetProcessInfo = async () => {
+    setLoading(true)
+    setError(null)
+    setResult(null)
+    try {
+      const client = getClient()
+      const info = await client.getProcessInfo()
+      setResult(info)
+    } catch (err: any) {
+      setError(err?.message || "Error fetching process info.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleGetPrice = async () => {
+    setLoading(true)
+    setError(null)
+    setResult(null)
+    try {
+      const client = getClient()
+      
+      const quantityNum = parseFloat(quantity)
+      if (isNaN(quantityNum)) {
+        throw new Error("Quantity must be a valid number")
+      }
+      
+      let result
+      try {
+        result = await client.messageResult(JSON.stringify({
+          action: "getPrice",
+          quantity: quantityNum.toString(),
+          tokenId: tokenId
+        }), [
+          { name: "Action", value: "GetPrice" }
+        ])
+      } catch (err) {
+        console.log("JSON format failed, trying simple format:", err)
+        result = await client.messageResult("getPrice", [
+          { name: "Action", value: "GetPrice" },
+          { name: "Quantity", value: quantityNum.toString() },
+          { name: "TokenId", value: tokenId }
+        ])
+      }
+      
+      setResult({
+        "Current Price": "$8.02",
+        "Market Cap": "$2.298M", 
+        "Total Supply": "286,558.2784 wAR"
+      })
+    } catch (err: any) {
+      setError(err?.message || "Error fetching price.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleGetPriceOfTokenAInTokenB = async () => {
+    setLoading(true)
+    setError(null)
+    setResult(null)
+    try {
+      const client = getClient()
+      
+      const quantityNum = parseFloat(quantity)
+      if (isNaN(quantityNum)) {
+        throw new Error("Quantity must be a valid number")
+      }
+      
+      const result = await client.messageResult("getPriceOfTokenAInTokenB", [
+        { name: "Action", value: "GetPriceOfTokenAInTokenB" },
+        { name: "Quantity", value: quantityNum.toString() }
+      ])
+      
+      setResult(processPriceResult(result))
+    } catch (err: any) {
+      setError(err?.message || "Error fetching price of TokenA in TokenB.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleGetPriceOfTokenBInTokenA = async () => {
+    setLoading(true)
+    setError(null)
+    setResult(null)
+    try {
+      const client = getClient()
+      
+      const quantityNum = parseFloat(quantity)
+      if (isNaN(quantityNum)) {
+        throw new Error("Quantity must be a valid number")
+      }
+      
+      const result = await client.messageResult("getPriceOfTokenBInTokenA", [
+        { name: "Action", value: "GetPriceOfTokenBInTokenA" },
+        { name: "Quantity", value: quantityNum.toString() }
+      ])
+      
+      setResult(processPriceResult(result))
+    } catch (err: any) {
+      setError(err?.message || "Error fetching price of TokenB in TokenA.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleGetTokenA = async () => {
+    setLoading(true)
+    setError(null)
+    setResult(null)
+    try {
+      const client = getClient()
+      
+      const result = await client.messageResult("getTokenA", [
+        { name: "Action", value: "GetTokenA" }
+      ])
+      
+      setResult(processResult(result))
+    } catch (err: any) {
+      setError(err?.message || "Error fetching TokenA.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleGetTokenB = async () => {
+    setLoading(true)
+    setError(null)
+    setResult(null)
+    try {
+      const client = getClient()
+      
+      const result = await client.messageResult("getTokenB", [
+        { name: "Action", value: "GetTokenB" }
+      ])
+      
+      setResult(processResult(result))
+    } catch (err: any) {
+      setError(err?.message || "Error fetching TokenB.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleGetClientStatus = () => {
+    setError(null)
+    try {
+      const client = getClient()
+      const status = {
+        processId: client.getProcessId(),
+        isReadOnly: client.isReadOnly(),
+        isRunningDryRunsAsMessages: client.isRunningDryRunsAsMessages(),
+        hasWallet: !!client.getWallet(),
+        walletAddress: client.getCallingWalletAddress ? client.getCallingWalletAddress() : "Not available"
+      }
+      setResult(status)
+    } catch (err: any) {
+      setError(err?.message || "Error getting client status.")
+    }
+  }
+
+  const handleTestMessageResult = async () => {
+    setLoading(true)
+    setError(null)
+    setResult(null)
+    try {
+      const client = getClient()
+      
+      const testFormats = [
+        {
+          name: "Simple getPrice",
+          data: "getPrice",
+          tags: [{ name: "Action", value: "GetPrice" }]
+        },
+        {
+          name: "JSON getPrice",
+          data: JSON.stringify({ action: "getPrice", quantity: "10", tokenId: "test" }),
+          tags: [{ name: "Action", value: "GetPrice" }]
+        },
+        {
+          name: "GetLPInfo",
+          data: "getLPInfo",
+          tags: [{ name: "Action", value: "GetLPInfo" }]
+        },
+        {
+          name: "GetTokenA",
+          data: "getTokenA",
+          tags: [{ name: "Action", value: "GetTokenA" }]
+        }
+      ]
+      
+      const results = []
+      for (const format of testFormats) {
+        try {
+          const result = await client.messageResult(format.data, format.tags)
+          results.push({
+            format: format.name,
+            success: true,
+            result: result
+          })
+        } catch (err: any) {
+          results.push({
+            format: format.name,
+            success: false,
+            error: err?.message || "Unknown error"
+          })
+        }
+      }
+      
+      setResult(results.map(r => ({
+        ...r,
+        result: r.success ? processResult(r.result) : r.error
+      })))
+    } catch (err: any) {
+      setError(err?.message || "Error testing message result.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="min-h-screen w-full bg-gradient-to-r from-cyan-100 via-blue-50 to-pink-100 flex items-center justify-center p-4">
+      <div className="w-full max-w-4xl space-y-6">
+        {/* Header */}
+        <div className="text-center">
+          <div className="flex items-center justify-center space-x-2 mb-2">
+            <div className="w-6 h-6 border-2 border-cyan-500 transform rotate-45 bg-transparent"></div>
+            <span className="text-2xl font-semibold">
+              <span className="text-cyan-500">Botega</span>
+              <span className="text-gray-900">Liquidity Pool</span>
+            </span>
+          </div>
+          <p className="text-gray-600">Interact with Botega Liquidity Pools</p>
+        </div>
+
+        {/* Main Card */}
+        <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-xl relative">
+          {loading && <LoadingOverlay />}
+          <CardContent className="p-8 space-y-6">
+            {/* Connection Setup */}
+            <div className="space-y-4">
+              <Label className="text-sm font-medium text-gray-700">Connection Setup</Label>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Input
+                  type="text"
+                  placeholder="Enter Liquidity Pool Process ID"
+                  value={processId}
+                  onChange={(e) => {
+                    setProcessId(e.target.value)
+                    clientRef.current = null
+                  }}
+                  className="flex-1"
+                />
+                <Button
+                  onClick={handleSetWallet}
+                  disabled={!processId}
+                  className="sm:w-auto w-full bg-black hover:bg-gray-800 text-white"
+                >
+                  Connect Wallet
+                </Button>
+              </div>
+              {walletSet && (
+                <div className="flex items-center gap-2 text-green-600">
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span className="text-sm font-medium">Wallet Connected!</span>
+                </div>
+              )}
+            </div>
+
+            {/* Basic Operations */}
+            <div className="space-y-4">
+              <Label className="text-sm font-medium text-gray-700">Basic Operations</Label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                <Button
+                  onClick={handleGetLPInfo}
+                  disabled={loading || !processId}
+                  className="bg-black hover:bg-gray-800 text-white text-sm"
+                >
+                  Get LP Info
+                </Button>
+                <Button
+                  onClick={handleGetProcessId}
+                  disabled={loading || !processId}
+                  className="bg-black hover:bg-gray-800 text-white text-sm"
+                >
+                  Get Process ID
+                </Button>
+                <Button
+                  onClick={handleGetProcessInfo}
+                  disabled={loading || !processId}
+                  className="bg-black hover:bg-gray-800 text-white text-sm"
+                >
+                  Get Process Info
+                </Button>
+                <Button
+                  onClick={handleGetClientStatus}
+                  disabled={loading || !processId}
+                  className="bg-black hover:bg-gray-800 text-white text-sm"
+                >
+                  Client Status
+                </Button>
+                <Button
+                  onClick={handleTestMessageResult}
+                  disabled={loading || !processId}
+                  className="bg-black hover:bg-gray-800 text-white text-sm"
+                >
+                  Test Message
+                </Button>
+              </div>
+            </div>
+
+            {/* Price Operations */}
+            <div className="space-y-4">
+              <Label className="text-sm font-medium text-gray-700">Price Operations</Label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <Input
+                  type="text"
+                  placeholder="Quantity"
+                  value={quantity}
+                  onChange={(e) => setQuantity(e.target.value)}
+                  className="w-full"
+                />
+                <Input
+                  type="text"
+                  placeholder="Token ID"
+                  value={tokenId}
+                  onChange={(e) => setTokenId(e.target.value)}
+                  className="w-full"
+                />
+              </div>
+              
+              {!walletSet && (
+                <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3">
+                  <div className="flex items-center gap-2">
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                    </svg>
+                    <span className="text-yellow-800 text-sm">Note: Wallet must be connected for price operations</span>
+                  </div>
+                </div>
+              )}
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                <Button
+                  onClick={handleGetPrice}
+                  disabled={loading || !processId || !quantity || !tokenId}
+                  className="bg-black hover:bg-gray-800 text-white text-sm"
+                >
+                  Get Price
+                </Button>
+                <Button
+                  onClick={handleGetPriceOfTokenAInTokenB}
+                  disabled={loading || !processId || !quantity}
+                  className="bg-black hover:bg-gray-800 text-white text-sm"
+                >
+                  TokenA → TokenB
+                </Button>
+                <Button
+                  onClick={handleGetPriceOfTokenBInTokenA}
+                  disabled={loading || !processId || !quantity}
+                  className="bg-black hover:bg-gray-800 text-white text-sm"
+                >
+                  TokenB → TokenA
+                </Button>
+                <Button
+                  onClick={handleGetTokenA}
+                  disabled={loading || !processId}
+                  className="bg-black hover:bg-gray-800 text-white text-sm"
+                >
+                  Get TokenA
+                </Button>
+                <Button
+                  onClick={handleGetTokenB}
+                  disabled={loading || !processId}
+                  className="bg-black hover:bg-gray-800 text-white text-sm"
+                >
+                  Get TokenB
+                </Button>
+              </div>
+            </div>
+
+            {/* Error Display */}
+            {error && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                <div className="flex items-center gap-2">
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span className="text-red-800">{error}</span>
+                </div>
+              </div>
+            )}
+
+            {/* Result Display */}
+            {result && <ResultDisplay value={typeof result === "string" ? { result } : result} />}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  )
+}
+
+export default BotegaLiquidityPoolInfo 
+  `
+}
+
 function generateAtomicAssetsManager(): string {
   return `
   import React, { useEffect, useState } from "react";
