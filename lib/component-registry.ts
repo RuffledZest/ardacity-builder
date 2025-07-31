@@ -568,6 +568,21 @@ export const componentRegistry: ComponentDefinition[] = [
     ],
     tags: ["arweave", "nft", "portfolio", "carousel", "3d", "profile", "assets", "bazaar", "pixel-art"],
   },
+  {
+    id: "ao-token-demo",
+    name: "AO Token",
+    category: "arweave",
+    type: "AOTokenDemo",
+    description: "Comprehensive AO Token management interface with transfer, mint, grant operations, balance checking, and process health monitoring. Full integration with ao-js-sdk for token operations.",
+    defaultProps: {
+      processId: "78Nrydz-vMmm16cAMHhLxvNE6Wr_1afaQb_EoS0YxG8"
+    },
+    dependencies: ["ao-js-sdk", "@permaweb/aoconnect"],
+    imports: [
+      "import AOTokenDemo from '@/components/arweave/ao-token-demo'"
+    ],
+    tags: ["arweave", "ao", "token", "transfer", "mint", "grant", "balance", "defi", "wallet"],
+  },
 
   {
     id: "dark-theme-header",

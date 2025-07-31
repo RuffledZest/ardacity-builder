@@ -110,6 +110,15 @@
       "renderable": true,
       "props": {},
       "description": "Comprehensive NFT portfolio explorer with 3D carousel, profile management, and asset discovery. Search by wallet address or profile ID with retro pixel art styling."
+    },
+    {
+      "type": "AOTokenDemo",
+      "name": "ao-token",
+      "renderable": true,
+      "props": {
+        "processId": "78Nrydz-vMmm16cAMHhLxvNE6Wr_1afaQb_EoS0YxG8"
+      },
+      "description": "Comprehensive AO Token management interface with transfer, mint, grant operations, balance checking, and process health monitoring. Full integration with ao-js-sdk for token operations."
     }
 
   ],
