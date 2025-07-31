@@ -3,8 +3,8 @@ import { FaGithub, FaTwitter, FaLinkedin, FaFacebook } from 'react-icons/fa';
 
 // Icon registry for builder-friendly string keys
 const logoRegistry: Record<string, React.ReactNode> = {
-    default: <img src="/logo.svg" alt="Brand Logo" className="h-9 w-auto" />,
-    saas: <img src="/saas-logo.svg" alt="SaaS Logo" className="h-9 w-auto" />,
+    default: <img src="/logo.svg" alt="Brand Logo" className="h-10 w-auto" />,
+    saas: <img src="/saas-logo.svg" alt="SaaS Logo" className="h-10 w-auto" />,
 };
 const socialIconRegistry: Record<string, React.ReactNode> = {
     github: <FaGithub />,
@@ -43,8 +43,8 @@ export const ProductFooter: React.FC<ProductFooterProps> = ({
     quickLinks = [],
     legalLinks = [],
     onSubscribe,
-    newsletterTitle = 'Subscribe to our newsletter',
-    newsletterDescription = 'Get product updates, company news, and more.',
+    newsletterTitle = 'Stay Updated',
+    newsletterDescription = 'Get the latest product updates and company news.',
     copyright,
     className,
 }) => {
@@ -55,7 +55,7 @@ export const ProductFooter: React.FC<ProductFooterProps> = ({
 
     // Logo resolution: logoUrl > logoKey > logo > default
     const resolvedLogo = logoUrl
-        ? <img src={logoUrl} alt="Brand Logo" className="h-9 w-auto" />
+        ? <img src={logoUrl} alt="Brand Logo" className="h-10 w-auto" />
         : logoKey
             ? logoRegistry[logoKey] || logoRegistry['default']
             : logo || logoRegistry['default'];
@@ -87,94 +87,149 @@ export const ProductFooter: React.FC<ProductFooterProps> = ({
     };
 
     return (
-        <footer className={`w-full bg-neutral-950 text-muted-foreground border-t border-neutral-800 shadow-lg pt-10 pb-4 px-6 md:px-10 ${className || ''}`}>
-            {/* Main grid */}
-            <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-6 items-start">
-                {/* Left: Logo, description, social */}
-                <div className="flex flex-col gap-4 items-start">
-                    <div className="flex items-center gap-3">{resolvedLogo}</div>
-                    {description && <div className="text-sm text-white/80 max-w-xs">{description}</div>}
-                    <div className="flex gap-3 mt-2">
-                        {resolvedSocialIcons.map((icon, idx) => (
-                            <span
-                                key={idx}
-                                className="text-xl transition-all text-muted-foreground hover:text-white ease-in-out duration-500 cursor-pointer rounded-lg bg-gradient-to-br from-[#39113D] to-white/10 shadow p-2 hover:scale-110 active:scale-95 focus:outline-none focus:text-white ease-in duration-100 focus:ring-2 focus:ring-fuchsia-500"
-                                tabIndex={0}
-                                style={{
-                                    backdropFilter: 'blur(8px)',
-                                    WebkitBackdropFilter: 'blur(8px)',
-                                    transition: 'transform 0.18s cubic-bezier(.4,2,.6,1)',
-                                }}
-                            >
-                                {icon}
-                            </span>
-                        ))}
-                    </div>
-                </div>
-                {/* Center: Quick links */}
-                <div className="flex flex-col gap-2 items-start md:items-center">
-                    <div>
-                        <div className="font-semibold text-white mb-2">Quick Links</div>
-                        <div className="flex flex-col gap-1 md:gap-2">
-                            {quickLinks.map(link => (
-                                <a
-                                    key={link.href}
-                                    href={link.href}
-                                    className="hover:text-white text-white/70 transition-colors text-sm"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
+        <footer className={`relative w-full bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-300 border-t border-slate-800/50 ${className || ''}`}>
+            {/* Professional Grid Background */}
+            <div className="absolute inset-0 opacity-20">
+                <div className="absolute inset-0 bg-[linear-gradient(rgba(148,163,184,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(148,163,184,0.02)_1px,transparent_1px)] bg-[size:50px_50px]" />
+            </div>
+
+            {/* Subtle Accent Lines */}
+            <div className="absolute inset-0 pointer-events-none">
+                <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-slate-600/30 to-transparent" />
+            </div>
+
+            <div className="relative">
+                {/* Main Footer Content */}
+                <div className="max-w-7xl mx-auto px-6 md:px-12 py-16">
+                    <div className="grid grid-cols-1 lg:grid-cols-4 gap-12 lg:gap-8">
+                        
+                        {/* Brand Section - Enhanced */}
+                        <div className="lg:col-span-2 space-y-6">
+                            <div className="flex items-center gap-3">
+                                {resolvedLogo}
+                            </div>
+                            
+                            {description && (
+                                <p className="text-slate-400 max-w-md leading-relaxed text-sm">
+                                    {description}
+                                </p>
+                            )}
+
+                            {/* Professional Social Icons */}
+                            <div className="flex gap-4">
+                                {resolvedSocialIcons.map((icon, idx) => (
+                                    <button
+                                        key={idx}
+                                        className="group relative p-3 bg-slate-800/30 hover:bg-slate-700/50 border border-slate-700/50 hover:border-slate-600/50 rounded-xl transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-slate-500/50"
+                                    >
+                                        <span className="relative z-10 text-slate-400 group-hover:text-white transition-colors duration-300 text-lg">
+                                            {icon}
+                                        </span>
+                                        {/* Subtle glow effect */}
+                                        <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                    </button>
+                                ))}
+                            </div>
+
+                            {/* Trust Badge */}
+                            <div className="inline-flex items-center px-4 py-2 bg-slate-800/30 border border-slate-700/50 rounded-lg">
+                                <div className="w-2 h-2 bg-emerald-400 rounded-full mr-3 animate-pulse" />
+                                <span className="text-xs text-slate-400 font-medium">SOC 2 Compliant</span>
+                            </div>
+                        </div>
+
+                        {/* Quick Links - Professional Layout */}
+                        <div className="space-y-6">
+                            <h3 className="text-white font-semibold text-lg">Quick Links</h3>
+                            <div className="space-y-3">
+                                {quickLinks.map(link => (
+                                    <a
+                                        key={link.href}
+                                        href={link.href}
+                                        className="block text-slate-400 hover:text-white transition-all duration-200 text-sm hover:translate-x-1 transform"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        {link.label}
+                                    </a>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Newsletter Section - Enhanced */}
+                        <div className="space-y-6">
+                            <div className="space-y-2">
+                                <h3 className="text-white font-semibold text-lg">{newsletterTitle}</h3>
+                                <p className="text-slate-400 text-sm">{newsletterDescription}</p>
+                            </div>
+                            
+                            {/* Professional Newsletter Form */}
+                            <div className="space-y-3">
+                                <div className="relative">
+                                    <input
+                                        type="email"
+                                        value={email}
+                                        onChange={e => setEmail(e.target.value)}
+                                        onKeyDown={handleKeyDown}
+                                        placeholder="Enter your email"
+                                        className="w-full bg-slate-800/30 border border-slate-700/50 focus:border-slate-600/50 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-slate-500/50 transition-all duration-300 placeholder:text-slate-500"
+                                        disabled={loading}
+                                        aria-label="Email address"
+                                    />
+                                </div>
+                                
+                                <button
+                                    type="button"
+                                    onClick={handleSubscribe}
+                                    disabled={loading}
+                                    className="w-full bg-gradient-to-r from-slate-700 to-slate-600 hover:from-slate-600 hover:to-slate-500 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-slate-500/50 hover:scale-[1.02] transform"
                                 >
-                                    {link.label}
-                                </a>
-                            ))}
+                                    {loading ? 'Subscribing...' : 'Subscribe'}
+                                </button>
+                            </div>
+
+                            {/* Status Messages */}
+                            {error && (
+                                <div className="text-red-400 text-xs bg-red-500/10 border border-red-500/20 rounded-lg p-2">
+                                    {error}
+                                </div>
+                            )}
+                            {success && (
+                                <div className="text-emerald-400 text-xs bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-2">
+                                    Subscribed! Check your inbox.
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
-                {/* Right: Newsletter */}
-                <div className="flex flex-col gap-2 items-start md:items-end w-full">
-                    <div className="font-semibold text-white mb-2">{newsletterTitle}</div>
-                    <div className="text-xs text-white/60 mb-2">{newsletterDescription}</div>
-                    <div className="flex flex-col sm:flex-row gap-2 w-fit max-w-xs">
-                        <input
-                            type="email"
-                            value={email}
-                            onChange={e => setEmail(e.target.value)}
-                            onKeyDown={handleKeyDown}
-                            placeholder="Enter your email"
-                            className="flex-1 bg-neutral-900 border border-neutral-700 text-sm text-white rounded-md px-4 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-500 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950 shadow-sm transition placeholder:text-neutral-500"
-                            disabled={loading}
-                            aria-label="Email address"
-                        />
-                        <button
-                            type="button"
-                            onClick={handleSubscribe}
-                            disabled={loading}
-                            className="h-10 px-5 rounded-md bg-fuchsia-600 hover:bg-fuchsia-700 text-white text-sm font-medium shadow-sm transition-colors disabled:opacity-60 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fuchsia-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950"
-                            style={{ minWidth: 110 }}
-                        >
-                            {loading ? 'Subscribing...' : 'Subscribe'}
-                        </button>
+
+                {/* Bottom Section - Professional */}
+                <div className="border-t border-slate-800/50 bg-slate-950/50">
+                    <div className="max-w-7xl mx-auto px-6 md:px-12 py-6">
+                        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                            
+                            {/* Legal Links */}
+                            <div className="flex flex-wrap gap-6 text-xs text-slate-500">
+                                {legalLinks.map(link => (
+                                    <a
+                                        key={link.href}
+                                        href={link.href}
+                                        className="hover:text-slate-300 transition-colors duration-200"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        {link.label}
+                                    </a>
+                                ))}
+                            </div>
+
+                            {/* Copyright with Professional Styling */}
+                            <div className="flex items-center gap-4 text-xs text-slate-500">
+                                <span>{copyright || `© ${new Date().getFullYear()} All rights reserved.`}</span>
+                            </div>
+                        </div>
                     </div>
-                    {error && <div className="text-xs text-red-500 mt-1">{error}</div>}
-                    {success && <div className="text-xs text-green-500 mt-1">Subscribed! Check your inbox.`&quot;`</div>}
                 </div>
-            </div>
-            {/* Bottom row: Legal links and copyright */}
-            <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-2 border-t border-neutral-800 mt-8 pt-4 text-xs text-white/60">
-                <div className="flex gap-4 flex-wrap mb-1 md:mb-0">
-                    {legalLinks.map(link => (
-                        <a
-                            key={link.href}
-                            href={link.href}
-                            className="hover:text-white/90 transition-all ease-in"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            {link.label}
-                        </a>
-                    ))}
-                </div>
-                <div className="text-xs">{copyright || `© ${new Date().getFullYear()} All rights reserved.`}</div>
             </div>
         </footer>
     );
