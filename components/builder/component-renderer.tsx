@@ -36,6 +36,7 @@ import ARNSRecordLookup from "../arweave/arns-record-lookup"
 import BotegaLiquidityPoolInfo from "../arweave/botega-liquidity-pool-info"
 import StakingPanel from "../arweave/staking-panel"
 import BazaarNftPortfolio from "../arweave/bazaar-nft-portfolio"
+import AOTokenDemo from "../arweave/ao-token-demo"
 import { BazaarHeader } from "../headers/bazaar-header"
 import ChatRoomHolder from "../arweave/chatroom-holder"
 
@@ -185,6 +186,8 @@ export function ComponentRenderer({ component, isRoot = false, index = 0, totalS
         return <StakingPanel {...component.props} />
       case "BazaarNftPortfolio":
         return <BazaarNftPortfolio {...component.props} />
+      case "AOTokenDemo":
+        return <AOTokenDemo {...component.props} />
       case "ClipPathLinks":
         return <ClipPathLinks {...component.props} />
       case "FlowingMenu":

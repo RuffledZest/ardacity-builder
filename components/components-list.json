@@ -102,6 +102,15 @@
       "description": "A message signing component for AO/Arweave wallets."
     },
     {
+      "type": "AOTokenDemo",
+      "name": "ao-token-demo",
+      "renderable": true,
+      "props": {
+        "processId": "78Nrydz-vMmm16cAMHhLxvNE6r_1afaQb_EoS0YxG8"
+      },
+      "description": "Comprehensive AO Token management interface with transfer, grant, mint operations, balance checking, and real-time activity logging. Connect to AO token processes and manage token operations with ArConnect wallet support."
+    },
+    {
       "type": "ChatRoomHolder",
       "name": "chatroom-on-chain",
       "renderable": true,
@@ -154,6 +163,15 @@
       "renderable": true,
       "props": {},
       "description": "Comprehensive NFT portfolio explorer with 3D carousel, profile management, and asset discovery. Search by wallet address or profile ID with retro pixel art styling."
+    },
+    {
+      "type": "AOTokenDemo",
+      "name": "ao-token",
+      "renderable": true,
+      "props": {
+        "processId": "78Nrydz-vMmm16cAMHhLxvNE6Wr_1afaQb_EoS0YxG8"
+      },
+      "description": "Comprehensive AO Token management interface with transfer, mint, grant operations, balance checking, and process health monitoring. Full integration with ao-js-sdk for token operations."
     }
   ],
   "footers": [
