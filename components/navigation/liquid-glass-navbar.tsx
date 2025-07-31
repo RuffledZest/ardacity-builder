@@ -1,16 +1,16 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { memo, useCallback, useEffect, useRef, useState } from "react"
-import { cn } from "@/lib/utils"
-import { animate } from "framer-motion"
+import type React from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
+import { cn } from "@/lib/utils";
+import { animate } from "framer-motion";
 
 interface LiquidGlassNavbarProps {
-  brand: string
-  links: Array<{ label: string; href: string }>
-  cta?: { label: string; href: string }
-  className?: string
-  scrollTargetId?: string
+  brand: string;
+  links: Array<{ label: string; href: string }>;
+  cta?: { label: string; href: string };
+  className?: string;
+  scrollTargetId?: string;
 }
 
 const GlowingEffect = memo(
@@ -26,82 +26,89 @@ const GlowingEffect = memo(
     movementDuration = 2,
     borderWidth = 1,
   }: {
-    blur?: number
-    inactiveZone?: number
-    proximity?: number
-    spread?: number
-    variant?: "default" | "white"
-    glow?: boolean
-    className?: string
-    disabled?: boolean
-    movementDuration?: number
-    borderWidth?: number
+    blur?: number;
+    inactiveZone?: number;
+    proximity?: number;
+    spread?: number;
+    variant?: "default" | "white";
+    glow?: boolean;
+    className?: string;
+    disabled?: boolean;
+    movementDuration?: number;
+    borderWidth?: number;
   }) => {
-    const containerRef = useRef<HTMLDivElement>(null)
-    const lastPosition = useRef({ x: 0, y: 0 })
-    const animationFrameRef = useRef<number>(0)
+    const containerRef = useRef<HTMLDivElement>(null);
+    const lastPosition = useRef({ x: 0, y: 0 });
+    const animationFrameRef = useRef<number>(0);
 
     const handleMove = useCallback(
       (e?: MouseEvent | { x: number; y: number }) => {
-        if (!containerRef.current) return
+        if (!containerRef.current) return;
         if (animationFrameRef.current) {
-          cancelAnimationFrame(animationFrameRef.current)
+          cancelAnimationFrame(animationFrameRef.current);
         }
         animationFrameRef.current = requestAnimationFrame(() => {
-          const element = containerRef.current
-          if (!element) return
-          const { left, top, width, height } = element.getBoundingClientRect()
-          const mouseX = e?.x ?? lastPosition.current.x
-          const mouseY = e?.y ?? lastPosition.current.y
+          const element = containerRef.current;
+          if (!element) return;
+          const { left, top, width, height } = element.getBoundingClientRect();
+          const mouseX = e?.x ?? lastPosition.current.x;
+          const mouseY = e?.y ?? lastPosition.current.y;
           if (e) {
-            lastPosition.current = { x: mouseX, y: mouseY }
+            lastPosition.current = { x: mouseX, y: mouseY };
           }
-          const center = [left + width * 0.5, top + height * 0.5]
-          const distanceFromCenter = Math.hypot(mouseX - center[0], mouseY - center[1])
-          const inactiveRadius = 0.5 * Math.min(width, height) * inactiveZone
+          const center = [left + width * 0.5, top + height * 0.5];
+          const distanceFromCenter = Math.hypot(
+            mouseX - center[0],
+            mouseY - center[1]
+          );
+          const inactiveRadius = 0.5 * Math.min(width, height) * inactiveZone;
           if (distanceFromCenter < inactiveRadius) {
-            element.style.setProperty("--active", "0")
-            return
+            element.style.setProperty("--active", "0");
+            return;
           }
           const isActive =
             mouseX > left - proximity &&
             mouseX < left + width + proximity &&
             mouseY > top - proximity &&
-            mouseY < top + height + proximity
-          element.style.setProperty("--active", isActive ? "1" : "0")
-          if (!isActive) return
-          const currentAngle = Number.parseFloat(element.style.getPropertyValue("--start")) || 0
-          const targetAngle = (180 * Math.atan2(mouseY - center[1], mouseX - center[0])) / Math.PI + 90
-          const angleDiff = ((targetAngle - currentAngle + 180) % 360) - 180
-          const newAngle = currentAngle + angleDiff
+            mouseY < top + height + proximity;
+          element.style.setProperty("--active", isActive ? "1" : "0");
+          if (!isActive) return;
+          const currentAngle =
+            Number.parseFloat(element.style.getPropertyValue("--start")) || 0;
+          const targetAngle =
+            (180 * Math.atan2(mouseY - center[1], mouseX - center[0])) /
+              Math.PI +
+            90;
+          const angleDiff = ((targetAngle - currentAngle + 180) % 360) - 180;
+          const newAngle = currentAngle + angleDiff;
           animate(currentAngle, newAngle, {
             duration: movementDuration,
             ease: [0.16, 1, 0.3, 1],
             onUpdate: (value) => {
-              element.style.setProperty("--start", String(value))
+              element.style.setProperty("--start", String(value));
             },
-          })
-        })
+          });
+        });
       },
-      [inactiveZone, proximity, movementDuration],
-    )
+      [inactiveZone, proximity, movementDuration]
+    );
 
     useEffect(() => {
-      if (disabled) return
-      const handleScroll = () => handleMove()
-      const handlePointerMove = (e: PointerEvent) => handleMove(e)
-      window.addEventListener("scroll", handleScroll, { passive: true })
+      if (disabled) return;
+      const handleScroll = () => handleMove();
+      const handlePointerMove = (e: PointerEvent) => handleMove(e);
+      window.addEventListener("scroll", handleScroll, { passive: true });
       document.body.addEventListener("pointermove", handlePointerMove, {
         passive: true,
-      })
+      });
       return () => {
         if (animationFrameRef.current) {
-          cancelAnimationFrame(animationFrameRef.current)
+          cancelAnimationFrame(animationFrameRef.current);
         }
-        window.removeEventListener("scroll", handleScroll)
-        document.body.removeEventListener("pointermove", handlePointerMove)
-      }
-    }, [handleMove, disabled])
+        window.removeEventListener("scroll", handleScroll);
+        document.body.removeEventListener("pointermove", handlePointerMove);
+      };
+    }, [handleMove, disabled]);
 
     return (
       <>
@@ -110,7 +117,7 @@ const GlowingEffect = memo(
             "pointer-events-none absolute -inset-px hidden rounded-[inherit] border opacity-0 transition-opacity",
             glow && "opacity-100",
             variant === "white" && "border-white",
-            disabled && "!block",
+            disabled && "!block"
           )}
         />
         <div
@@ -149,7 +156,7 @@ const GlowingEffect = memo(
             glow && "opacity-100",
             blur > 0 && "blur-[var(--blur)] ",
             className,
-            disabled && "!hidden",
+            disabled && "!hidden"
           )}
         >
           <div
@@ -162,24 +169,35 @@ const GlowingEffect = memo(
               "after:opacity-[var(--active)] after:transition-opacity after:duration-300",
               "after:[mask-clip:padding-box,border-box]",
               "after:[mask-composite:intersect]",
-              "after:[mask-image:linear-gradient(#0000,#0000),conic-gradient(from_calc((var(--start)-var(--spread))*1deg),#00000000_0deg,#fff,#00000000_calc(var(--spread)*2deg))]",
+              "after:[mask-image:linear-gradient(#0000,#0000),conic-gradient(from_calc((var(--start)-var(--spread))*1deg),#00000000_0deg,#fff,#00000000_calc(var(--spread)*2deg))]"
             )}
           />
         </div>
       </>
-    )
-  },
-)
+    );
+  }
+);
 
-GlowingEffect.displayName = "GlowingEffect"
+GlowingEffect.displayName = "GlowingEffect";
 
-export function LiquidGlassNavbar({ brand, links, cta, className, scrollTargetId }: LiquidGlassNavbarProps) {
-  const [scrolled, setScrolled] = useState(false)
+export function LiquidGlassNavbar({
+  brand,
+  links,
+  cta,
+  className,
+  scrollTargetId,
+}: LiquidGlassNavbarProps) {
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const scrollTarget = scrollTargetId ? document.getElementById(scrollTargetId) : window;
+    const scrollTarget = scrollTargetId
+      ? document.getElementById(scrollTargetId)
+      : window;
     const onScroll = () => {
-      const scrollY = scrollTarget === window ? window.scrollY : (scrollTarget as HTMLElement).scrollTop;
+      const scrollY =
+        scrollTarget === window
+          ? window.scrollY
+          : (scrollTarget as HTMLElement).scrollTop;
       setScrolled(scrollY > 30);
     };
     if (scrollTarget) {
@@ -194,8 +212,21 @@ export function LiquidGlassNavbar({ brand, links, cta, className, scrollTargetId
   return (
     <>
       <svg style={{ display: "none" }}>
-        <filter id="glass-distortion-card" x="0%" y="0%" width="100%" height="100%" filterUnits="objectBoundingBox">
-          <feTurbulence type="fractalNoise" baseFrequency="0.002 0.008" numOctaves="2" seed="17" result="turbulence" />
+        <filter
+          id="glass-distortion-card"
+          x="0%"
+          y="0%"
+          width="100%"
+          height="100%"
+          filterUnits="objectBoundingBox"
+        >
+          <feTurbulence
+            type="fractalNoise"
+            baseFrequency="0.002 0.008"
+            numOctaves="2"
+            seed="17"
+            result="turbulence"
+          />
           <feComponentTransfer in="turbulence" result="mapped">
             <feFuncR type="gamma" amplitude="1.2" exponent="8" offset="0.4" />
             <feFuncG type="gamma" amplitude="0.1" exponent="1" offset="0.1" />
@@ -212,16 +243,56 @@ export function LiquidGlassNavbar({ brand, links, cta, className, scrollTargetId
           >
             <fePointLight x="-150" y="-150" z="400" />
           </feSpecularLighting>
-          <feComposite in="specLight" operator="arithmetic" k1="0" k2="1.2" k3="1.2" k4="0" result="litImage" />
-          <feDisplacementMap in="SourceGraphic" in2="softMap" scale="300" xChannelSelector="R" yChannelSelector="G" />
+          <feComposite
+            in="specLight"
+            operator="arithmetic"
+            k1="0"
+            k2="1.2"
+            k3="1.2"
+            k4="0"
+            result="litImage"
+          />
+          <feDisplacementMap
+            in="SourceGraphic"
+            in2="softMap"
+            scale="300"
+            xChannelSelector="R"
+            yChannelSelector="G"
+          />
         </filter>
       </svg>
 
-      <div className={cn("fixed top-0 left-0 transform mx-auto z-50 transition-all duration-500 ease-in-out", scrolled ? "w-[60%]" : "w-full", className)}>
-        <div className={cn("liquidGlass-wrapper relative flex font-semibold overflow-hidden text-black cursor-pointer p-2 hover:p-[10px] hover:scale-[1] hover:shadow-[0_12px_24px_rgba(0,0,0,0.2)] transition-all duration-[400ms] ease-[cubic-bezier(0.175,0.885,0.32,2.2)]" ,scrolled ? "rounded-full" : "rounded-none")}>
-          <div className={cn("liquidGlass-effect absolute z-0 inset-0 [backdrop-filter:blur(3px)] [filter:url(#glass-distortion-card)] overflow-hidden [isolation:isolate]" ,scrolled ? "rounded-full" : "rounded-none")} />
-          <div className={cn("liquidGlass-tint z-[1] absolute inset-0 bg-white/[0.048]" ,scrolled ? "rounded-full" : "rounded-none")} />
-          <div className={cn("liquidGlass-shine absolute inset-0 z-[2] overflow-hidden shadow-[inset_2px_2px_1px_0_rgba(255,255,255,0.5),inset_-1px_-1px_1px_1px_rgba(255,255,255,0.5)]" ,scrolled ? "rounded-full" : "rounded-none")} />
+      <div
+        className={cn(
+          "fixed top-0 left-0 transform mx-auto z-50 transition-all duration-500 ease-in-out",
+          scrolled ? "w-[60%]" : "w-full",
+          className
+        )}
+      >
+        <div
+          className={cn(
+            "liquidGlass-wrapper relative flex font-semibold overflow-hidden text-black cursor-pointer p-2 hover:p-[10px] hover:scale-[1] hover:shadow-[0_12px_24px_rgba(0,0,0,0.2)] transition-all duration-[400ms] ease-[cubic-bezier(0.175,0.885,0.32,2.2)]",
+            scrolled ? "rounded-full" : "rounded-none"
+          )}
+        >
+          <div
+            className={cn(
+              "liquidGlass-effect absolute z-0 inset-0 [backdrop-filter:blur(3px)] [filter:url(#glass-distortion-card)] overflow-hidden [isolation:isolate]",
+              scrolled ? "rounded-full" : "rounded-none"
+            )}
+          />
+          <div
+            className={cn(
+              "liquidGlass-tint z-[1] absolute inset-0 bg-white/[0.048]",
+              scrolled ? "rounded-full" : "rounded-none"
+            )}
+          />
+          <div
+            className={cn(
+              "liquidGlass-shine absolute inset-0 z-[2] overflow-hidden shadow-[inset_2px_2px_1px_0_rgba(255,255,255,0.5),inset_-1px_-1px_1px_1px_rgba(255,255,255,0.5)]",
+              scrolled ? "rounded-full" : "rounded-none"
+            )}
+          />
 
           <div className="relative z-[3] flex items-center justify-between w-full px-6 py-3">
             <div className="text-xl font-bold tracking-tight text-white dark:text-zinc-100 drop-shadow-md">
@@ -229,7 +300,11 @@ export function LiquidGlassNavbar({ brand, links, cta, className, scrollTargetId
             </div>
             <nav className="hidden md:flex gap-6 text-sm font-medium text-zinc-700 dark:text-zinc-200">
               {links.map((link, i) => (
-                <a key={i} href={link.href} className="hover:text-purple-500 text-white  hover:border-1 hover:border-white/70 transition-all hover:scale-110 bg-white/10 backdrop-blur-sm px-3 py-1 rounded-full">
+                <a
+                  key={i}
+                  href={link.href}
+                  className="hover:text-purple-500 text-white  hover:border-1 hover:border-white/70 transition-all hover:scale-110 bg-white/10 backdrop-blur-sm px-3 py-1 rounded-full"
+                >
                   {link.label}
                 </a>
               ))}
@@ -248,5 +323,5 @@ export function LiquidGlassNavbar({ brand, links, cta, className, scrollTargetId
         </div>
       </div>
     </>
-  )
+  );
 }
